@@ -1,0 +1,1077 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calcatreu — Dashboard Regalías Mineras</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #C9A84C;
+  --gold2: #E8C97A;
+  --silver: #A8B8C8;
+  --silver2: #CBD8E4;
+  --bg: #080C0F;
+  --bg2: #0D1318;
+  --bg3: #111820;
+  --bg4: #161E28;
+  --border: rgba(201,168,76,0.15);
+  --border2: rgba(168,184,200,0.12);
+  --text: #E8EDF2;
+  --text2: #8A9BAC;
+  --text3: #4A5A6A;
+  --green: #3DD68C;
+  --red: #F05252;
+  --province: #7B68EE;
+  --nation: #4ECDC4;
+  --muni: #FFB347;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Background texture */
+body::before {
+  content:'';
+  position:fixed; inset:0;
+  background:
+    radial-gradient(ellipse 800px 400px at 20% 0%, rgba(201,168,76,0.04) 0%, transparent 70%),
+    radial-gradient(ellipse 600px 300px at 80% 100%, rgba(168,184,200,0.04) 0%, transparent 70%);
+  pointer-events:none; z-index:0;
+}
+
+.wrap { position:relative; z-index:1; max-width:1440px; margin:0 auto; padding:24px; }
+
+/* ── HEADER ── */
+header {
+  display:flex; align-items:flex-end; justify-content:space-between;
+  border-bottom: 1px solid var(--border);
+  padding-bottom:20px; margin-bottom:28px;
+}
+.logo-block {}
+.logo-sup {
+  font-family:'DM Mono', monospace;
+  font-size:10px; letter-spacing:3px;
+  color:var(--text3); margin-bottom:4px;
+}
+.logo-main {
+  font-family:'Bebas Neue', sans-serif;
+  font-size:48px; line-height:1;
+  background: linear-gradient(135deg, var(--gold) 0%, var(--gold2) 50%, var(--silver) 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+  letter-spacing:2px;
+}
+.logo-sub {
+  font-family:'DM Mono', monospace;
+  font-size:11px; color:var(--text2); margin-top:4px;
+}
+.header-right { text-align:right; }
+.ts {
+  font-family:'DM Mono', monospace;
+  font-size:11px; color:var(--text3);
+}
+.live-pill {
+  display:inline-flex; align-items:center; gap:6px;
+  background:rgba(61,214,140,0.08); border:1px solid rgba(61,214,140,0.25);
+  color:var(--green); padding:4px 10px; border-radius:20px;
+  font-size:10px; font-weight:600; letter-spacing:1px; margin-top:6px;
+}
+.live-dot { width:6px; height:6px; border-radius:50%; background:var(--green); animation:blink 1.5s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+
+/* ── SPOT ROW ── */
+.spot-row {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:16px; margin-bottom:20px;
+}
+.spot-card {
+  background:var(--bg2); border:1px solid var(--border);
+  border-radius:12px; padding:24px;
+  position:relative; overflow:hidden;
+}
+.spot-card.gold { border-color:rgba(201,168,76,0.3); }
+.spot-card.silver { border-color:rgba(168,184,200,0.25); }
+.spot-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:2px;
+}
+.spot-card.gold::before { background:linear-gradient(90deg,var(--gold),var(--gold2),transparent); }
+.spot-card.silver::before { background:linear-gradient(90deg,var(--silver),var(--silver2),transparent); }
+.spot-label {
+  font-family:'DM Mono', monospace;
+  font-size:10px; letter-spacing:2px; color:var(--text3); margin-bottom:8px;
+}
+.spot-price {
+  font-family:'Bebas Neue', sans-serif;
+  font-size:52px; line-height:1;
+}
+.spot-card.gold .spot-price { color:var(--gold2); }
+.spot-card.silver .spot-price { color:var(--silver2); }
+.spot-meta { display:flex; gap:20px; margin-top:10px; }
+.spot-chg {
+  font-family:'DM Mono', monospace;
+  font-size:13px; font-weight:500;
+}
+.spot-chg.pos { color:var(--green); }
+.spot-chg.neg { color:var(--red); }
+.spot-detail { font-size:11px; color:var(--text3); }
+.spot-ts { font-family:'DM Mono', monospace; font-size:10px; color:var(--text3); margin-top:8px; }
+.spot-bg-text {
+  position:absolute; right:-10px; bottom:-20px;
+  font-family:'Bebas Neue', sans-serif; font-size:100px;
+  opacity:0.04; pointer-events:none; line-height:1;
+}
+.spot-card.gold .spot-bg-text { color:var(--gold); }
+.spot-card.silver .spot-bg-text { color:var(--silver); }
+.loading-text { color:var(--text3); font-size:16px; animation:pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ── SECCIÓN TABS ── */
+.tabs-row {
+  display:flex; gap:4px; margin-bottom:20px;
+  border-bottom:1px solid var(--border);
+  padding-bottom:0;
+}
+.tab {
+  padding:10px 20px; cursor:pointer;
+  font-family:'DM Mono', monospace; font-size:11px; letter-spacing:1px;
+  color:var(--text3); border:none; background:none;
+  border-bottom:2px solid transparent; margin-bottom:-1px;
+  transition:all 0.2s;
+}
+.tab:hover { color:var(--text2); }
+.tab.active { color:var(--gold); border-bottom-color:var(--gold); }
+
+.tab-content { display:none; }
+.tab-content.active { display:block; }
+
+/* ── GRID PRINCIPAL ── */
+.main-grid {
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:16px; margin-bottom:16px;
+}
+.full-width { grid-column:1/-1; }
+
+/* ── CARDS ── */
+.card {
+  background:var(--bg2); border:1px solid var(--border2);
+  border-radius:12px; padding:20px;
+}
+.card-title {
+  font-family:'DM Mono', monospace;
+  font-size:10px; letter-spacing:2px; color:var(--text3);
+  margin-bottom:16px; display:flex; align-items:center; gap:8px;
+}
+.card-title::after { content:''; flex:1; height:1px; background:var(--border2); }
+
+/* ── TABLA PRODUCCION ── */
+.prod-table { width:100%; border-collapse:collapse; }
+.prod-table th {
+  text-align:right; font-family:'DM Mono', monospace;
+  font-size:9px; letter-spacing:1px; color:var(--text3);
+  padding:6px 8px; border-bottom:1px solid var(--border2);
+}
+.prod-table th:first-child { text-align:left; }
+.prod-table td {
+  padding:7px 8px; font-family:'DM Mono', monospace;
+  font-size:11px; color:var(--text2); text-align:right;
+  border-bottom:1px solid rgba(255,255,255,0.03);
+}
+.prod-table td:first-child { text-align:left; color:var(--text); font-weight:500; }
+.prod-table tr:hover td { background:rgba(255,255,255,0.02); }
+.prod-table .total-row td {
+  border-top:1px solid var(--border); color:var(--text);
+  font-weight:600; background:var(--bg3);
+}
+.au { color:var(--gold) !important; }
+.ag { color:var(--silver) !important; }
+
+/* ── FOB CALCULADO ── */
+.fob-grid {
+  display:grid; grid-template-columns:repeat(4,1fr); gap:12px;
+  margin-bottom:16px;
+}
+.fob-kpi {
+  background:var(--bg3); border-radius:8px; padding:14px;
+  border:1px solid var(--border2);
+}
+.fob-kpi-label { font-family:'DM Mono', monospace; font-size:9px; letter-spacing:1.5px; color:var(--text3); margin-bottom:6px; }
+.fob-kpi-val { font-family:'DM Mono', monospace; font-size:15px; font-weight:500; }
+.fob-kpi-val.gold-val { color:var(--gold2); }
+.fob-kpi-val.silver-val { color:var(--silver2); }
+.fob-kpi-val.total-val { color:var(--text); }
+.fob-kpi-val.regalia-val { color:var(--green); }
+
+/* ── BARRAS DISTRIBUCIÓN ── */
+.dist-bar-wrap { margin-bottom:12px; }
+.dist-bar-header { display:flex; justify-content:space-between; margin-bottom:4px; }
+.dist-bar-name { font-size:11px; color:var(--text2); }
+.dist-bar-val { font-family:'DM Mono', monospace; font-size:11px; }
+.dist-bar-track { height:6px; background:var(--bg4); border-radius:3px; overflow:hidden; }
+.dist-bar-fill { height:100%; border-radius:3px; transition:width 0.8s ease; }
+
+/* ── TABLA REGALIAS COMPARATIVA ── */
+.reg-table { width:100%; border-collapse:collapse; }
+.reg-table th {
+  text-align:right; font-family:'DM Mono', monospace;
+  font-size:9px; letter-spacing:1px; color:var(--text3);
+  padding:6px 8px; border-bottom:1px solid var(--border2);
+}
+.reg-table th:first-child { text-align:left; }
+.reg-table td {
+  padding:8px 8px; font-family:'DM Mono', monospace;
+  font-size:11px; text-align:right;
+  border-bottom:1px solid rgba(255,255,255,0.03);
+}
+.reg-table td:first-child { text-align:left; color:var(--text); }
+.reg-table .model-a { color:var(--gold2); }
+.reg-table .model-b { color:var(--province); }
+.reg-table .alpha { color:var(--silver2); }
+.reg-table .total-row td { border-top:1px solid var(--border); background:var(--bg3); font-weight:600; }
+
+/* ── ALPHA CHART ── */
+.alpha-chart { display:flex; align-items:flex-end; gap:8px; height:100px; margin:16px 0 8px; }
+.alpha-bar-wrap { flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; }
+.alpha-bar { width:100%; border-radius:3px 3px 0 0; transition:height 0.8s ease; position:relative; }
+.alpha-bar.model-b-bar { background:linear-gradient(180deg, var(--province), rgba(123,104,238,0.4)); }
+.alpha-label { font-family:'DM Mono', monospace; font-size:9px; color:var(--text3); }
+.alpha-val { font-family:'DM Mono', monospace; font-size:9px; color:var(--silver2); }
+
+/* ── JURISDICCION ── */
+.juris-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+.juris-card {
+  background:var(--bg3); border-radius:8px; padding:14px;
+  border-left:3px solid;
+}
+.juris-card.provincia { border-color:var(--province); }
+.juris-card.nacion { border-color:var(--nation); }
+.juris-card.municipio { border-color:var(--muni); }
+.juris-name { font-family:'DM Mono', monospace; font-size:9px; letter-spacing:2px; color:var(--text3); margin-bottom:6px; }
+.juris-usd { font-family:'DM Mono', monospace; font-size:14px; font-weight:500; }
+.juris-card.provincia .juris-usd { color:var(--province); }
+.juris-card.nacion .juris-usd { color:var(--nation); }
+.juris-card.municipio .juris-usd { color:var(--muni); }
+.juris-ars { font-size:10px; color:var(--text3); margin-top:3px; font-family:'DM Mono', monospace; }
+
+/* ── ESCENARIOS ── */
+.esc-row { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; }
+.esc-card {
+  background:var(--bg3); border-radius:8px; padding:16px;
+  border:1px solid var(--border2); text-align:center;
+}
+.esc-name { font-family:'DM Mono', monospace; font-size:9px; letter-spacing:2px; color:var(--text3); margin-bottom:8px; }
+.esc-val { font-family:'Bebas Neue', sans-serif; font-size:28px; }
+.esc-card.actual .esc-val { color:var(--gold2); }
+.esc-card.moderado .esc-val { color:var(--silver2); }
+.esc-card.optimista .esc-val { color:var(--green); }
+.esc-sub { font-size:10px; color:var(--text3); margin-top:4px; font-family:'DM Mono', monospace; }
+
+/* ── FOOTER NOTE ── */
+.footnote {
+  margin-top:24px; padding:16px 20px;
+  background:var(--bg2); border:1px solid var(--border2);
+  border-radius:8px; color:var(--text3);
+  font-family:'DM Mono', monospace; font-size:10px; line-height:1.8;
+}
+
+/* ── AI PANEL ── */
+.ai-panel {
+  margin-top:16px;
+  background:var(--bg2); border:1px solid rgba(123,104,238,0.25);
+  border-radius:12px; overflow:hidden;
+}
+.ai-header {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:14px 20px; border-bottom:1px solid rgba(123,104,238,0.15);
+  background:linear-gradient(135deg,rgba(123,104,238,0.06),transparent);
+}
+.ai-title { display:flex; align-items:center; gap:8px; font-family:'DM Mono', monospace; font-size:10px; letter-spacing:2px; color:var(--province); }
+.ai-dot { width:6px; height:6px; border-radius:50%; background:var(--province); box-shadow:0 0 8px var(--province); }
+.ai-btns { display:flex; gap:6px; }
+.ai-btn {
+  padding:5px 12px; background:transparent;
+  border:1px solid var(--border2); border-radius:4px;
+  color:var(--text2); font-family:'DM Mono', monospace;
+  font-size:10px; cursor:pointer; transition:all 0.2s;
+}
+.ai-btn:hover { border-color:var(--province); color:var(--province); }
+.ai-input-row { display:flex; gap:8px; padding:12px 20px; border-bottom:1px solid var(--border2); }
+.ai-input {
+  flex:1; background:var(--bg3); border:1px solid var(--border2);
+  border-radius:6px; padding:8px 12px; color:var(--text);
+  font-family:'DM Mono', monospace; font-size:11px; outline:none;
+}
+.ai-input:focus { border-color:var(--province); }
+.ai-send {
+  padding:8px 16px; background:rgba(123,104,238,0.15);
+  border:1px solid rgba(123,104,238,0.4); border-radius:6px;
+  color:var(--province); font-family:'DM Mono', monospace;
+  font-size:11px; cursor:pointer; transition:all 0.2s;
+}
+.ai-send:hover { background:rgba(123,104,238,0.25); }
+.ai-send:disabled { opacity:0.4; cursor:not-allowed; }
+.ai-output {
+  padding:16px 20px; min-height:100px; max-height:280px;
+  overflow-y:auto; color:var(--text2); line-height:1.8; font-size:12px;
+  font-family:'DM Sans', sans-serif;
+}
+.ai-placeholder { color:var(--text3); font-style:italic; font-family:'DM Mono', monospace; font-size:11px; }
+.ai-thinking { color:var(--province); font-family:'DM Mono', monospace; font-size:11px; animation:blink 1s infinite; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:var(--bg); }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<!-- HEADER -->
+<header>
+  <div class="logo-block">
+    <div class="logo-sup">PROYECTO MINERO · PATAGONIA GOLD</div>
+    <div class="logo-main">CALCATREU</div>
+    <div class="logo-sub">Dashboard de Regalías Mineras · Río Negro, Argentina</div>
+  </div>
+  <div class="header-right">
+    <div class="ts" id="ts">--</div>
+    <div class="live-pill"><span class="live-dot"></span>COTIZACIONES EN VIVO</div>
+  </div>
+</header>
+
+<!-- SPOT CARDS -->
+<div class="spot-row">
+  <div class="spot-card gold">
+    <div class="spot-bg-text">AU</div>
+    <div class="spot-label">XAU/USD · ORO SPOT · USD/OZ TROY</div>
+    <div class="spot-price" id="au-price"><span class="loading-text">···</span></div>
+    <div class="spot-meta">
+      <div class="spot-chg" id="au-chg">—</div>
+      <div class="spot-detail" id="au-range">Máx — · Mín —</div>
+    </div>
+    <div class="spot-ts" id="au-ts">Actualizando...</div>
+  </div>
+  <div class="spot-card silver">
+    <div class="spot-bg-text">AG</div>
+    <div class="spot-label">XAG/USD · PLATA SPOT · USD/OZ TROY</div>
+    <div class="spot-price" id="ag-price"><span class="loading-text">···</span></div>
+    <div class="spot-meta">
+      <div class="spot-chg" id="ag-chg">—</div>
+      <div class="spot-detail" id="ag-range">Máx — · Mín —</div>
+    </div>
+    <div class="spot-ts" id="ag-ts">Actualizando...</div>
+  </div>
+</div>
+
+<!-- ENTRADA MANUAL DE PRECIOS -->
+<div style="display:flex;gap:12px;margin-bottom:16px;align-items:center;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:12px 16px">
+  <span style="font-family:DM Mono,monospace;font-size:10px;letter-spacing:1px;color:var(--text3);white-space:nowrap">AJUSTE MANUAL →</span>
+  <label style="display:flex;align-items:center;gap:8px;font-family:DM Mono,monospace;font-size:11px;color:var(--gold2)">Au USD/oz
+    <input id="input-au" type="number" step="0.01" placeholder="ej: 3312.50" style="background:var(--bg3);border:1px solid rgba(201,168,76,0.3);border-radius:4px;padding:5px 10px;color:var(--gold2);font-family:DM Mono,monospace;font-size:12px;width:130px;outline:none">
+  </label>
+  <label style="display:flex;align-items:center;gap:8px;font-family:DM Mono,monospace;font-size:11px;color:var(--silver2)">Ag USD/oz
+    <input id="input-ag" type="number" step="0.01" placeholder="ej: 32.85" style="background:var(--bg3);border:1px solid rgba(168,184,200,0.3);border-radius:4px;padding:5px 10px;color:var(--silver2);font-family:DM Mono,monospace;font-size:12px;width:110px;outline:none">
+  </label>
+  <button onclick="aplicarManual()" style="padding:6px 16px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);border-radius:4px;color:var(--gold);font-family:DM Mono,monospace;font-size:11px;cursor:pointer">Aplicar →</button>
+  <button onclick="fetchSpot()" style="padding:6px 16px;background:transparent;border:1px solid var(--border2);border-radius:4px;color:var(--text3);font-family:DM Mono,monospace;font-size:11px;cursor:pointer">↻ Actualizar live</button>
+  <span id="manual-status" style="font-family:DM Mono,monospace;font-size:10px;color:var(--text3)"></span>
+</div>
+
+<!-- TABS -->
+<div class="tabs-row">
+  <button class="tab active" onclick="showTab('produccion')">PRODUCCIÓN</button>
+  <button class="tab" onclick="showTab('regalias')">REGALÍAS</button>
+  <button class="tab" onclick="showTab('alpha')">MODELO α ENDÓGENO</button>
+  <button class="tab" onclick="showTab('distribucion')">DISTRIBUCIÓN</button>
+  <button class="tab" onclick="showTab('escenarios')">ESCENARIOS</button>
+</div>
+
+<!-- TAB: PRODUCCIÓN -->
+<div class="tab-content active" id="tab-produccion">
+  <div class="fob-grid" id="fob-kpis">
+    <div class="fob-kpi"><div class="fob-kpi-label">FOB ORO TOTAL</div><div class="fob-kpi-val gold-val" id="kpi-fob-au">···</div></div>
+    <div class="fob-kpi"><div class="fob-kpi-label">FOB PLATA TOTAL</div><div class="fob-kpi-val silver-val" id="kpi-fob-ag">···</div></div>
+    <div class="fob-kpi"><div class="fob-kpi-label">FOB COMBINADO</div><div class="fob-kpi-val total-val" id="kpi-fob-total">···</div></div>
+    <div class="fob-kpi"><div class="fob-kpi-label">REGALÍA ESTIMADA</div><div class="fob-kpi-val regalia-val" id="kpi-regalia">···</div></div>
+  </div>
+  <div class="card full-width">
+    <div class="card-title">PRODUCCIÓN POR AÑO · VIDA DE MINA 8 AÑOS</div>
+    <table class="prod-table">
+      <thead>
+        <tr>
+          <th>AÑO</th>
+          <th>TONNAJE (t)</th>
+          <th>LEY Au (g/t)</th>
+          <th>LEY Ag (g/t)</th>
+          <th>Oz Au REC.</th>
+          <th>FOB Au (USD)</th>
+          <th>Oz Ag REC.</th>
+          <th>FOB Ag (USD)</th>
+          <th>FOB TOTAL (USD)</th>
+          <th>REGALÍA 2% (USD)</th>
+        </tr>
+      </thead>
+      <tbody id="prod-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TAB: REGALÍAS -->
+<div class="tab-content" id="tab-regalias">
+  <div class="card full-width">
+    <div class="card-title">REGALÍAS MODELO ACTUAL · Ley 5.001 Río Negro</div>
+    <div class="fob-grid" style="margin-bottom:20px">
+      <div class="fob-kpi"><div class="fob-kpi-label">REGALÍA 2% TOTAL</div><div class="fob-kpi-val gold-val" id="r-reg2">···</div></div>
+      <div class="fob-kpi"><div class="fob-kpi-label">IMPUESTO DESARROLLO 3.75%</div><div class="fob-kpi-val silver-val" id="r-imp">···</div></div>
+      <div class="fob-kpi"><div class="fob-kpi-label">TOTAL RECAUDADO</div><div class="fob-kpi-val total-val" id="r-total">···</div></div>
+      <div class="fob-kpi"><div class="fob-kpi-label">VIDA DE MINA (8 años)</div><div class="fob-kpi-val regalia-val" id="r-vida">···</div></div>
+    </div>
+    <table class="reg-table">
+      <thead>
+        <tr>
+          <th>AÑO</th>
+          <th>FOB TOTAL (USD)</th>
+          <th class="model-a">REGALÍA 2% (USD)</th>
+          <th class="model-a">IMP. DESARROLLO 3.75%</th>
+          <th class="model-a">TOTAL REC. (USD)</th>
+          <th>EN ARS (TC: <span id="tc-header">—</span>)</th>
+        </tr>
+      </thead>
+      <tbody id="reg-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- TAB: ALPHA ENDÓGENO -->
+<div class="tab-content" id="tab-alpha">
+  <div class="main-grid">
+    <div class="card">
+      <div class="card-title">INDICADOR TÉCNICO Y α ENDÓGENO · Vera (2025)</div>
+      <table class="reg-table">
+        <thead>
+          <tr>
+            <th>AÑO</th>
+            <th>LEY Au (g/t)</th>
+            <th class="alpha">IT_t</th>
+            <th class="alpha">ITN_t</th>
+            <th class="alpha">α_t</th>
+            <th class="model-b">λ_t (tasa FOB)</th>
+            <th class="model-b">REGALÍA α (USD)</th>
+          </tr>
+        </thead>
+        <tbody id="alpha-tbody"></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title">COMPARACIÓN α POR AÑO</div>
+      <div class="alpha-chart" id="alpha-chart"></div>
+      <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:9px;color:var(--text3)">
+        <span>Año 1</span><span>Año 2</span><span>Año 3</span><span>Año 4</span>
+        <span>Año 5</span><span>Año 6</span><span>Año 7</span><span>Año 8</span>
+      </div>
+      <div style="margin-top:20px">
+        <div class="card-title">COMPARACIÓN TOTAL REGALÍAS</div>
+        <div class="esc-row">
+          <div class="esc-card actual">
+            <div class="esc-name">MODELO ACTUAL</div>
+            <div class="esc-val" id="comp-actual">···</div>
+            <div class="esc-sub">2% sobre FOB (fijo)</div>
+          </div>
+          <div class="esc-card moderado">
+            <div class="esc-name">MODELO α ENDÓGENO</div>
+            <div class="esc-val" id="comp-alpha">···</div>
+            <div class="esc-sub">3% × α sobre boca mina</div>
+          </div>
+          <div class="esc-card optimista">
+            <div class="esc-name">DIFERENCIA</div>
+            <div class="esc-val" id="comp-diff">···</div>
+            <div class="esc-sub">Δ entre modelos</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footnote">
+    <strong style="color:var(--province)">MODELO α ENDÓGENO</strong> · Vera (2025) · "Modelo de Estimación Ex Ante de Regalías Mineras mediante un α Endógeno Basado en Variables Geológicas y Metalúrgicas"<br>
+    IT_t = Ley_Au × Recuperación_Au · ITN_t = (IT_t − IT_min) / (IT_max − IT_min) · α_t = 0.50 + 0.17 × ITN_t · λ_t = 0.03 × α_t<br>
+    El coeficiente α varía entre 0.50 (mineral de baja ley) y 0.67 (mineral de alta ley), generando tasas efectivas sobre FOB entre 1.50% y 2.00%.
+  </div>
+</div>
+
+<!-- TAB: DISTRIBUCIÓN -->
+<div class="tab-content" id="tab-distribucion">
+  <div class="main-grid">
+    <div class="card">
+      <div class="card-title">DISTRIBUCIÓN JURISDICCIONAL · FOB TOTAL PROYECTO</div>
+      <div class="juris-grid" style="margin-bottom:20px" id="juris-cards"></div>
+      <div id="dist-bars"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">DISTRIBUCIÓN DE REGALÍAS PROVINCIA</div>
+      <div id="prov-bars"></div>
+    </div>
+  </div>
+</div>
+
+<!-- TAB: ESCENARIOS -->
+<div class="tab-content" id="tab-escenarios">
+  <div class="card full-width">
+    <div class="card-title">ESCENARIOS DE COTIZACIÓN Y REGALÍAS</div>
+    <div class="esc-row" style="margin-bottom:24px">
+      <div class="esc-card actual">
+        <div class="esc-name">ESCENARIO ACTUAL</div>
+        <div class="esc-val" id="esc-actual">···</div>
+        <div class="esc-sub" id="esc-actual-sub">Precio spot hoy</div>
+      </div>
+      <div class="esc-card moderado">
+        <div class="esc-name">ESCENARIO MODERADO</div>
+        <div class="esc-val" id="esc-moderado">···</div>
+        <div class="esc-sub">Au $2.747 · Ag $37.5 (2026 proj.)</div>
+      </div>
+      <div class="esc-card optimista">
+        <div class="esc-name">ESCENARIO OPTIMISTA</div>
+        <div class="esc-val" id="esc-optimista">···</div>
+        <div class="esc-sub">Au $3.779 · Ag $53.9 (2029 proj.)</div>
+      </div>
+    </div>
+    <table class="reg-table">
+      <thead>
+        <tr>
+          <th>AÑO</th>
+          <th class="model-a">REG. ACTUAL (USD)</th>
+          <th>REG. MODERADO (USD)</th>
+          <th class="model-b">REG. OPTIMISTA (USD)</th>
+          <th>Δ ACTUAL vs MODERADO</th>
+          <th>Δ ACTUAL vs OPTIMISTA</th>
+        </tr>
+      </thead>
+      <tbody id="esc-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- AI PANEL -->
+<div class="ai-panel">
+  <div class="ai-header">
+    <div class="ai-title"><div class="ai-dot"></div>ANÁLISIS IA · CLAUDE SONNET</div>
+    <div class="ai-btns">
+      <button class="ai-btn" onclick="askAI('¿Cuál es el impacto de la cotización actual del oro en las regalías proyectadas de Calcatreu?')">Impacto spot</button>
+      <button class="ai-btn" onclick="askAI('Comparar el modelo de regalía fija 2% vs el modelo α endógeno de Vera. ¿Cuál es más conveniente para la provincia?')">Comparar modelos</button>
+      <button class="ai-btn" onclick="askAI('¿En qué año del proyecto Calcatreu se maximizan las regalías y por qué?')">Año pico</button>
+      <button class="ai-btn" onclick="askAI('Analizar la distribución jurisdiccional. ¿Es equitativa para el municipio productor?')">Distribución</button>
+    </div>
+  </div>
+  <div class="ai-input-row">
+    <input class="ai-input" id="ai-query" type="text" placeholder="Pregunta sobre Calcatreu, regalías, modelos de distribución...">
+    <button class="ai-send" id="ai-send-btn" onclick="askAI()">Analizar →</button>
+  </div>
+  <div class="ai-output" id="ai-output">
+    <span class="ai-placeholder">← Usá los botones rápidos o escribí tu pregunta sobre el proyecto Calcatreu.</span>
+  </div>
+</div>
+
+</div><!-- /wrap -->
+
+<script>
+// ── DATOS GEOLÓGICOS CALCATREU ────────────────────────────────
+const GEO = [
+  { año:1, label:"2026 (Año 1)", ton:506344,  leyAu:3.09,  leyAg:26.2  },
+  { año:2, label:"2027 (Año 2)", ton:1027076, leyAu:3.38,  leyAg:30.11 },
+  { año:3, label:"2028 (Año 3)", ton:926391,  leyAu:3.35,  leyAg:32.0  },
+  { año:4, label:"2029 (Año 4)", ton:778760,  leyAu:3.44,  leyAg:37.3  },
+  { año:5, label:"2030 (Año 5)", ton:824896,  leyAu:2.24,  leyAg:24.7  },
+  { año:6, label:"2031 (Año 6)", ton:866338,  leyAu:2.376, leyAg:28.1  },
+  { año:7, label:"2032 (Año 7)", ton:588434,  leyAu:1.73,  leyAg:16.7  },
+  { año:8, label:"2033 (Año 8)", ton:285862,  leyAu:1.66,  leyAg:13.3  },
+];
+
+const REC_AU = 0.63;
+const REC_AG = 0.30;
+const G_PER_OZ = 31.1035;
+const TASA_REGALIA = 0.02;
+const TASA_DESARROLLO = 0.0375;
+const TC_ARS = 933.42; // tipo de cambio referencia
+
+// Precios cotizados (actualizados por fetch)
+let pAu = 0, pAg = 0;
+
+// Escenarios adicionales
+const ESC_MOD = { au: 2747, ag: 37.5 };
+const ESC_OPT = { au: 3779, ag: 53.94 };
+
+// α endógeno (Vera 2025)
+const IT_MIN = 1.0458, IT_MAX = 2.1672;
+const ALPHA_MIN = 0.50, ALPHA_MAX = 0.67;
+
+function calcIT(leyAu) { return leyAu * REC_AU; }
+function calcITN(it) { return (it - IT_MIN) / (IT_MAX - IT_MIN); }
+function calcAlpha(itn) { return ALPHA_MIN + (ALPHA_MAX - ALPHA_MIN) * itn; }
+
+// ── CÁLCULO PRINCIPAL ─────────────────────────────────────────
+function calcData(auP, agP) {
+  return GEO.map(d => {
+    const grAu  = d.ton * d.leyAu * REC_AU;
+    const ozAu  = grAu / G_PER_OZ;
+    const fobAu = ozAu * auP;
+    const grAg  = d.ton * d.leyAg * REC_AG;
+    const ozAg  = grAg / G_PER_OZ;
+    const fobAg = ozAg * agP;
+    const fobTotal = fobAu + fobAg;
+    const regalia2 = fobTotal * TASA_REGALIA;
+    const impDes   = fobTotal * TASA_DESARROLLO;
+    const totalRec = regalia2 + impDes;
+
+    // Alpha endógeno
+    const it  = calcIT(d.leyAu);
+    const itn = Math.min(1, Math.max(0, calcITN(it)));
+    const alpha = calcAlpha(itn);
+    const lambda = 0.03 * alpha;
+    const regaliaAlpha = fobTotal * lambda;
+
+    return {
+      ...d, grAu, ozAu, fobAu, grAg, ozAg, fobAg,
+      fobTotal, regalia2, impDes, totalRec,
+      it, itn, alpha, lambda, regaliaAlpha
+    };
+  });
+}
+
+// ── FORMAT ────────────────────────────────────────────────────
+const fmtUSD = v => v === 0 ? '—' : '$' + (v/1e6).toFixed(2) + 'M';
+const fmtUSDk = v => '$' + v.toLocaleString('es-AR', {maximumFractionDigits:0});
+const fmtN = (v,d=2) => v.toFixed(d);
+const fmtOz = v => v.toLocaleString('es-AR', {maximumFractionDigits:0});
+const fmtTon = v => v.toLocaleString('es-AR');
+
+// ── RENDER PRODUCCIÓN ─────────────────────────────────────────
+function renderProduccion(data) {
+  if (pAu === 0) return;
+  const tbody = document.getElementById('prod-tbody');
+  let totFobAu=0,totFobAg=0,totFob=0,totReg=0,totOzAu=0,totOzAg=0;
+  tbody.innerHTML = data.map(d => {
+    totFobAu+=d.fobAu; totFobAg+=d.fobAg; totFob+=d.fobTotal;
+    totReg+=d.regalia2; totOzAu+=d.ozAu; totOzAg+=d.ozAg;
+    return `<tr>
+      <td>${d.label}</td>
+      <td>${fmtTon(d.ton)}</td>
+      <td class="au">${d.leyAu}</td>
+      <td class="ag">${d.leyAg}</td>
+      <td class="au">${fmtOz(d.ozAu)}</td>
+      <td class="au">${fmtUSD(d.fobAu)}</td>
+      <td class="ag">${fmtOz(d.ozAg)}</td>
+      <td class="ag">${fmtUSD(d.fobAg)}</td>
+      <td>${fmtUSD(d.fobTotal)}</td>
+      <td style="color:var(--green)">${fmtUSD(d.regalia2)}</td>
+    </tr>`;
+  }).join('') + `<tr class="total-row">
+    <td>TOTALES</td><td>5.804.101</td><td class="au">2.79 prom.</td><td class="ag">27.78 prom.</td>
+    <td class="au">${fmtOz(totOzAu)}</td>
+    <td class="au">${fmtUSD(totFobAu)}</td>
+    <td class="ag">${fmtOz(totOzAg)}</td>
+    <td class="ag">${fmtUSD(totFobAg)}</td>
+    <td>${fmtUSD(totFob)}</td>
+    <td style="color:var(--green)">${fmtUSD(totReg)}</td>
+  </tr>`;
+
+  document.getElementById('kpi-fob-au').textContent = fmtUSD(totFobAu);
+  document.getElementById('kpi-fob-ag').textContent = fmtUSD(totFobAg);
+  document.getElementById('kpi-fob-total').textContent = fmtUSD(totFob);
+  document.getElementById('kpi-regalia').textContent = fmtUSD(totReg);
+}
+
+// ── RENDER REGALÍAS ───────────────────────────────────────────
+function renderRegalias(data) {
+  if (pAu === 0) return;
+  const tbody = document.getElementById('reg-tbody');
+  let totFob=0,totReg=0,totImp=0,totTotal=0;
+  tbody.innerHTML = data.map(d => {
+    totFob+=d.fobTotal; totReg+=d.regalia2; totImp+=d.impDes; totTotal+=d.totalRec;
+    const ars = (d.totalRec * TC_ARS / 1e9).toFixed(2) + 'B';
+    return `<tr>
+      <td>${d.label}</td>
+      <td>${fmtUSD(d.fobTotal)}</td>
+      <td class="model-a">${fmtUSD(d.regalia2)}</td>
+      <td class="model-a">${fmtUSD(d.impDes)}</td>
+      <td class="model-a">${fmtUSD(d.totalRec)}</td>
+      <td style="color:var(--text3)">ARS ${ars}</td>
+    </tr>`;
+  }).join('') + `<tr class="total-row">
+    <td>VIDA DE MINA</td>
+    <td>${fmtUSD(totFob)}</td>
+    <td class="model-a">${fmtUSD(totReg)}</td>
+    <td class="model-a">${fmtUSD(totImp)}</td>
+    <td class="model-a">${fmtUSD(totTotal)}</td>
+    <td style="color:var(--text3)">ARS ${(totTotal*TC_ARS/1e9).toFixed(1)}B</td>
+  </tr>`;
+
+  document.getElementById('r-reg2').textContent = fmtUSD(totReg);
+  document.getElementById('r-imp').textContent = fmtUSD(totImp);
+  document.getElementById('r-total').textContent = fmtUSD(totTotal);
+  document.getElementById('r-vida').textContent = '8 años · ' + fmtUSD(totFob) + ' FOB';
+  document.getElementById('tc-header').textContent = TC_ARS.toLocaleString('es-AR');
+}
+
+// ── RENDER ALPHA ──────────────────────────────────────────────
+function renderAlpha(data) {
+  if (pAu === 0) return;
+  const tbody = document.getElementById('alpha-tbody');
+  let totActual=0, totAlpha=0;
+  tbody.innerHTML = data.map(d => {
+    totActual += d.regalia2;
+    totAlpha  += d.regaliaAlpha;
+    return `<tr>
+      <td>${d.label}</td>
+      <td class="au">${d.leyAu}</td>
+      <td class="alpha">${fmtN(d.it,4)}</td>
+      <td class="alpha">${fmtN(d.itn,2)}</td>
+      <td class="alpha">${fmtN(d.alpha,2)}</td>
+      <td class="model-b">${(d.lambda*100).toFixed(2)}%</td>
+      <td class="model-b">${fmtUSD(d.regaliaAlpha)}</td>
+    </tr>`;
+  }).join('') + `<tr class="total-row">
+    <td colspan="6">TOTAL REGALÍAS α ENDÓGENO</td>
+    <td class="model-b">${fmtUSD(totAlpha)}</td>
+  </tr>`;
+
+  // Barras alpha
+  const chart = document.getElementById('alpha-chart');
+  const maxAlpha = Math.max(...data.map(d => d.alpha));
+  chart.innerHTML = data.map(d => {
+    const h = Math.round((d.alpha / maxAlpha) * 90);
+    return `<div class="alpha-bar-wrap">
+      <div class="alpha-val">${fmtN(d.alpha,2)}</div>
+      <div class="alpha-bar model-b-bar" style="height:${h}px"></div>
+    </div>`;
+  }).join('');
+
+  const diff = totAlpha - totActual;
+  document.getElementById('comp-actual').textContent = fmtUSD(totActual);
+  document.getElementById('comp-alpha').textContent = fmtUSD(totAlpha);
+  document.getElementById('comp-diff').textContent = (diff >= 0 ? '+' : '') + fmtUSD(Math.abs(diff));
+}
+
+// ── RENDER DISTRIBUCIÓN ───────────────────────────────────────
+function renderDistribucion(data) {
+  if (pAu === 0) return;
+  const totFob = data.reduce((s,d) => s + d.fobTotal, 0);
+
+  // Distribución del FOB total (del Excel)
+  const dist = [
+    { name:'Proveedores Locales', pct:0.25,   color:'var(--gold2)'    },
+    { name:'Nación (impuestos)',  pct:0.225,  color:'var(--nation)'   },
+    { name:'Salarios',           pct:0.13,   color:'var(--green)'    },
+    { name:'Compras Exterior',   pct:0.10,   color:'var(--silver2)'  },
+    { name:'Prov. Nacionales',   pct:0.10,   color:'var(--text2)'    },
+    { name:'Ganancia Empresa',   pct:0.1364, color:'var(--province)' },
+    { name:'Fondos Provincia',   pct:0.0459, color:'var(--muni)'     },
+    { name:'Municipios/Comis.',  pct:0.0126, color:'var(--red)'      },
+  ];
+
+  const bars = document.getElementById('dist-bars');
+  bars.innerHTML = dist.map(d => {
+    const usd = totFob * d.pct;
+    return `<div class="dist-bar-wrap">
+      <div class="dist-bar-header">
+        <span class="dist-bar-name">${d.name}</span>
+        <span class="dist-bar-val" style="color:${d.color}">${fmtUSD(usd)} · ${(d.pct*100).toFixed(1)}%</span>
+      </div>
+      <div class="dist-bar-track">
+        <div class="dist-bar-fill" style="width:${d.pct*100}%;background:${d.color}"></div>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Jurisdicción
+  const totReg = data.reduce((s,d) => s + d.totalRec, 0);
+  document.getElementById('juris-cards').innerHTML = `
+    <div class="juris-card provincia">
+      <div class="juris-name">PROVINCIA (TOTAL)</div>
+      <div class="juris-usd">${fmtUSD(totFob*0.4385)}</div>
+      <div class="juris-ars">ARS ${(totFob*0.4385*TC_ARS/1e9).toFixed(1)}B</div>
+    </div>
+    <div class="juris-card nacion">
+      <div class="juris-name">NACIÓN</div>
+      <div class="juris-usd">${fmtUSD(totFob*0.325)}</div>
+      <div class="juris-ars">ARS ${(totFob*0.325*TC_ARS/1e9).toFixed(1)}B</div>
+    </div>
+    <div class="juris-card municipio">
+      <div class="juris-name">EXTRANJERO</div>
+      <div class="juris-usd">${fmtUSD(totFob*0.236)}</div>
+      <div class="juris-ars">ARS ${(totFob*0.236*TC_ARS/1e9).toFixed(1)}B</div>
+    </div>`;
+
+  // Distribución interna regalías provincia
+  const provDist = [
+    { name:'F.F. Desarrollo Regional (3.75%)', pct:1.0,  color:'var(--province)',  tasa:0.0375 },
+    { name:'Coparticipación General',           pct:0.50, color:'var(--gold2)',     tasa:0.0105 },
+    { name:'F.F. Obras Infraestructura',        pct:0.15, color:'var(--nation)',    tasa:0.00525},
+    { name:'Coparticipación Municipio',         pct:0.15, color:'var(--muni)',      tasa:0.00315},
+    { name:'Coparticipación SECMIN',            pct:0.10, color:'var(--silver2)',   tasa:0.0021 },
+  ];
+  const fobTot = data.reduce((s,d) => s+d.fobTotal, 0);
+  const provBars = document.getElementById('prov-bars');
+  provBars.innerHTML = provDist.map(d => {
+    const usd = fobTot * d.tasa;
+    return `<div class="dist-bar-wrap">
+      <div class="dist-bar-header">
+        <span class="dist-bar-name">${d.name}</span>
+        <span class="dist-bar-val" style="color:${d.color}">${fmtUSD(usd)}</span>
+      </div>
+      <div class="dist-bar-track">
+        <div class="dist-bar-fill" style="width:${d.pct*80}%;background:${d.color}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── RENDER ESCENARIOS ─────────────────────────────────────────
+function renderEscenarios() {
+  if (pAu === 0) return;
+  const dActual = calcData(pAu, pAg);
+  const dMod    = calcData(ESC_MOD.au, ESC_MOD.ag);
+  const dOpt    = calcData(ESC_OPT.au, ESC_OPT.ag);
+
+  const totA = dActual.reduce((s,d) => s+d.totalRec, 0);
+  const totM = dMod.reduce((s,d)    => s+d.totalRec, 0);
+  const totO = dOpt.reduce((s,d)    => s+d.totalRec, 0);
+
+  document.getElementById('esc-actual').textContent    = fmtUSD(totA);
+  document.getElementById('esc-actual-sub').textContent = `Au $${pAu.toFixed(0)} · Ag $${pAg.toFixed(2)}`;
+  document.getElementById('esc-moderado').textContent  = fmtUSD(totM);
+  document.getElementById('esc-optimista').textContent = fmtUSD(totO);
+
+  const tbody = document.getElementById('esc-tbody');
+  tbody.innerHTML = dActual.map((d,i) => {
+    const m = dMod[i], o = dOpt[i];
+    const diffM = ((m.totalRec - d.totalRec)/d.totalRec*100).toFixed(1);
+    const diffO = ((o.totalRec - d.totalRec)/d.totalRec*100).toFixed(1);
+    return `<tr>
+      <td>${d.label}</td>
+      <td class="model-a">${fmtUSD(d.totalRec)}</td>
+      <td>${fmtUSD(m.totalRec)}</td>
+      <td class="model-b">${fmtUSD(o.totalRec)}</td>
+      <td style="color:${diffM>=0?'var(--green)':'var(--red)'}">${diffM>=0?'+':''}${diffM}%</td>
+      <td style="color:${diffO>=0?'var(--green)':'var(--red)'}">${diffO>=0?'+':''}${diffO}%</td>
+    </tr>`;
+  }).join('') + `<tr class="total-row">
+    <td>VIDA DE MINA</td>
+    <td class="model-a">${fmtUSD(totA)}</td>
+    <td>${fmtUSD(totM)}</td>
+    <td class="model-b">${fmtUSD(totO)}</td>
+    <td style="color:var(--red)">${((totM-totA)/totA*100).toFixed(1)}%</td>
+    <td style="color:var(--green)">+${((totO-totA)/totA*100).toFixed(1)}%</td>
+  </tr>`;
+}
+
+// ── RENDER ALL ────────────────────────────────────────────────
+function renderAll() {
+  const data = calcData(pAu, pAg);
+  renderProduccion(data);
+  renderRegalias(data);
+  renderAlpha(data);
+  renderDistribucion(data);
+  renderEscenarios();
+}
+
+// ── FETCH PRECIOS VÍA CLAUDE (web search) ────────────────────
+function setSpotUI(au, ag, fuente) {
+  const ts = new Date().toLocaleTimeString('es-AR');
+  // ORO
+  pAu = au.price;
+  document.getElementById('au-price').textContent = '$' + pAu.toFixed(2);
+  const auChg = document.getElementById('au-chg');
+  auChg.textContent = (au.chg >= 0 ? '+' : '') + au.chg.toFixed(2) + '% hoy';
+  auChg.className = 'spot-chg ' + (au.chg >= 0 ? 'pos' : 'neg');
+  document.getElementById('au-range').textContent = `Apertura $${au.open.toFixed(2)} · Máx $${au.high.toFixed(2)} · Mín $${au.low.toFixed(2)}`;
+  document.getElementById('au-ts').textContent = fuente + ' · ' + ts;
+  // PLATA
+  pAg = ag.price;
+  document.getElementById('ag-price').textContent = '$' + pAg.toFixed(2);
+  const agChg = document.getElementById('ag-chg');
+  agChg.textContent = (ag.chg >= 0 ? '+' : '') + ag.chg.toFixed(2) + '% hoy';
+  agChg.className = 'spot-chg ' + (ag.chg >= 0 ? 'pos' : 'neg');
+  document.getElementById('ag-range').textContent = `Apertura $${ag.open.toFixed(2)} · Máx $${ag.high.toFixed(2)} · Mín $${ag.low.toFixed(2)}`;
+  document.getElementById('ag-ts').textContent = fuente + ' · ' + ts;
+  renderAll();
+}
+
+function usarPreciosReferencia(motivo) {
+  console.warn('Fallback precios referencia:', motivo);
+  setSpotUI(
+    { price:3312.0, open:3295.0, high:3330.0, low:3290.0, chg:0.52 },
+    { price:32.85,  open:32.60,  high:33.10,  low:32.40,  chg:0.77 },
+    '⚠ Referencia estimada'
+  );
+  document.getElementById('au-ts').textContent = '⚠ Sin conexión — estimación basada en datos recientes';
+  document.getElementById('ag-ts').textContent = '⚠ Sin conexión — estimación basada en datos recientes';
+}
+
+async function fetchSpot() {
+  document.getElementById('au-price').innerHTML = '<span class="loading-text">···</span>';
+  document.getElementById('ag-price').innerHTML = '<span class="loading-text">···</span>';
+  document.getElementById('au-ts').textContent  = 'Buscando precio actual...';
+  document.getElementById('ag-ts').textContent  = 'Buscando precio actual...';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        system: `Sos un asistente financiero. Tu única tarea es buscar precios de metales preciosos y devolver un JSON.
+REGLA CRÍTICA: Tu respuesta final de texto debe ser ÚNICAMENTE el JSON, sin ningún texto antes ni después, sin markdown, sin explicaciones.
+JSON requerido (todos números en USD):
+{"au":{"price":0,"open":0,"high":0,"low":0,"chg":0},"ag":{"price":0,"open":0,"high":0,"low":0,"chg":0}}
+chg = variación porcentual del día (número, puede ser negativo).`,
+        messages: [{ role: 'user', content: 'Buscá precio spot actual XAU/USD (oro) y XAG/USD (plata) en USD por onza troy ahora mismo. Devolvé solo el JSON.' }]
+      })
+    });
+
+    if (!res.ok) throw new Error(`API HTTP ${res.status}`);
+    const data = await res.json();
+    console.log('API response:', JSON.stringify(data).slice(0, 300));
+
+    // Juntar todos los bloques de texto (ignorar tool_use / tool_result)
+    const allText = (data.content || [])
+      .filter(b => b.type === 'text')
+      .map(b => b.text)
+      .join('');
+
+    if (!allText) throw new Error('Sin bloque de texto en respuesta');
+
+    // Extraer el JSON — buscar el objeto entre llaves
+    const match = allText.match(/\{[\s\S]*"au"[\s\S]*"ag"[\s\S]*\}/);
+    if (!match) throw new Error('JSON no encontrado en: ' + allText.slice(0,100));
+
+    const prices = JSON.parse(match[0]);
+
+    // Validar que los números sean razonables
+    if (!prices.au?.price || prices.au.price < 100 || prices.au.price > 20000)
+      throw new Error('Precio oro inválido: ' + prices.au?.price);
+    if (!prices.ag?.price || prices.ag.price < 1 || prices.ag.price > 500)
+      throw new Error('Precio plata inválido: ' + prices.ag?.price);
+
+    setSpotUI(prices.au, prices.ag, 'Claude · Tiempo real');
+
+  } catch(e) {
+    console.error('fetchSpot error:', e.message);
+    usarPreciosReferencia(e.message);
+  }
+}
+
+// ── TABS ──────────────────────────────────────────────────────
+function showTab(id) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+// ── TIMESTAMP ─────────────────────────────────────────────────
+function updateTS() {
+  document.getElementById('ts').textContent = new Date().toLocaleString('es-AR', {
+    day:'2-digit', month:'2-digit', year:'numeric',
+    hour:'2-digit', minute:'2-digit', second:'2-digit'
+  });
+}
+
+// ── AI ANÁLISIS ───────────────────────────────────────────────
+const CONTEXT = () => `
+Sos un experto en economía minera analizando el proyecto Calcatreu de Patagonia Gold en Río Negro, Argentina.
+
+DATOS DEL PROYECTO:
+- Vida de mina: 8 años (2026-2033)
+- Tonelaje total: 5.804.101 toneladas
+- Ley promedio Au: 2.79 g/t · Recuperación: 63%
+- Ley promedio Ag: 27.78 g/t · Recuperación: 30%
+- Cotización ACTUAL: Oro $${pAu.toFixed(2)}/oz · Plata $${pAg.toFixed(2)}/oz
+- FOB total proyectado (precio actual): $${fmtUSD(calcData(pAu,pAg).reduce((s,d)=>s+d.fobTotal,0))}
+- Regalías 2% totales: $${fmtUSD(calcData(pAu,pAg).reduce((s,d)=>s+d.regalia2,0))}
+- Impuesto Desarrollo 3.75% total: $${fmtUSD(calcData(pAu,pAg).reduce((s,d)=>s+d.impDes,0))}
+
+MODELO α ENDÓGENO (Vera 2025):
+- IT_t = Ley_Au × Recuperación_Au
+- ITN_t = (IT_t - 1.0458) / (2.1672 - 1.0458)
+- α_t varía entre 0.50 y 0.67 según calidad geológica
+- Regalía = 3% × α_t (tasa efectiva: 1.50% a 2.00% sobre FOB)
+
+DISTRIBUCIÓN JURISDICCIONAL:
+- Provincia recibe 43.85% del total distribuido
+- Nación: 32.51% · Extranjero: 23.64%
+- Regalías se distribuyen: 50% Rentas Gral, 15% Infraestructura, 15% Municipios, 10% SECMIN, 10% F.F. Desarrollo
+
+Respondé en español, de forma técnica pero clara. Máximo 4 párrafos. Enfocate en implicancias fiscales y de política pública.
+`.trim();
+
+async function askAI(presetQuery) {
+  const query = presetQuery || document.getElementById('ai-query').value.trim();
+  if (!query) return;
+  if (pAu === 0) { document.getElementById('ai-output').innerHTML = '<span style="color:var(--red)">Esperá que carguen las cotizaciones primero.</span>'; return; }
+
+  const output = document.getElementById('ai-output');
+  const btn    = document.getElementById('ai-send-btn');
+  btn.disabled = true; btn.textContent = '···';
+  output.innerHTML = '<span class="ai-thinking">● Analizando datos de Calcatreu...</span>';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system: CONTEXT(),
+        messages:[{ role:'user', content:query }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.map(b => b.text||'').join('') || 'Sin respuesta.';
+    output.innerHTML = text
+      .replace(/\n\n/g,'</p><p style="margin-top:10px">')
+      .replace(/\*\*(.*?)\*\*/g,'<strong style="color:var(--text)">$1</strong>')
+      .replace(/^/,'<p>').replace(/$/,'</p>');
+  } catch(e) {
+    output.innerHTML = `<span style="color:var(--red)">Error: ${e.message}</span>`;
+  } finally {
+    btn.disabled = false; btn.textContent = 'Analizar →';
+  }
+}
+
+document.getElementById('ai-query').addEventListener('keydown', e => {
+  if (e.key === 'Enter') askAI();
+});
+
+// ── APLICAR PRECIOS MANUALES ──────────────────────────────────
+function aplicarManual() {
+  const au = parseFloat(document.getElementById('input-au').value);
+  const ag = parseFloat(document.getElementById('input-ag').value);
+  if (!au || au < 100 || au > 20000) { document.getElementById('manual-status').textContent = '⚠ Oro inválido'; return; }
+  if (!ag || ag < 1  || ag > 500)   { document.getElementById('manual-status').textContent = '⚠ Plata inválida'; return; }
+  setSpotUI(
+    { price:au, open:au, high:au, low:au, chg:0 },
+    { price:ag, open:ag, high:ag, low:ag, chg:0 },
+    '✎ Ingresado manualmente'
+  );
+  document.getElementById('manual-status').textContent = '✓ Aplicado';
+  setTimeout(() => document.getElementById('manual-status').textContent = '', 3000);
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+updateTS();
+setInterval(updateTS, 1000);
+fetchSpot();
+setInterval(fetchSpot, 15 * 60 * 1000); // cada 15 min
+</script>
+</body>
+</html>
