@@ -9,21 +9,21 @@
 :root {
   --gold: #C9A84C;
   --gold2: #E8C97A;
-  --silver: #A8B8C8;
-  --silver2: #CBD8E4;
-  --bg: #080C0F;
-  --bg2: #0D1318;
-  --bg3: #111820;
-  --bg4: #161E28;
-  --border: rgba(201,168,76,0.15);
-  --border2: rgba(168,184,200,0.12);
-  --text: #E8EDF2;
-  --text2: #8A9BAC;
-  --text3: #4A5A6A;
+  --silver: #A8C4D8;
+  --silver2: #C0D8E8;
+  --bg: #050A12;
+  --bg2: #091420;
+  --bg3: #0D1C2E;
+  --bg4: #112438;
+  --border: rgba(201,168,76,0.18);
+  --border2: rgba(100,160,220,0.15);
+  --text: #DCE8F2;
+  --text2: #7A9BB8;
+  --text3: #3A5A78;
   --green: #3DD68C;
   --red: #F05252;
-  --province: #7B68EE;
-  --nation: #4ECDC4;
+  --province: #4A9EE0;
+  --nation: #38C8C0;
   --muni: #FFB347;
 }
 
@@ -38,13 +38,22 @@ body {
   overflow-x: hidden;
 }
 
-/* Background texture */
+/* Background texture — azul metalizado */
 body::before {
   content:'';
   position:fixed; inset:0;
   background:
-    radial-gradient(ellipse 800px 400px at 20% 0%, rgba(201,168,76,0.04) 0%, transparent 70%),
-    radial-gradient(ellipse 600px 300px at 80% 100%, rgba(168,184,200,0.04) 0%, transparent 70%);
+    radial-gradient(ellipse 900px 500px at 15% 0%, rgba(30,80,160,0.18) 0%, transparent 65%),
+    radial-gradient(ellipse 700px 400px at 85% 100%, rgba(20,60,120,0.15) 0%, transparent 65%),
+    radial-gradient(ellipse 500px 300px at 50% 50%, rgba(10,40,90,0.08) 0%, transparent 70%),
+    repeating-linear-gradient(
+      0deg, transparent, transparent 60px,
+      rgba(60,120,200,0.018) 60px, rgba(60,120,200,0.018) 61px
+    ),
+    repeating-linear-gradient(
+      90deg, transparent, transparent 60px,
+      rgba(60,120,200,0.018) 60px, rgba(60,120,200,0.018) 61px
+    );
   pointer-events:none; z-index:0;
 }
 
@@ -417,7 +426,7 @@ header {
           <th>Oz Ag REC.</th>
           <th>FOB Ag (USD)</th>
           <th>FOB TOTAL (USD)</th>
-          <th>REGALÍA 2% (USD)</th>
+          <th>REGALÍA 2.1% (USD)</th>
         </tr>
       </thead>
       <tbody id="prod-tbody"></tbody>
@@ -440,7 +449,7 @@ header {
         <tr>
           <th>AÑO</th>
           <th>FOB TOTAL (USD)</th>
-          <th class="model-a">REGALÍA 2% (USD)</th>
+          <th class="model-a">REGALÍA 2.1% (USD)</th>
           <th class="model-a">IMP. DESARROLLO 3.75%</th>
           <th class="model-a">TOTAL REC. (USD)</th>
           <th>EN ARS (TC: <span id="tc-header">—</span>)</th>
@@ -597,7 +606,7 @@ const GEO = [
 const REC_AU = 0.63;
 const REC_AG = 0.30;
 const G_PER_OZ = 31.1035;
-const TASA_REGALIA = 0.02;
+const TASA_REGALIA = 0.021;
 const TASA_DESARROLLO = 0.0375;
 const TC_ARS = 933.42; // tipo de cambio referencia
 
@@ -935,13 +944,11 @@ async function fetchSpot() {
 
     if (!data.success) throw new Error('API error: ' + (data.error?.info || 'desconocido'));
 
-    // La API devuelve cuántas onzas de metal por 1 USD
-    // rates.USDXAU = onzas de Au por 1 USD → precio 1 oz Au = 1 / rates.USDXAU
+    // API devuelve: XAU = onzas de oro por 1 USD → precio = 1/XAU
     const rates = data.rates;
-    const priceAu = rates.XAU ? (1 / rates.XAU) : (1 / rates.USDXAU);
-    const priceAg = rates.XAG ? (1 / rates.XAG) : (1 / rates.USDXAG);
-    console.log('Rates raw:', rates);
-    console.log('Au calculado:', priceAu, 'Ag calculado:', priceAg);
+    const priceAu = 1 / rates.XAU;
+    const priceAg = 1 / rates.XAG;
+    console.log('Au:', priceAu.toFixed(2), 'Ag:', priceAg.toFixed(2));
 
     setSpotUI(
       { price: priceAu, open: priceAu, high: priceAu, low: priceAu, chg: 0 },
