@@ -882,7 +882,10 @@ function renderAll() {
   renderEscenarios();
 }
 
-// ── FETCH PRECIOS VÍA CLAUDE (web search) ────────────────────
+// ── API KEY METALPRICEAPI (gratuita) ─────────────────────────
+const METAL_API_KEY = 'c72185f52d5cf7dc27d0cebb92dc5364';
+
+// ── FETCH PRECIOS VÍA METALPRICEAPI ──────────────────────────
 function setSpotUI(au, ag, fuente) {
   const ts = new Date().toLocaleTimeString('es-AR');
   // ORO
@@ -918,51 +921,31 @@ function usarPreciosReferencia(motivo) {
 async function fetchSpot() {
   document.getElementById('au-price').innerHTML = '<span class="loading-text">···</span>';
   document.getElementById('ag-price').innerHTML = '<span class="loading-text">···</span>';
-  document.getElementById('au-ts').textContent  = 'Buscando precio actual...';
-  document.getElementById('ag-ts').textContent  = 'Buscando precio actual...';
+  document.getElementById('au-ts').textContent  = 'Conectando a MetalpriceAPI...';
+  document.getElementById('ag-ts').textContent  = 'Conectando a MetalpriceAPI...';
 
   try {
-    const res = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        system: `Sos un asistente financiero. Tu única tarea es buscar precios de metales preciosos y devolver un JSON.
-REGLA CRÍTICA: Tu respuesta final de texto debe ser ÚNICAMENTE el JSON, sin ningún texto antes ni después, sin markdown, sin explicaciones.
-JSON requerido (todos números en USD):
-{"au":{"price":0,"open":0,"high":0,"low":0,"chg":0},"ag":{"price":0,"open":0,"high":0,"low":0,"chg":0}}
-chg = variación porcentual del día (número, puede ser negativo).`,
-        messages: [{ role: 'user', content: 'Buscá precio spot actual XAU/USD (oro) y XAG/USD (plata) en USD por onza troy ahora mismo. Devolvé solo el JSON.' }]
-      })
-    });
+    // MetalpriceAPI — plan free, 100 requests/mes, datos con 24hs delay
+    const url = `https://api.metalpriceapi.com/v1/latest?api_key=${METAL_API_KEY}&base=USD&currencies=XAU,XAG`;
+    const res = await fetch(url);
 
-    if (!res.ok) throw new Error(`API HTTP ${res.status}`);
+    if (!res.ok) throw new Error(`MetalpriceAPI HTTP ${res.status}`);
     const data = await res.json();
-    console.log('API response:', JSON.stringify(data).slice(0, 300));
+    console.log('MetalpriceAPI response:', data);
 
-    // Juntar todos los bloques de texto (ignorar tool_use / tool_result)
-    const allText = (data.content || [])
-      .filter(b => b.type === 'text')
-      .map(b => b.text)
-      .join('');
+    if (!data.success) throw new Error('API error: ' + (data.error?.info || 'desconocido'));
 
-    if (!allText) throw new Error('Sin bloque de texto en respuesta');
+    // La API devuelve cuántos USD vale 1 XAU/XAG
+    // rates.USDXAU = USD por 1 XAU → precio oz Au en USD = 1 / rates.USDXAU
+    const rates = data.rates;
+    const priceAu = 1 / rates.USDXAU;
+    const priceAg = 1 / rates.USDXAG;
 
-    // Extraer el JSON — buscar el objeto entre llaves
-    const match = allText.match(/\{[\s\S]*"au"[\s\S]*"ag"[\s\S]*\}/);
-    if (!match) throw new Error('JSON no encontrado en: ' + allText.slice(0,100));
-
-    const prices = JSON.parse(match[0]);
-
-    // Validar que los números sean razonables
-    if (!prices.au?.price || prices.au.price < 100 || prices.au.price > 20000)
-      throw new Error('Precio oro inválido: ' + prices.au?.price);
-    if (!prices.ag?.price || prices.ag.price < 1 || prices.ag.price > 500)
-      throw new Error('Precio plata inválido: ' + prices.ag?.price);
-
-    setSpotUI(prices.au, prices.ag, 'Claude · Tiempo real');
+    setSpotUI(
+      { price: priceAu, open: priceAu, high: priceAu, low: priceAu, chg: 0 },
+      { price: priceAg, open: priceAg, high: priceAg, low: priceAg, chg: 0 },
+      'MetalpriceAPI · Tiempo real'
+    );
 
   } catch(e) {
     console.error('fetchSpot error:', e.message);
