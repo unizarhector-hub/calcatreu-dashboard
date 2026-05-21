@@ -935,11 +935,13 @@ async function fetchSpot() {
 
     if (!data.success) throw new Error('API error: ' + (data.error?.info || 'desconocido'));
 
-    // La API devuelve cuántos USD vale 1 XAU/XAG
-    // rates.USDXAU = USD por 1 XAU → precio oz Au en USD = 1 / rates.USDXAU
+    // La API devuelve cuántas onzas de metal por 1 USD
+    // rates.USDXAU = onzas de Au por 1 USD → precio 1 oz Au = 1 / rates.USDXAU
     const rates = data.rates;
-    const priceAu = 1 / rates.USDXAU;
-    const priceAg = 1 / rates.USDXAG;
+    const priceAu = rates.XAU ? (1 / rates.XAU) : (1 / rates.USDXAU);
+    const priceAg = rates.XAG ? (1 / rates.XAG) : (1 / rates.USDXAG);
+    console.log('Rates raw:', rates);
+    console.log('Au calculado:', priceAu, 'Ag calculado:', priceAg);
 
     setSpotUI(
       { price: priceAu, open: priceAu, high: priceAu, low: priceAu, chg: 0 },
