@@ -499,7 +499,7 @@ header {
 <div class="tab-content" id="tab-alpha">
   <div class="main-grid">
     <div class="card">
-      <div class="card-title">INDICADOR TÉCNICO Y α ENDÓGENO · Vera (2025)</div>
+      <div class="card-title">INDICADOR TÉCNICO Y α ENDÓGENO · Millán / Vera / Ilgner</div>
       <table class="reg-table">
         <thead>
           <tr>
@@ -545,7 +545,7 @@ header {
     </div>
   </div>
   <div class="footnote">
-    <strong style="color:var(--province)">MODELO α ENDÓGENO</strong> · Vera (2025) · "Modelo de Estimación Ex Ante de Regalías Mineras mediante un α Endógeno Basado en Variables Geológicas y Metalúrgicas"<br>
+    <strong style="color:var(--province)">MODELO α ENDÓGENO</strong> · Millán / Vera / Ilgner · "Modelo de Estimación Ex Ante de Regalías Mineras mediante un α Endógeno Basado en Variables Geológicas y Metalúrgicas"<br>
     IT_t = Ley_Au × Recuperación_Au · ITN_t = (IT_t − IT_min) / (IT_max − IT_min) · α_t = 0.50 + 0.17 × ITN_t · λ_t = 0.03 × α_t<br>
     El coeficiente α varía entre 0.50 (mineral de baja ley) y 0.67 (mineral de alta ley), generando tasas efectivas sobre FOB entre 1.50% y 2.00%.
   </div>
@@ -652,7 +652,7 @@ let pAu = 0, pAg = 0;
 const ESC_MOD = { au: 2747, ag: 37.5 };
 const ESC_OPT = { au: 3779, ag: 53.94 };
 
-// α endógeno (Vera 2025)
+// α endógeno (Millán / Vera / Ilgner)
 const IT_MIN = 1.0458, IT_MAX = 2.1672;
 const ALPHA_MIN = 0.50, ALPHA_MAX = 0.67;
 
@@ -1027,7 +1027,7 @@ DATOS DEL PROYECTO:
 - Regalías 2% totales: $${fmtUSD(calcData(pAu,pAg).reduce((s,d)=>s+d.regalia2,0))}
 - Impuesto Desarrollo 3.75% total: $${fmtUSD(calcData(pAu,pAg).reduce((s,d)=>s+d.impDes,0))}
 
-MODELO α ENDÓGENO (Vera 2025):
+MODELO α ENDÓGENO (Millán / Vera / Ilgner):
 - IT_t = Ley_Au × Recuperación_Au
 - ITN_t = (IT_t - 1.0458) / (2.1672 - 1.0458)
 - α_t varía entre 0.50 y 0.67 según calidad geológica
