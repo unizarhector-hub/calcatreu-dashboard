@@ -7,23 +7,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --gold: #C9A84C;
-  --gold2: #E8C97A;
-  --silver: #A8C4D8;
-  --silver2: #C0D8E8;
-  --bg: #050A12;
-  --bg2: #091420;
-  --bg3: #0D1C2E;
-  --bg4: #112438;
-  --border: rgba(201,168,76,0.18);
-  --border2: rgba(100,160,220,0.15);
-  --text: #DCE8F2;
-  --text2: #7A9BB8;
-  --text3: #3A5A78;
-  --green: #3DD68C;
-  --red: #F05252;
-  --province: #4A9EE0;
-  --nation: #38C8C0;
+  --gold: #D4AF5A;
+  --gold2: #F0D080;
+  --silver: #B8D0E8;
+  --silver2: #D0E8F8;
+  --bg: #08111E;
+  --bg2: rgba(10,22,42,0.82);
+  --bg3: rgba(12,26,50,0.75);
+  --bg4: rgba(15,32,60,0.70);
+  --border: rgba(212,175,90,0.25);
+  --border2: rgba(120,180,240,0.18);
+  --text: #EDF4FA;
+  --text2: #90B8D8;
+  --text3: #4A6E90;
+  --green: #45E89A;
+  --red: #F06060;
+  --province: #5AAEF0;
+  --nation: #40D0C8;
   --muni: #FFB347;
 }
 
@@ -38,21 +38,32 @@ body {
   overflow-x: hidden;
 }
 
-/* Background texture — azul metalizado */
+/* Background — imagen minera translúcida */
 body::before {
   content:'';
   position:fixed; inset:0;
+  background-image: url('https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=1600&q=60&fit=crop');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.07;
+  pointer-events:none; z-index:0;
+}
+
+body::after {
+  content:'';
+  position:fixed; inset:0;
   background:
-    radial-gradient(ellipse 900px 500px at 15% 0%, rgba(30,80,160,0.18) 0%, transparent 65%),
-    radial-gradient(ellipse 700px 400px at 85% 100%, rgba(20,60,120,0.15) 0%, transparent 65%),
-    radial-gradient(ellipse 500px 300px at 50% 50%, rgba(10,40,90,0.08) 0%, transparent 70%),
+    linear-gradient(180deg, rgba(8,17,30,0.70) 0%, rgba(8,17,30,0.50) 40%, rgba(8,17,30,0.80) 100%),
+    radial-gradient(ellipse 900px 500px at 15% 0%, rgba(30,90,180,0.20) 0%, transparent 65%),
+    radial-gradient(ellipse 700px 400px at 85% 100%, rgba(20,60,130,0.18) 0%, transparent 65%),
     repeating-linear-gradient(
       0deg, transparent, transparent 60px,
-      rgba(60,120,200,0.018) 60px, rgba(60,120,200,0.018) 61px
+      rgba(60,130,220,0.025) 60px, rgba(60,130,220,0.025) 61px
     ),
     repeating-linear-gradient(
       90deg, transparent, transparent 60px,
-      rgba(60,120,200,0.018) 60px, rgba(60,120,200,0.018) 61px
+      rgba(60,130,220,0.025) 60px, rgba(60,130,220,0.025) 61px
     );
   pointer-events:none; z-index:0;
 }
@@ -64,6 +75,7 @@ header {
   display:flex; align-items:flex-end; justify-content:space-between;
   border-bottom: 1px solid var(--border);
   padding-bottom:20px; margin-bottom:28px;
+  position:relative; z-index:2;
 }
 .logo-block {}
 .logo-sup {
@@ -102,9 +114,12 @@ header {
   gap:16px; margin-bottom:20px;
 }
 .spot-card {
-  background:var(--bg2); border:1px solid var(--border);
+  background:var(--bg2);
+  border:1px solid var(--border);
   border-radius:12px; padding:24px;
   position:relative; overflow:hidden;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 .spot-card.gold { border-color:rgba(201,168,76,0.3); }
 .spot-card.silver { border-color:rgba(168,184,200,0.25); }
@@ -144,19 +159,36 @@ header {
 
 /* ── SECCIÓN TABS ── */
 .tabs-row {
-  display:flex; gap:4px; margin-bottom:20px;
+  display:flex; gap:6px; margin-bottom:20px;
   border-bottom:1px solid var(--border);
   padding-bottom:0;
 }
 .tab {
-  padding:10px 20px; cursor:pointer;
-  font-family:'DM Mono', monospace; font-size:11px; letter-spacing:1px;
-  color:var(--text3); border:none; background:none;
-  border-bottom:2px solid transparent; margin-bottom:-1px;
+  padding:10px 22px; cursor:pointer;
+  font-family:'DM Mono', monospace; font-size:11px; letter-spacing:1.5px;
+  color:var(--text2);
+  border:1px solid transparent;
+  border-bottom:2px solid transparent;
+  background: rgba(12,26,50,0.6);
+  border-radius:6px 6px 0 0;
+  margin-bottom:-1px;
   transition:all 0.2s;
+  backdrop-filter:blur(8px);
 }
-.tab:hover { color:var(--text2); }
-.tab.active { color:var(--gold); border-bottom-color:var(--gold); }
+.tab:hover {
+  color:var(--gold2);
+  background:rgba(212,175,90,0.08);
+  border-color:rgba(212,175,90,0.15);
+  border-bottom-color:transparent;
+}
+.tab.active {
+  color:var(--gold);
+  background:rgba(212,175,90,0.12);
+  border-color:rgba(212,175,90,0.3);
+  border-bottom:2px solid var(--gold);
+  font-weight:600;
+  letter-spacing:2px;
+}
 
 .tab-content { display:none; }
 .tab-content.active { display:block; }
@@ -171,8 +203,11 @@ header {
 
 /* ── CARDS ── */
 .card {
-  background:var(--bg2); border:1px solid var(--border2);
+  background:var(--bg2);
+  border:1px solid var(--border2);
   border-radius:12px; padding:20px;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 .card-title {
   font-family:'DM Mono', monospace;
