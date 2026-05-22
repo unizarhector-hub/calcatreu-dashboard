@@ -416,6 +416,18 @@ header {
   </div>
 </div>
 
+<!-- BADGE FECHA PRECIO -->
+<div id="precio-fecha-badge" style="
+  display:flex; align-items:center; gap:10px;
+  background:rgba(240,165,60,0.08);
+  border:1px solid rgba(240,165,60,0.25);
+  border-radius:8px; padding:10px 16px;
+  margin-bottom:12px;
+  font-family:'DM Mono',monospace; font-size:11px;
+  color:rgba(240,185,80,0.9);
+  line-height:1.5;
+">⚠ Cargando fecha del precio...</div>
+
 <!-- ENTRADA MANUAL DE PRECIOS -->
 <div style="display:flex;gap:12px;margin-bottom:16px;align-items:center;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:12px 16px">
   <span style="font-family:DM Mono,monospace;font-size:10px;letter-spacing:1px;color:var(--text3);white-space:nowrap">AJUSTE MANUAL →</span>
@@ -940,6 +952,13 @@ function setSpotUI(au, ag, fuente) {
   auChg.className = 'spot-chg ' + (au.chg >= 0 ? 'pos' : 'neg');
   document.getElementById('au-range').textContent = `Apertura $${au.open.toFixed(2)} · Máx $${au.high.toFixed(2)} · Mín $${au.low.toFixed(2)}`;
   document.getElementById('au-ts').textContent = fuente + ' · ' + ts;
+  // Actualizar badge de fecha
+  const fechaBadge = document.getElementById('precio-fecha-badge');
+  if (fechaBadge) {
+    const ayer = new Date(); ayer.setDate(ayer.getDate() - 1);
+    const fechaStr = ayer.toLocaleDateString('es-AR', {day:'2-digit',month:'2-digit',year:'numeric'});
+    fechaBadge.textContent = '⚠ Precio de cierre: ' + fechaStr + ' — Plan gratuito MetalpriceAPI (24hs delay). Para precio actual usá el ajuste manual.';
+  }
   // PLATA
   pAg = ag.price;
   document.getElementById('ag-price').textContent = '$' + pAg.toFixed(2);
