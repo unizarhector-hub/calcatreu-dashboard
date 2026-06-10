@@ -191,7 +191,7 @@ header {
 }
 
 .tab-content { display:none; }
-.tab-content.active { display:block; }
+.tab-content.active { display:block; margin-bottom:20px; min-height:200px; }
 
 /* ── GRID PRINCIPAL ── */
 .main-grid {
@@ -1106,14 +1106,19 @@ function renderFortalecer(data) {
 
 // ── RENDER ALL ────────────────────────────────────────────────
 function renderAll() {
-  const data = calcData(pAu, pAg);
-  renderProduccion(data);
-  renderRegalias(data);
-  renderImpuesto(data);
-  renderFortalecer(data);
-  renderAlpha(data);
-  renderDistribucion(data);
-  renderEscenarios();
+  try {
+    const data = calcData(pAu, pAg);
+    renderProduccion(data);
+    renderRegalias(data);
+    renderImpuesto(data);
+    renderFortalecer(data);
+    renderAlpha(data);
+    renderDistribucion(data);
+    renderEscenarios();
+    console.log('renderAll OK — Au:', pAu, 'Ag:', pAg);
+  } catch(e) {
+    console.error('renderAll ERROR:', e.message, e.stack);
+  }
 }
 
 // ── API KEY METALPRICEAPI ────────────────────────────────────
