@@ -507,12 +507,12 @@ header {
 <!-- TAB: REGALÍAS -->
 <div class="tab-content" id="tab-regalias">
   <div class="card full-width">
-    <div class="card-title">REGALÍAS MODELO ACTUAL · Ley 5.001 Río Negro</div>
+    <div class="card-title">REGALÍAS · 2.10% sobre FOB · Ley 5.001 Río Negro</div>
     <div class="fob-grid" style="margin-bottom:20px">
-      <div class="fob-kpi"><div class="fob-kpi-label">REGALÍA 2% TOTAL</div><div class="fob-kpi-val gold-val" id="r-reg2">···</div></div>
-      <div class="fob-kpi"><div class="fob-kpi-label">IMPUESTO DESARROLLO 3.75%</div><div class="fob-kpi-val silver-val" id="r-imp">···</div></div>
-      <div class="fob-kpi"><div class="fob-kpi-label">TOTAL RECAUDADO</div><div class="fob-kpi-val total-val" id="r-total">···</div></div>
-      <div class="fob-kpi"><div class="fob-kpi-label">VIDA DE MINA (8 años)</div><div class="fob-kpi-val regalia-val" id="r-vida">···</div></div>
+      <div class="fob-kpi"><div class="fob-kpi-label">REGALÍA 2.1% TOTAL</div><div class="fob-kpi-val gold-val" id="r-reg2">···</div></div>
+      <div class="fob-kpi"><div class="fob-kpi-label">PROVINCIA (75%)</div><div class="fob-kpi-val silver-val" id="r-prov">···</div></div>
+      <div class="fob-kpi"><div class="fob-kpi-label">FORTALECER (25%)</div><div class="fob-kpi-val regalia-val" id="r-fort-reg">···</div></div>
+      <div class="fob-kpi"><div class="fob-kpi-label">VIDA DE MINA (8 años)</div><div class="fob-kpi-val total-val" id="r-vida">···</div></div>
     </div>
     <table class="reg-table">
       <thead>
@@ -520,13 +520,91 @@ header {
           <th>AÑO</th>
           <th>FOB TOTAL (USD)</th>
           <th class="model-a">REGALÍA 2.1% (USD)</th>
-          <th class="model-a">IMP. DESARROLLO 3.75%</th>
-          <th class="model-a">TOTAL REC. (USD)</th>
+          <th class="model-a">PROVINCIA 75% (USD)</th>
+          <th class="model-a">FORTALECER 25% (USD)</th>
           <th>EN ARS (TC: <span id="tc-header">—</span>)</th>
         </tr>
       </thead>
       <tbody id="reg-tbody"></tbody>
     </table>
+    <div style="margin-top:16px;padding:12px 16px;background:var(--bg3);border-radius:8px;border-left:3px solid var(--gold);font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);line-height:1.8">
+      <strong style="color:var(--gold2)">DISTRIBUCIÓN:</strong> 75% → Jurisdicción general (Provincia, Municipios, Nación) · 25% → Fondo FORTALECER
+    </div>
+  </div>
+</div>
+
+<!-- TAB: IMPUESTO DESARROLLO -->
+<div class="tab-content" id="tab-impuesto">
+  <div class="card full-width">
+    <div class="card-title">IMPUESTO PARA EL DESARROLLO · 3.75% sobre FOB · 100% Área de Influencia</div>
+    <div class="fob-grid" style="margin-bottom:20px">
+      <div class="fob-kpi"><div class="fob-kpi-label">IMP. DESARROLLO TOTAL</div><div class="fob-kpi-val gold-val" id="imp-total">···</div></div>
+      <div class="fob-kpi"><div class="fob-kpi-label">100% ÁREA DE INFLUENCIA</div><div class="fob-kpi-val regalia-val" id="imp-area">···</div></div>
+      <div class="fob-kpi"><div class="fob-kpi-label">= 100% FORTALECER</div><div class="fob-kpi-val" style="color:var(--province)" id="imp-fort">···</div></div>
+      <div class="fob-kpi"><div class="fob-kpi-label">PROMEDIO ANUAL</div><div class="fob-kpi-val total-val" id="imp-prom">···</div></div>
+    </div>
+    <table class="reg-table">
+      <thead>
+        <tr>
+          <th>AÑO</th>
+          <th>FOB TOTAL (USD)</th>
+          <th class="model-a">IMP. DESARROLLO 3.75% (USD)</th>
+          <th class="model-a">100% ÁREA INFLUENCIA (USD)</th>
+          <th class="model-a">= FORTALECER (USD)</th>
+          <th>EN ARS (TC: <span id="tc-header2">—</span>)</th>
+        </tr>
+      </thead>
+      <tbody id="imp-tbody"></tbody>
+    </table>
+    <div style="margin-top:16px;padding:12px 16px;background:var(--bg3);border-radius:8px;border-left:3px solid var(--province);font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);line-height:1.8">
+      <strong style="color:var(--silver2)">NOTA:</strong> El Impuesto para el Desarrollo es independiente de las Regalías. El 100% se destina al Área de Influencia del proyecto y se canaliza íntegramente al Fondo FORTALECER.
+    </div>
+  </div>
+</div>
+
+<!-- TAB: FORTALECER -->
+<div class="tab-content" id="tab-fortalecer">
+  <div class="card full-width">
+    <div class="card-title">FONDO FORTALECER · 25% Regalías + 100% Impuesto Desarrollo</div>
+    <div class="fob-grid" style="margin-bottom:20px">
+      <div class="fob-kpi"><div class="fob-kpi-label">TOTAL FONDO FORTALECER</div><div class="fob-kpi-val regalia-val" id="fort-total">···</div></div>
+      <div class="fob-kpi"><div class="fob-kpi-label">COMPONENTE REGALÍAS 25%</div><div class="fob-kpi-val gold-val" id="fort-comp-reg">···</div></div>
+      <div class="fob-kpi"><div class="fob-kpi-label">COMPONENTE IMP. DESARROLLO</div><div class="fob-kpi-val" style="color:var(--province)" id="fort-comp-imp">···</div></div>
+      <div class="fob-kpi"><div class="fob-kpi-label">PROMEDIO ANUAL</div><div class="fob-kpi-val total-val" id="fort-prom">···</div></div>
+    </div>
+    <table class="reg-table">
+      <thead>
+        <tr>
+          <th>AÑO</th>
+          <th>FOB TOTAL (USD)</th>
+          <th class="model-a">25% REGALÍAS (USD)</th>
+          <th class="model-b">100% IMP. DESARROLLO (USD)</th>
+          <th style="color:var(--green)">TOTAL FORTALECER (USD)</th>
+          <th>EN ARS (TC: <span id="tc-header3">—</span>)</th>
+        </tr>
+      </thead>
+      <tbody id="fort-tbody"></tbody>
+    </table>
+    <div style="margin-top:16px;padding:16px;background:linear-gradient(135deg,rgba(61,214,140,0.06),rgba(90,174,240,0.06));border-radius:8px;border:1px solid rgba(61,214,140,0.2)">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--green);margin-bottom:12px">COMPOSICIÓN DEL FONDO</div>
+      <div style="display:flex;gap:32px;flex-wrap:wrap">
+        <div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px">FUENTE 1</div>
+          <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--gold2)">25% de Regalías (2.10%)</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">= 0.525% sobre FOB</div>
+        </div>
+        <div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px">FUENTE 2</div>
+          <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--silver2)">100% Impuesto Desarrollo (3.75%)</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">= 3.75% sobre FOB</div>
+        </div>
+        <div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px">TASA EFECTIVA TOTAL</div>
+          <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--green);font-weight:600">4.275% sobre FOB</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">hacia Área de Influencia</div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
