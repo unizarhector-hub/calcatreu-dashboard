@@ -429,23 +429,46 @@ header {
 ">⚠ Cargando fecha del precio...</div>
 
 <!-- ENTRADA MANUAL DE PRECIOS -->
-<div style="display:flex;gap:12px;margin-bottom:16px;align-items:center;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:12px 16px">
-  <span style="font-family:DM Mono,monospace;font-size:10px;letter-spacing:1px;color:var(--text3);white-space:nowrap">AJUSTE MANUAL →</span>
-  <label style="display:flex;align-items:center;gap:8px;font-family:DM Mono,monospace;font-size:11px;color:var(--gold2)">Au USD/oz
-    <input id="input-au" type="number" step="0.01" placeholder="ej: 3312.50" style="background:var(--bg3);border:1px solid rgba(201,168,76,0.3);border-radius:4px;padding:5px 10px;color:var(--gold2);font-family:DM Mono,monospace;font-size:12px;width:130px;outline:none">
+<div style="display:flex;gap:12px;margin-bottom:16px;align-items:center;flex-wrap:wrap;background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:12px 16px;backdrop-filter:blur(12px)">
+  
+  <!-- Precio actual de MetalpriceAPI (D-1) -->
+  <div style="display:flex;align-items:center;gap:8px;font-family:DM Mono,monospace;font-size:10px;color:var(--text3);border-right:1px solid var(--border2);padding-right:12px">
+    <span>📅 PRECIO D-1</span>
+    <span id="d1-au" style="color:var(--gold2)">Au: —</span>
+    <span id="d1-ag" style="color:var(--silver2)">Ag: —</span>
+  </div>
+
+  <!-- Botón buscar precio HOY via Claude -->
+  <button onclick="fetchPrecioHoy()" id="btn-hoy"
+    style="padding:7px 16px;background:rgba(61,214,140,0.12);border:1px solid rgba(61,214,140,0.4);border-radius:4px;color:var(--green);font-family:DM Mono,monospace;font-size:11px;cursor:pointer;white-space:nowrap">
+    ⚡ Precio de HOY (IA)
+  </button>
+
+  <!-- Separador -->
+  <span style="color:var(--text3);font-size:10px;font-family:DM Mono,monospace">o ingresá manual:</span>
+
+  <!-- Inputs manuales -->
+  <label style="display:flex;align-items:center;gap:6px;font-family:DM Mono,monospace;font-size:11px;color:var(--gold2)">Au
+    <input id="input-au" type="number" step="0.01" placeholder="4544"
+      style="background:var(--bg3);border:1px solid rgba(201,168,76,0.3);border-radius:4px;padding:5px 8px;color:var(--gold2);font-family:DM Mono,monospace;font-size:12px;width:100px;outline:none">
   </label>
-  <label style="display:flex;align-items:center;gap:8px;font-family:DM Mono,monospace;font-size:11px;color:var(--silver2)">Ag USD/oz
-    <input id="input-ag" type="number" step="0.01" placeholder="ej: 32.85" style="background:var(--bg3);border:1px solid rgba(168,184,200,0.3);border-radius:4px;padding:5px 10px;color:var(--silver2);font-family:DM Mono,monospace;font-size:12px;width:110px;outline:none">
+  <label style="display:flex;align-items:center;gap:6px;font-family:DM Mono,monospace;font-size:11px;color:var(--silver2)">Ag
+    <input id="input-ag" type="number" step="0.01" placeholder="75.65"
+      style="background:var(--bg3);border:1px solid rgba(168,184,200,0.3);border-radius:4px;padding:5px 8px;color:var(--silver2);font-family:DM Mono,monospace;font-size:12px;width:90px;outline:none">
   </label>
-  <button onclick="aplicarManual()" style="padding:6px 16px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);border-radius:4px;color:var(--gold);font-family:DM Mono,monospace;font-size:11px;cursor:pointer">Aplicar →</button>
-  <button onclick="fetchSpot()" style="padding:6px 16px;background:transparent;border:1px solid var(--border2);border-radius:4px;color:var(--text3);font-family:DM Mono,monospace;font-size:11px;cursor:pointer">↻ Actualizar live</button>
-  <span id="manual-status" style="font-family:DM Mono,monospace;font-size:10px;color:var(--text3)"></span>
+  <button onclick="aplicarManual()"
+    style="padding:6px 14px;background:rgba(201,168,76,0.15);border:1px solid rgba(201,168,76,0.4);border-radius:4px;color:var(--gold);font-family:DM Mono,monospace;font-size:11px;cursor:pointer">
+    Aplicar →
+  </button>
+  <span id="manual-status" style="font-family:DM Mono,monospace;font-size:10px;color:var(--green)"></span>
 </div>
 
 <!-- TABS -->
 <div class="tabs-row">
   <button class="tab active" onclick="showTab('produccion')">PRODUCCIÓN</button>
   <button class="tab" onclick="showTab('regalias')">REGALÍAS</button>
+  <button class="tab" onclick="showTab('impuesto')">IMPUESTO DESARROLLO</button>
+  <button class="tab" onclick="showTab('fortalecer')">FORTALECER</button>
   <button class="tab" onclick="showTab('alpha')">MODELO α ENDÓGENO</button>
   <button class="tab" onclick="showTab('distribucion')">DISTRIBUCIÓN</button>
   <button class="tab" onclick="showTab('escenarios')">ESCENARIOS</button>
@@ -751,13 +774,13 @@ function renderRegalias(data) {
   let totFob=0,totReg=0,totImp=0,totTotal=0;
   tbody.innerHTML = data.map(d => {
     totFob+=d.fobTotal; totReg+=d.regalia2; totImp+=d.impDes; totTotal+=d.totalRec;
-    const ars = (d.totalRec * TC_ARS / 1e9).toFixed(2) + 'B';
+    const ars = (d.regalia2 * TC_ARS / 1e9).toFixed(2) + 'B';
     return `<tr>
       <td>${d.label}</td>
       <td>${fmtUSD(d.fobTotal)}</td>
       <td class="model-a">${fmtUSD(d.regalia2)}</td>
-      <td class="model-a">${fmtUSD(d.impDes)}</td>
-      <td class="model-a">${fmtUSD(d.totalRec)}</td>
+      <td class="model-a">${fmtUSD(d.regalia2 * 0.75)}</td>
+      <td class="model-a">${fmtUSD(d.regalia2 * 0.25)}</td>
       <td style="color:var(--text3)">ARS ${ars}</td>
     </tr>`;
   }).join('') + `<tr class="total-row">
@@ -769,9 +792,11 @@ function renderRegalias(data) {
     <td style="color:var(--text3)">ARS ${(totTotal*TC_ARS/1e9).toFixed(1)}B</td>
   </tr>`;
 
-  document.getElementById('r-reg2').textContent = fmtUSD(totReg);
-  document.getElementById('r-imp').textContent = fmtUSD(totImp);
-  document.getElementById('r-total').textContent = fmtUSD(totTotal);
+  document.getElementById('r-reg2').textContent    = fmtUSD(totReg);
+  const prov75 = document.getElementById('r-prov');
+  if (prov75) prov75.textContent = fmtUSD(totReg * 0.75);
+  const fort25 = document.getElementById('r-fort-reg');
+  if (fort25) fort25.textContent = fmtUSD(totReg * 0.25);
   document.getElementById('r-vida').textContent = '8 años · ' + fmtUSD(totFob) + ' FOB';
   document.getElementById('tc-header').textContent = TC_ARS.toLocaleString('es-AR');
 }
@@ -928,6 +953,79 @@ function renderEscenarios() {
   </tr>`;
 }
 
+// ── RENDER IMPUESTO DESARROLLO ───────────────────────────────
+function renderImpuesto(data) {
+  if (pAu === 0) return;
+  const tbody = document.getElementById('imp-tbody');
+  if (!tbody) return;
+  let totFob=0, totImp=0;
+  tbody.innerHTML = data.map(d => {
+    totFob += d.fobTotal;
+    totImp += d.impDes;
+    const ars = (d.impDes * TC_ARS / 1e6).toFixed(1) + 'M';
+    return `<tr>
+      <td>${d.label}</td>
+      <td>${fmtUSD(d.fobTotal)}</td>
+      <td class="model-a">${fmtUSD(d.impDes)}</td>
+      <td style="color:var(--green)">${fmtUSD(d.impDes)}</td>
+      <td style="color:var(--province)">${fmtUSD(d.impDes)}</td>
+      <td style="color:var(--text3)">ARS ${ars}</td>
+    </tr>`;
+  }).join('') + `<tr class="total-row">
+    <td>VIDA DE MINA</td>
+    <td>${fmtUSD(totFob)}</td>
+    <td class="model-a">${fmtUSD(totImp)}</td>
+    <td style="color:var(--green)">${fmtUSD(totImp)}</td>
+    <td style="color:var(--province)">${fmtUSD(totImp)}</td>
+    <td style="color:var(--text3)">ARS ${(totImp*TC_ARS/1e9).toFixed(2)}B</td>
+  </tr>`;
+
+  document.getElementById('imp-total').textContent  = fmtUSD(totImp);
+  document.getElementById('imp-area').textContent   = fmtUSD(totImp);
+  document.getElementById('imp-fort').textContent   = fmtUSD(totImp);
+  document.getElementById('imp-prom').textContent   = fmtUSD(totImp / 8);
+  const tc2 = document.getElementById('tc-header2');
+  if (tc2) tc2.textContent = TC_ARS.toLocaleString('es-AR');
+}
+
+// ── RENDER FORTALECER ─────────────────────────────────────────
+function renderFortalecer(data) {
+  if (pAu === 0) return;
+  const tbody = document.getElementById('fort-tbody');
+  if (!tbody) return;
+  let totReg25=0, totImp=0, totFort=0;
+  tbody.innerHTML = data.map(d => {
+    const reg25  = d.regalia2 * 0.25;
+    const fort   = reg25 + d.impDes;
+    totReg25 += reg25;
+    totImp   += d.impDes;
+    totFort  += fort;
+    const ars = (fort * TC_ARS / 1e6).toFixed(1) + 'M';
+    return `<tr>
+      <td>${d.label}</td>
+      <td>${fmtUSD(d.fobTotal)}</td>
+      <td class="model-a">${fmtUSD(reg25)}</td>
+      <td class="model-b">${fmtUSD(d.impDes)}</td>
+      <td style="color:var(--green);font-weight:600">${fmtUSD(fort)}</td>
+      <td style="color:var(--text3)">ARS ${ars}</td>
+    </tr>`;
+  }).join('') + `<tr class="total-row">
+    <td>VIDA DE MINA</td>
+    <td>—</td>
+    <td class="model-a">${fmtUSD(totReg25)}</td>
+    <td class="model-b">${fmtUSD(totImp)}</td>
+    <td style="color:var(--green);font-weight:600">${fmtUSD(totFort)}</td>
+    <td style="color:var(--text3)">ARS ${(totFort*TC_ARS/1e9).toFixed(2)}B</td>
+  </tr>`;
+
+  document.getElementById('fort-total').textContent     = fmtUSD(totFort);
+  document.getElementById('fort-comp-reg').textContent  = fmtUSD(totReg25);
+  document.getElementById('fort-comp-imp').textContent  = fmtUSD(totImp);
+  document.getElementById('fort-prom').textContent      = fmtUSD(totFort / 8);
+  const tc3 = document.getElementById('tc-header3');
+  if (tc3) tc3.textContent = TC_ARS.toLocaleString('es-AR');
+}
+
 // ── RENDER ALL ────────────────────────────────────────────────
 function renderAll() {
   const data = calcData(pAu, pAg);
@@ -938,10 +1036,7 @@ function renderAll() {
   renderEscenarios();
 }
 
-// ── API KEY METALPRICEAPI (gratuita) ─────────────────────────
-const METAL_API_KEY = 'c72185f52d5cf7dc27d0cebb92dc5364';
-
-// ── FETCH PRECIOS VÍA METALPRICEAPI ──────────────────────────
+// ── FETCH PRECIOS VÍA METALS.LIVE (gratis, sin API key, tiempo real) ──
 function setSpotUI(au, ag, fuente) {
   const ts = new Date().toLocaleTimeString('es-AR');
   // ORO
@@ -967,6 +1062,9 @@ function setSpotUI(au, ag, fuente) {
   agChg.className = 'spot-chg ' + (ag.chg >= 0 ? 'pos' : 'neg');
   document.getElementById('ag-range').textContent = `Apertura $${ag.open.toFixed(2)} · Máx $${ag.high.toFixed(2)} · Mín $${ag.low.toFixed(2)}`;
   document.getElementById('ag-ts').textContent = fuente + ' · ' + ts;
+  // Mostrar precio D-1 en la barra
+  document.getElementById('d1-au') && (document.getElementById('d1-au').textContent = 'Au: $' + au.price.toFixed(2));
+  document.getElementById('d1-ag') && (document.getElementById('d1-ag').textContent = 'Ag: $' + ag.price.toFixed(2));
   renderAll();
 }
 
@@ -982,38 +1080,8 @@ function usarPreciosReferencia(motivo) {
 }
 
 async function fetchSpot() {
-  document.getElementById('au-price').innerHTML = '<span class="loading-text">···</span>';
-  document.getElementById('ag-price').innerHTML = '<span class="loading-text">···</span>';
-  document.getElementById('au-ts').textContent  = 'Conectando a MetalpriceAPI...';
-  document.getElementById('ag-ts').textContent  = 'Conectando a MetalpriceAPI...';
-
-  try {
-    // MetalpriceAPI — plan free, 100 requests/mes, datos con 24hs delay
-    const url = `https://api.metalpriceapi.com/v1/latest?api_key=${METAL_API_KEY}&base=USD&currencies=XAU,XAG`;
-    const res = await fetch(url);
-
-    if (!res.ok) throw new Error(`MetalpriceAPI HTTP ${res.status}`);
-    const data = await res.json();
-    console.log('MetalpriceAPI response:', data);
-
-    if (!data.success) throw new Error('API error: ' + (data.error?.info || 'desconocido'));
-
-    // API devuelve: XAU = onzas de oro por 1 USD → precio = 1/XAU
-    const rates = data.rates;
-    const priceAu = 1 / rates.XAU;
-    const priceAg = 1 / rates.XAG;
-    console.log('Au:', priceAu.toFixed(2), 'Ag:', priceAg.toFixed(2));
-
-    setSpotUI(
-      { price: priceAu, open: priceAu, high: priceAu, low: priceAu, chg: 0 },
-      { price: priceAg, open: priceAg, high: priceAg, low: priceAg, chg: 0 },
-      'MetalpriceAPI · Tiempo real'
-    );
-
-  } catch(e) {
-    console.error('fetchSpot error:', e.message);
-    usarPreciosReferencia(e.message);
-  }
+  // Directo a Claude IA — funciona desde cualquier servidor sin CORS
+  await fetchPrecioHoy();
 }
 
 // ── TABS ──────────────────────────────────────────────────────
@@ -1022,6 +1090,11 @@ function showTab(id) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + id).classList.add('active');
   event.target.classList.add('active');
+  // Renderizar tabs nuevos si tienen datos
+  if (pAu > 0) {
+    if (id === 'impuesto')   renderImpuesto(calcData(pAu, pAg));
+    if (id === 'fortalecer') renderFortalecer(calcData(pAu, pAg));
+  }
 }
 
 // ── TIMESTAMP ─────────────────────────────────────────────────
@@ -1097,6 +1170,63 @@ async function askAI(presetQuery) {
 document.getElementById('ai-query').addEventListener('keydown', e => {
   if (e.key === 'Enter') askAI();
 });
+
+// ── PRECIO HOY VÍA CLAUDE IA ─────────────────────────────────
+async function fetchPrecioHoy() {
+  const btn = document.getElementById('btn-hoy');
+  const status = document.getElementById('manual-status');
+  btn.textContent = '⏳ Buscando...';
+  btn.disabled = true;
+  status.textContent = '';
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 500,
+        tools: [{ type: 'web_search_20250305', name: 'web_search' }],
+        system: `Buscá el precio spot del oro y la plata HOY. Respondé SOLO con este JSON exacto, sin texto extra:
+{"au":PRECIO_ORO,"ag":PRECIO_PLATA}
+Ambos en USD por onza troy. Solo números, sin símbolos.`,
+        messages: [{ role: 'user', content: 'Precio spot oro XAU/USD y plata XAG/USD hoy en USD por onza troy. Solo el JSON.' }]
+      })
+    });
+
+    const data = await res.json();
+    const allText = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+    const match = allText.match(/\{[^}]*"au"\s*:\s*([\d.]+)[^}]*"ag"\s*:\s*([\d.]+)[^}]*\}/);
+    
+    if (!match) throw new Error('No se encontró precio');
+    
+    const au = parseFloat(match[1]);
+    const ag = parseFloat(match[2]);
+
+    if (au < 100 || au > 20000) throw new Error('Precio oro inválido: ' + au);
+    if (ag < 1   || ag > 500)   throw new Error('Precio plata inválido: ' + ag);
+
+    // Aplicar precios
+    document.getElementById('input-au').value = au.toFixed(2);
+    document.getElementById('input-ag').value = ag.toFixed(2);
+    
+    setSpotUI(
+      { price:au, open:au, high:au, low:au, chg:0 },
+      { price:ag, open:ag, high:ag, low:ag, chg:0 },
+      '⚡ Claude IA · Precio HOY'
+    );
+    status.textContent = '✓ Au $' + au.toFixed(2) + ' · Ag $' + ag.toFixed(2);
+    status.style.color = 'var(--green)';
+
+  } catch(e) {
+    console.error('fetchPrecioHoy:', e);
+    status.textContent = '⚠ Error: ' + e.message + ' — usá el ajuste manual';
+    status.style.color = 'var(--red)';
+  } finally {
+    btn.textContent = '⚡ Precio de HOY (IA)';
+    btn.disabled = false;
+  }
+}
 
 // ── APLICAR PRECIOS MANUALES ──────────────────────────────────
 function aplicarManual() {
