@@ -474,13 +474,53 @@ header {
   <button class="tab" onclick="showTab('escenarios')">ESCENARIOS</button>
 </div>
 
+<!-- BARRA TASAS EXPORTACIÓN -->
+<div id="barra-tasas" style="display:none;gap:12px;margin-bottom:16px;align-items:center;flex-wrap:wrap;background:var(--bg2);border:1px solid rgba(90,174,240,0.25);border-radius:8px;padding:12px 16px;backdrop-filter:blur(12px)">
+  <span style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--province);white-space:nowrap">⚖ TASAS EXPORTACIÓN →</span>
+  <label style="display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:11px;color:var(--gold2)">
+    DE Oro (%)
+    <input id="input-de-au" type="number" step="0.1" min="0" max="100" value="0"
+      style="background:var(--bg3);border:1px solid rgba(201,168,76,0.3);border-radius:4px;padding:5px 8px;color:var(--gold2);font-family:'DM Mono',monospace;font-size:12px;width:70px;outline:none">
+  </label>
+  <label style="display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:11px;color:var(--silver2)">
+    DE Plata (%)
+    <input id="input-de-ag" type="number" step="0.1" min="0" max="100" value="4.5"
+      style="background:var(--bg3);border:1px solid rgba(168,184,200,0.3);border-radius:4px;padding:5px 8px;color:var(--silver2);font-family:'DM Mono',monospace;font-size:12px;width:70px;outline:none">
+  </label>
+  <label style="display:flex;align-items:center;gap:6px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text2)">
+    Perc. Ganancias (%)
+    <input id="input-perc" type="number" step="0.1" min="0" max="100" value="1"
+      style="background:var(--bg3);border:1px solid rgba(255,255,255,0.1);border-radius:4px;padding:5px 8px;color:var(--text2);font-family:'DM Mono',monospace;font-size:12px;width:70px;outline:none">
+  </label>
+  <button onclick="aplicarTasas()"
+    style="padding:6px 14px;background:rgba(90,174,240,0.15);border:1px solid rgba(90,174,240,0.4);border-radius:4px;color:var(--province);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer">
+    Aplicar →
+  </button>
+  <button onclick="resetTasas()"
+    style="padding:6px 14px;background:transparent;border:1px solid var(--border2);border-radius:4px;color:var(--text3);font-family:'DM Mono',monospace;font-size:11px;cursor:pointer">
+    ↺ Restablecer
+  </button>
+  <span id="tasas-status" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--green)"></span>
+</div>
+
 <!-- TAB: PRODUCCIÓN -->
 <div class="tab-content active" id="tab-produccion">
-  <div class="fob-grid" id="fob-kpis">
-    <div class="fob-kpi"><div class="fob-kpi-label">FOB ORO TOTAL</div><div class="fob-kpi-val gold-val" id="kpi-fob-au">···</div></div>
-    <div class="fob-kpi"><div class="fob-kpi-label">FOB PLATA TOTAL</div><div class="fob-kpi-val silver-val" id="kpi-fob-ag">···</div></div>
+  <div class="fob-grid" id="fob-kpis" style="grid-template-columns:repeat(4,1fr)">
     <div class="fob-kpi"><div class="fob-kpi-label">FOB COMBINADO</div><div class="fob-kpi-val total-val" id="kpi-fob-total">···</div></div>
-    <div class="fob-kpi"><div class="fob-kpi-label">REGALÍA ESTIMADA</div><div class="fob-kpi-val regalia-val" id="kpi-regalia">···</div></div>
+    <div class="fob-kpi"><div class="fob-kpi-label">DE PLATA 4.5%</div><div class="fob-kpi-val silver-val" id="kpi-de-ag">···</div></div>
+    <div class="fob-kpi"><div class="fob-kpi-label">PERC. GANANCIAS 1%</div><div class="fob-kpi-val" style="color:var(--text2)" id="kpi-perc">···</div></div>
+    <div class="fob-kpi"><div class="fob-kpi-label">FOB NETO (sin cargas)</div><div class="fob-kpi-val regalia-val" id="kpi-fob-neto">···</div></div>
+  </div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">
+      <span style="color:var(--gold2)">Au Doré → DE 0% (exento Dic 2023)</span> · 
+      <span style="color:var(--silver2)">Ag Doré → DE 4.5% (Dcto 563/2025)</span> · 
+      <span style="color:var(--text2)">Perc. Ganancias 1% (RG 5815/2026)</span>
+    </div>
+    <button onclick="toggleTasas()" id="btn-tasas"
+      style="padding:5px 12px;background:rgba(90,174,240,0.1);border:1px solid rgba(90,174,240,0.3);border-radius:4px;color:var(--province);font-family:'DM Mono',monospace;font-size:10px;cursor:pointer">
+      ✎ Editar tasas
+    </button>
   </div>
   <div class="card full-width">
     <div class="card-title">PRODUCCIÓN POR AÑO · VIDA DE MINA 8 AÑOS</div>
@@ -496,7 +536,11 @@ header {
           <th>Oz Ag REC.</th>
           <th>FOB Ag (USD)</th>
           <th>FOB TOTAL (USD)</th>
-          <th>REGALÍA 2.1% (USD)</th>
+          <th class="au">DE Au <span id="th-de-au">0%</span></th>
+          <th class="ag">DE Ag <span id="th-de-ag">4.5%</span></th>
+          <th style="color:var(--text2)">Perc. Gan. <span id="th-perc">1%</span></th>
+          <th style="color:var(--red)">CARGA EXPORT.</th>
+          <th style="color:var(--green)">FOB NETO (USD)</th>
         </tr>
       </thead>
       <tbody id="prod-tbody"></tbody>
@@ -758,6 +802,12 @@ const TASA_REGALIA = 0.021;
 const TASA_DESARROLLO = 0.0375;
 const TC_ARS = 933.42; // tipo de cambio referencia
 
+// ── DERECHOS DE EXPORTACIÓN (editables) ──────────────────────
+// Doré: Au 0% · Ag 4.5% · Percepción Ganancias RG5815/2026: 1%
+let DE_AU  = 0.000;  // Oro doré — exento desde dic 2023
+let DE_AG  = 0.045;  // Plata doré — Decreto 563/2025
+let PERC_GANANCIAS = 0.010; // RG 5815/2026 — sobre FOB exportación
+
 // Precios cotizados (actualizados por fetch)
 let pAu = 0, pAg = 0;
 
@@ -794,10 +844,20 @@ function calcData(auP, agP) {
     const lambda = 0.03 * alpha;
     const regaliaAlpha = fobTotal * lambda;
 
+    // Derechos de exportación sobre FOB
+    const deAu   = fobAu * DE_AU;
+    const deAg   = fobAg * DE_AG;
+    const deTotal = deAu + deAg;
+    // Percepción Ganancias RG5815/2026 sobre FOB total
+    const percGan = fobTotal * PERC_GANANCIAS;
+    // Total carga fiscal exportación
+    const cargaExport = deTotal + percGan;
+
     return {
       ...d, grAu, ozAu, fobAu, grAg, ozAg, fobAg,
       fobTotal, regalia2, impDes, totalRec,
-      it, itn, alpha, lambda, regaliaAlpha
+      it, itn, alpha, lambda, regaliaAlpha,
+      deAu, deAg, deTotal, percGan, cargaExport
     };
   });
 }
@@ -814,9 +874,13 @@ function renderProduccion(data) {
   if (pAu === 0) return;
   const tbody = document.getElementById('prod-tbody');
   let totFobAu=0,totFobAg=0,totFob=0,totReg=0,totOzAu=0,totOzAg=0;
+  let totDeAu=0,totDeAg=0,totDeTotal=0,totPercGan=0,totCarga=0;
   tbody.innerHTML = data.map(d => {
     totFobAu+=d.fobAu; totFobAg+=d.fobAg; totFob+=d.fobTotal;
     totReg+=d.regalia2; totOzAu+=d.ozAu; totOzAg+=d.ozAg;
+    totDeAu+=d.deAu; totDeAg+=d.deAg; totDeTotal+=d.deTotal;
+    totPercGan+=d.percGan; totCarga+=d.cargaExport;
+    const fobNeto = d.fobTotal - d.cargaExport;
     return `<tr>
       <td>${d.label}</td>
       <td>${fmtTon(d.ton)}</td>
@@ -827,7 +891,11 @@ function renderProduccion(data) {
       <td class="ag">${fmtOz(d.ozAg)}</td>
       <td class="ag">${fmtUSD(d.fobAg)}</td>
       <td>${fmtUSD(d.fobTotal)}</td>
-      <td style="color:var(--green)">${fmtUSD(d.regalia2)}</td>
+      <td class="au">${d.deAu > 0 ? fmtUSD(d.deAu) : '<span style="color:var(--text3)">Exento</span>'}</td>
+      <td class="ag">${fmtUSD(d.deAg)}</td>
+      <td style="color:var(--text2)">${fmtUSD(d.percGan)}</td>
+      <td style="color:var(--red);font-weight:600">${fmtUSD(d.cargaExport)}</td>
+      <td style="color:var(--green);font-weight:600">${fmtUSD(fobNeto)}</td>
     </tr>`;
   }).join('') + `<tr class="total-row">
     <td>TOTALES</td><td>5.804.101</td><td class="au">2.79 prom.</td><td class="ag">27.78 prom.</td>
@@ -836,13 +904,27 @@ function renderProduccion(data) {
     <td class="ag">${fmtOz(totOzAg)}</td>
     <td class="ag">${fmtUSD(totFobAg)}</td>
     <td>${fmtUSD(totFob)}</td>
-    <td style="color:var(--green)">${fmtUSD(totReg)}</td>
+    <td class="au"><span style="color:var(--text3)">Exento</span></td>
+    <td class="ag">${fmtUSD(totDeAg)}</td>
+    <td style="color:var(--text2)">${fmtUSD(totPercGan)}</td>
+    <td style="color:var(--red);font-weight:600">${fmtUSD(totCarga)}</td>
+    <td style="color:var(--green);font-weight:600">${fmtUSD(totFob - totCarga)}</td>
   </tr>`;
 
-  document.getElementById('kpi-fob-au').textContent = fmtUSD(totFobAu);
-  document.getElementById('kpi-fob-ag').textContent = fmtUSD(totFobAg);
   document.getElementById('kpi-fob-total').textContent = fmtUSD(totFob);
-  document.getElementById('kpi-regalia').textContent = fmtUSD(totReg);
+  const kDeAg = document.getElementById('kpi-de-ag');
+  if (kDeAg) kDeAg.textContent = fmtUSD(totDeAg);
+  const kPerc = document.getElementById('kpi-perc');
+  if (kPerc) kPerc.textContent = fmtUSD(totPercGan);
+  const kNeto = document.getElementById('kpi-fob-neto');
+  if (kNeto) kNeto.textContent = fmtUSD(totFob - totCarga);
+  // Actualizar headers de columnas con tasas actuales
+  const thDeAu = document.getElementById('th-de-au');
+  if (thDeAu) thDeAu.textContent = (DE_AU*100).toFixed(1) + '%';
+  const thDeAg = document.getElementById('th-de-ag');
+  if (thDeAg) thDeAg.textContent = (DE_AG*100).toFixed(1) + '%';
+  const thPerc = document.getElementById('th-perc');
+  if (thPerc) thPerc.textContent = (PERC_GANANCIAS*100).toFixed(1) + '%';
 }
 
 // ── RENDER REGALÍAS ───────────────────────────────────────────
@@ -1337,6 +1419,58 @@ Ambos en USD por onza troy. Solo números, sin símbolos.`,
   } finally {
     btn.textContent = '⚡ Precio de HOY (IA)';
     btn.disabled = false;
+  }
+}
+
+// ── TOGGLE / EDITAR TASAS EXPORTACIÓN ────────────────────────
+function toggleTasas() {
+  const barra = document.getElementById('barra-tasas');
+  const btn   = document.getElementById('btn-tasas');
+  if (barra.style.display === 'none' || barra.style.display === '') {
+    barra.style.display = 'flex';
+    btn.textContent = '✕ Cerrar';
+  } else {
+    barra.style.display = 'none';
+    btn.textContent = '✎ Editar tasas';
+  }
+}
+
+function aplicarTasas() {
+  const deAu  = parseFloat(document.getElementById('input-de-au').value) || 0;
+  const deAg  = parseFloat(document.getElementById('input-de-ag').value) || 0;
+  const perc  = parseFloat(document.getElementById('input-perc').value)  || 0;
+
+  DE_AU = deAu / 100;
+  DE_AG = deAg / 100;
+  PERC_GANANCIAS = perc / 100;
+
+  // Actualizar labels de KPIs
+  const kDeAg = document.getElementById('kpi-de-ag');
+  if (kDeAg) kDeAg.previousElementSibling.textContent = 'DE PLATA ' + deAg.toFixed(1) + '%';
+  const kPerc = document.getElementById('kpi-perc');
+  if (kPerc) kPerc.previousElementSibling.textContent = 'PERC. GANANCIAS ' + perc.toFixed(1) + '%';
+
+  renderAll();
+
+  const status = document.getElementById('tasas-status');
+  if (status) {
+    status.textContent = '✓ Tasas aplicadas — Au ' + deAu + '% · Ag ' + deAg + '% · Perc. ' + perc + '%';
+    setTimeout(() => status.textContent = '', 4000);
+  }
+}
+
+function resetTasas() {
+  DE_AU = 0.000;
+  DE_AG = 0.045;
+  PERC_GANANCIAS = 0.010;
+  document.getElementById('input-de-au').value = '0';
+  document.getElementById('input-de-ag').value = '4.5';
+  document.getElementById('input-perc').value  = '1';
+  renderAll();
+  const status = document.getElementById('tasas-status');
+  if (status) {
+    status.textContent = '↺ Valores legales restituidos';
+    setTimeout(() => status.textContent = '', 3000);
   }
 }
 
