@@ -782,6 +782,28 @@ header {
 
 </div><!-- /wrap -->
 
+<!-- MODAL API KEY -->
+<div id="modal-key" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:9999;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
+  <div style="background:#0D1C2E;border:1px solid rgba(212,175,90,0.4);border-radius:12px;padding:32px;max-width:480px;width:90%">
+    <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:#D4AF5A;margin-bottom:8px">CALCATREU</div>
+    <div style="font-family:'DM Mono',monospace;font-size:11px;color:#7A9BB8;margin-bottom:24px;letter-spacing:1px">CONFIGURACIÓN DE CONEXIÓN · PRIMERA VEZ</div>
+    <div style="font-family:'DM Mono',monospace;font-size:11px;color:#90B8D8;margin-bottom:12px;line-height:1.8">
+      Para activar las cotizaciones en tiempo real ingresá tu clave de API de Anthropic.<br>
+      <span style="color:#4A6E90">Se guarda en tu navegador — nunca se sube a ningún servidor.</span>
+    </div>
+    <input id="input-api-key" type="password" placeholder="sk-ant-..."
+      style="width:100%;background:#091420;border:1px solid rgba(212,175,90,0.3);border-radius:6px;padding:10px 14px;color:#E8C97A;font-family:'DM Mono',monospace;font-size:13px;outline:none;margin-bottom:8px;box-sizing:border-box">
+    <div id="modal-error" style="font-family:'DM Mono',monospace;font-size:10px;color:#F06060;margin-bottom:12px;min-height:16px"></div>
+    <button onclick="guardarKey()"
+      style="width:100%;padding:12px;background:rgba(212,175,90,0.15);border:1px solid rgba(212,175,90,0.4);border-radius:6px;color:#D4AF5A;font-family:'DM Mono',monospace;font-size:12px;cursor:pointer;letter-spacing:1px">
+      CONECTAR →
+    </button>
+    <div style="margin-top:12px;font-family:'DM Mono',monospace;font-size:10px;color:#3A5A78;text-align:center">
+      Anthropic Console → Claves de API → Crear clave
+    </div>
+  </div>
+</div>
+
 <script>
 // ── DATOS GEOLÓGICOS CALCATREU ────────────────────────────────
 const GEO = [
@@ -1219,8 +1241,8 @@ function renderAll() {
   }
 }
 
-// ── ANTHROPIC API KEY ────────────────────────────────────────
-const ANTHROPIC_KEY = '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';
+// ── ANTHROPIC API KEY — se guarda en localStorage del navegador ──
+let ANTHROPIC_KEY = localStorage.getItem('calcatreu_api_key') || '';
 
 function setSpotUI(au, ag, fuente) {
   const ts = new Date().toLocaleTimeString('es-AR');
@@ -1529,8 +1551,38 @@ function aplicarManual() {
 // ── INIT ──────────────────────────────────────────────────────
 updateTS();
 setInterval(updateTS, 1000);
-fetchSpot();
+
+// Si no hay key guardada, mostrar modal
+if (!ANTHROPIC_KEY) {
+  mostrarModalKey();
+} else {
+  fetchSpot();
+}
 setInterval(fetchSpot, 60 * 60 * 1000); // cada 60 min
+
+function mostrarModalKey() {
+  document.getElementById('modal-key').style.display = 'flex';
+}
+
+function guardarKey() {
+  const key = document.getElementById('input-api-key').value.trim();
+  if (!key.startsWith('sk-ant-')) {
+    document.getElementById('modal-error').textContent = '⚠ La key debe empezar con sk-ant-';
+    return;
+  }
+  ANTHROPIC_KEY = key;
+  localStorage.setItem('calcatreu_api_key', key);
+  document.getElementById('modal-key').style.display = 'none';
+  fetchSpot();
+}
+
+function cambiarKey() {
+  localStorage.removeItem('calcatreu_api_key');
+  ANTHROPIC_KEY = '';
+  document.getElementById('input-api-key').value = '';
+  document.getElementById('modal-error').textContent = '';
+  mostrarModalKey();
+}
 </script>
 </body>
 </html>
