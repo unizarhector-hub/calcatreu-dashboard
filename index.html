@@ -1280,7 +1280,7 @@ async function fetchSpot() {
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6',
+        model: 'claude-sonnet-4-6-20250514',
         max_tokens: 500,
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
         system: `Buscá el precio spot actual del oro XAU/USD y la plata XAG/USD en USD por onza troy.
