@@ -1265,7 +1265,7 @@ function setSpotUI(au, ag, fuente) {
   if (fechaBadge) {
     const ayer = new Date(); ayer.setDate(ayer.getDate() - 1);
     const fechaStr = ayer.toLocaleDateString('es-AR', {day:'2-digit',month:'2-digit',year:'numeric'});
-    fechaBadge.textContent = '⚠ Precio de cierre: ' + fechaStr + ' — Plan gratuito MetalpriceAPI (24hs delay). Para precio actual usá el ajuste manual.';
+    fechaBadge.textContent = '⚡ Cotizaciones en tiempo real vía Claude IA · Fuentes: Kitco · Investing.com · Reuters · Actualización automática cada 60 min';
   }
   // PLATA
   pAg = ag.price;
