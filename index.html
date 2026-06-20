@@ -1003,30 +1003,46 @@ function renderAlpha(data) {
 // ── RENDER DISTRIBUCIÓN ───────────────────────────────────────
 function renderDistribucion(data) {
   if (pAu === 0) return;
-  const totFob = data.reduce((s,d) => s + d.fobTotal, 0);
+  const totFob    = data.reduce((s,d) => s + d.fobTotal, 0);
+  const totDeAg   = data.reduce((s,d) => s + d.deAg, 0);
+  const totPercGan= data.reduce((s,d) => s + d.percGan, 0);
+  const totCarga  = data.reduce((s,d) => s + d.cargaExport, 0);
+  const fobNeto   = totFob - totCarga;
 
-  // Distribución del FOB total (del Excel)
+  // Nación incluye: Imp.Gcias(12.8%) + DE Ag + Percepción Ganancias + Cred/Déb(0.12%) + Aportes(1.2%) + Combustibles(1.2%)
+  const pctNacionBase = 0.128 + 0.0012 + 0.012 + 0.012; // sin DE ni Percepción
+  const nacionTotal   = totFob * pctNacionBase + totCarga;
+  const pctNacion     = nacionTotal / totFob;
+
   const dist = [
-    { name:'Proveedores Locales', pct:0.25,   color:'var(--gold2)'    },
-    { name:'Nación (impuestos)',  pct:0.225,  color:'var(--nation)'   },
-    { name:'Salarios',           pct:0.13,   color:'var(--green)'    },
-    { name:'Compras Exterior',   pct:0.10,   color:'var(--silver2)'  },
-    { name:'Prov. Nacionales',   pct:0.10,   color:'var(--text2)'    },
-    { name:'Ganancia Empresa',   pct:0.1364, color:'var(--province)' },
-    { name:'Fondos Provincia',   pct:0.0459, color:'var(--muni)'     },
-    { name:'Municipios/Comis.',  pct:0.0126, color:'var(--red)'      },
+    { name:'Proveedores Locales',          val: totFob*0.25,         color:'var(--gold2)'    },
+    { name:'Nación (Impuestos + DE)',       val: nacionTotal,         color:'var(--nation)'   },
+    { name:'Salarios',                     val: totFob*0.13,         color:'var(--green)'    },
+    { name:'Compras Exterior',             val: totFob*0.10,         color:'var(--silver2)'  },
+    { name:'Prov. Nacionales',             val: totFob*0.10,         color:'var(--text2)'    },
+    { name:'Ganancia Empresa',             val: totFob*0.1364,       color:'var(--province)' },
+    { name:'Fondos Provincia (Regalías)',  val: totFob*0.0459,       color:'var(--muni)'     },
+    { name:'Municipios/Comis. Fomento',    val: totFob*0.0126,       color:'var(--red)'      },
   ];
 
+  // Nota sobre Derechos de Exportación
+  const notaDE = `<div style="margin-bottom:12px;padding:10px 14px;background:var(--bg3);border-radius:6px;border-left:3px solid var(--nation);font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);line-height:1.8">
+    <strong style="color:var(--nation)">NACIÓN incluye Carga de Exportación:</strong>
+    DE Plata 4.5% = ${fmtUSD(totDeAg)} · Percepción Ganancias 1% = ${fmtUSD(totPercGan)} · Total Carga Export. = <strong style="color:var(--red)">${fmtUSD(totCarga)}</strong>
+    &nbsp;|&nbsp; <strong style="color:var(--green)">FOB Neto = ${fmtUSD(fobNeto)}</strong>
+  </div>`;
+
+  const maxVal = Math.max(...dist.map(d => d.val));
   const bars = document.getElementById('dist-bars');
-  bars.innerHTML = dist.map(d => {
-    const usd = totFob * d.pct;
+  bars.innerHTML = notaDE + dist.map(d => {
+    const pct = d.val / totFob;
     return `<div class="dist-bar-wrap">
       <div class="dist-bar-header">
         <span class="dist-bar-name">${d.name}</span>
-        <span class="dist-bar-val" style="color:${d.color}">${fmtUSD(usd)} · ${(d.pct*100).toFixed(1)}%</span>
+        <span class="dist-bar-val" style="color:${d.color}">${fmtUSD(d.val)} · ${(pct*100).toFixed(1)}%</span>
       </div>
       <div class="dist-bar-track">
-        <div class="dist-bar-fill" style="width:${d.pct*100}%;background:${d.color}"></div>
+        <div class="dist-bar-fill" style="width:${Math.min(pct*100,100)}%;background:${d.color}"></div>
       </div>
     </div>`;
   }).join('');
@@ -1203,10 +1219,11 @@ function renderAll() {
   }
 }
 
-// ── API KEY METALPRICEAPI ────────────────────────────────────
-const METAL_API_KEY = 'c72185f52d5cf7dc27d0cebb92dc5364';
+// ── PRECIOS FIJOS AL 20/06/2026 ──────────────────────────────
+// Fuente: Trading Economics / JM Bullion / Kitco
+// Au: $4.136,59 USD/oz · Ag: $64,71 USD/oz
+// Para actualizar: solicitar nuevo script con precios del momento
 
-// ── FETCH PRECIOS VÍA METALPRICEAPI ──────────────────────────
 function setSpotUI(au, ag, fuente) {
   const ts = new Date().toLocaleTimeString('es-AR');
   // ORO
@@ -1249,33 +1266,15 @@ function usarPreciosReferencia(motivo) {
   document.getElementById('ag-ts').textContent = '⚠ Sin conexión — estimación basada en datos recientes';
 }
 
-async function fetchSpot() {
-  document.getElementById('au-price').innerHTML = '<span class="loading-text">···</span>';
-  document.getElementById('ag-price').innerHTML = '<span class="loading-text">···</span>';
-  document.getElementById('au-ts').textContent  = 'Conectando a MetalpriceAPI...';
-  document.getElementById('ag-ts').textContent  = 'Conectando a MetalpriceAPI...';
-
-  try {
-    const url = `https://api.metalpriceapi.com/v1/latest?api_key=${METAL_API_KEY}&base=USD&currencies=XAU,XAG`;
-    const res = await fetch(url);
-    if (!res.ok) throw new Error(`MetalpriceAPI HTTP ${res.status}`);
-    const data = await res.json();
-    if (!data.success) throw new Error(data.error?.info || 'error desconocido');
-
-    const rates = data.rates;
-    const priceAu = 1 / rates.XAU;
-    const priceAg = 1 / rates.XAG;
-    console.log('Au:', priceAu.toFixed(2), 'Ag:', priceAg.toFixed(2));
-
-    setSpotUI(
-      { price: priceAu, open: priceAu, high: priceAu, low: priceAu, chg: 0 },
-      { price: priceAg, open: priceAg, high: priceAg, low: priceAg, chg: 0 },
-      'MetalpriceAPI · Automático'
-    );
-  } catch(e) {
-    console.error('fetchSpot error:', e.message);
-    usarPreciosReferencia(e.message);
-  }
+function fetchSpot() {
+  // Precios cierre viernes 19/06/2026 — Fuente: Investing.com
+  // Mercado cerrado sábado 20/06/2026
+  // Au: $4.160,26 | Ag: $69,71
+  setSpotUI(
+    { price: 4160.26, open: 4210.05, high: 4213.66, low: 4120.89, chg: -1.18 },
+    { price: 69.71,   open: 67.91,   high: 69.77,   low: 67.87,   chg: +2.65 },
+    '📅 Cierre 19/06/2026 · Investing.com'
+  );
 }
 
 // ── TABS ──────────────────────────────────────────────────────
@@ -1492,8 +1491,7 @@ function aplicarManual() {
 // ── INIT ──────────────────────────────────────────────────────
 updateTS();
 setInterval(updateTS, 1000);
-fetchSpot();
-setInterval(fetchSpot, 15 * 60 * 1000); // cada 15 min
+fetchSpot(); // Carga precios fijos al 20/06/2026
 </script>
 </body>
 </html>
