@@ -1307,7 +1307,7 @@ async function fetchSpot() {
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-6-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 500,
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
         system: `Buscá el precio spot actual del oro XAU/USD y la plata XAG/USD en USD por onza troy.
@@ -1319,6 +1319,7 @@ Todos valores numéricos en USD. chg = variación % del día.`,
     });
 
     if (res.status === 401 || res.status === 403) throw new Error('401 key inválida');
+    if (res.status === 404) throw new Error('404 modelo no encontrado');
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
 
@@ -1415,7 +1416,7 @@ async function askAI(presetQuery) {
       method:'POST',
       headers:{'Content-Type':'application/json','x-api-key':ANTHROPIC_KEY,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
       body: JSON.stringify({
-        model:'claude-sonnet-4-20250514',
+        model:'claude-sonnet-4-6',
         max_tokens:1000,
         system: CONTEXT(),
         messages:[{ role:'user', content:query }]
@@ -1451,7 +1452,7 @@ async function fetchPrecioHoy() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-sonnet-4-6',
         max_tokens: 500,
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
         system: `Buscá el precio spot del oro y la plata HOY. Respondé SOLO con este JSON exacto, sin texto extra:
@@ -1567,11 +1568,8 @@ updateTS();
 setInterval(updateTS, 1000);
 
 // Mostrar modal si no hay key, sino intentar fetch
-if (!ANTHROPIC_KEY || ANTHROPIC_KEY.length < 20) {
-  mostrarModalKey();
-} else {
-  fetchSpot();
-}
+// Siempre mostrar modal para ingresar/confirmar key
+mostrarModalKey();
 setInterval(() => {
   if (ANTHROPIC_KEY && ANTHROPIC_KEY.length > 20) fetchSpot();
 }, 60 * 60 * 1000); // cada 60 min
