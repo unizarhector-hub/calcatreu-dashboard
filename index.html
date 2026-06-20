@@ -801,6 +801,11 @@ header {
     <div style="margin-top:12px;font-family:'DM Mono',monospace;font-size:10px;color:#3A5A78;text-align:center">
       Anthropic Console → Claves de API → Crear clave
     </div>
+    <div style="margin-top:8px;text-align:center">
+      <button onclick="limpiarLocalStorage()" style="background:transparent;border:none;color:#3A5A78;font-family:'DM Mono',monospace;font-size:9px;cursor:pointer;text-decoration:underline">
+        Limpiar caché del navegador
+      </button>
+    </div>
   </div>
 </div>
 
@@ -1313,6 +1318,7 @@ Todos valores numéricos en USD. chg = variación % del día.`,
       })
     });
 
+    if (res.status === 401 || res.status === 403) throw new Error('401 key inválida');
     if (!res.ok) throw new Error('HTTP ' + res.status);
     const data = await res.json();
 
@@ -1328,12 +1334,20 @@ Todos valores numéricos en USD. chg = variación % del día.`,
 
   } catch(e) {
     console.error('fetchSpot error:', e.message);
-    // Fallback precios cierre 19/06/2026
-    setSpotUI(
-      { price: 4160.26, open: 4210.05, high: 4213.66, low: 4120.89, chg: -1.18 },
-      { price: 69.71,   open: 67.91,   high: 69.77,   low: 67.87,   chg: +2.65 },
-      '📅 Fallback · Cierre 19/06/2026'
-    );
+    if (e.message.includes('401') || e.message.includes('403')) {
+      // Key inválida — limpiar y pedir nueva
+      localStorage.removeItem('calcatreu_api_key');
+      ANTHROPIC_KEY = '';
+      mostrarModalKey();
+      document.getElementById('modal-error').textContent = '⚠ Key inválida o revocada — ingresá una nueva';
+    } else {
+      // Otro error — usar fallback
+      setSpotUI(
+        { price: 4160.26, open: 4210.05, high: 4213.66, low: 4120.89, chg: -1.18 },
+        { price: 69.71,   open: 67.91,   high: 69.77,   low: 67.87,   chg: +2.65 },
+        '📅 Fallback · Cierre 19/06/2026'
+      );
+    }
   }
 }
 
@@ -1552,13 +1566,15 @@ function aplicarManual() {
 updateTS();
 setInterval(updateTS, 1000);
 
-// Si no hay key guardada, mostrar modal
-if (!ANTHROPIC_KEY) {
+// Mostrar modal si no hay key, sino intentar fetch
+if (!ANTHROPIC_KEY || ANTHROPIC_KEY.length < 20) {
   mostrarModalKey();
 } else {
   fetchSpot();
 }
-setInterval(fetchSpot, 60 * 60 * 1000); // cada 60 min
+setInterval(() => {
+  if (ANTHROPIC_KEY && ANTHROPIC_KEY.length > 20) fetchSpot();
+}, 60 * 60 * 1000); // cada 60 min
 
 function mostrarModalKey() {
   document.getElementById('modal-key').style.display = 'flex';
@@ -1572,8 +1588,14 @@ function guardarKey() {
   }
   ANTHROPIC_KEY = key;
   localStorage.setItem('calcatreu_api_key', key);
+  document.getElementById('modal-error').textContent = '';
   document.getElementById('modal-key').style.display = 'none';
   fetchSpot();
+}
+
+function limpiarLocalStorage() {
+  localStorage.clear();
+  location.reload();
 }
 
 function cambiarKey() {
