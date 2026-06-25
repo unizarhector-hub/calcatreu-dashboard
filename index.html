@@ -376,6 +376,14 @@ header {
 ::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
 
 /* ── RESPONSIVE ── */
+
+/* Wrapper para tablas horizontales — aplica a todas */
+.table-scroll {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 @media (max-width: 1024px) {
   .wrap { padding: 16px; }
   .spot-row { grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -383,6 +391,9 @@ header {
   .logo-main { font-size: 36px; }
   .tabs-row { gap: 4px; }
   .tab { font-size: 9px; padding: 8px 10px; }
+  .prod-table, .reg-table { font-size: 11px; }
+  .prod-table th, .prod-table td,
+  .reg-table th, .reg-table td { padding: 6px 5px; }
 }
 
 @media (max-width: 768px) {
@@ -416,10 +427,22 @@ header {
   .fob-kpi { padding: 12px; }
   .fob-kpi-val { font-size: 18px; }
 
-  /* Tablas */
-  .prod-table, .reg-table { font-size: 10px; }
+  /* TABLAS — scroll horizontal en todas */
+  .prod-table, .reg-table { font-size: 10px; min-width: 700px; }
   .prod-table th, .prod-table td,
-  .reg-table th, .reg-table td { padding: 5px 4px; }
+  .reg-table th, .reg-table td { padding: 5px 4px; white-space: nowrap; }
+
+  /* Card con tabla → overflow scroll */
+  .card.full-width { overflow-x: auto; }
+  .card.full-width table { min-width: 650px; }
+
+  /* Tab producción — tabla muy ancha */
+  #tab-produccion .card table { min-width: 900px; }
+  #tab-regalias .card table,
+  #tab-impuesto .card table,
+  #tab-fortalecer .card table,
+  #tab-alpha .card table,
+  #tab-escenarios .card table { min-width: 600px; }
 
   /* Todos los grids de 2 columnas → 1 columna */
   div[style*="grid-template-columns:1fr 1fr"],
@@ -432,6 +455,12 @@ header {
   #tab-empleo div[style*="display:grid"] {
     grid-template-columns: 1fr !important;
   }
+
+  /* Distribución — barras */
+  .dist-bar-row { flex-wrap: wrap; gap: 6px; }
+
+  /* Alpha bars */
+  .alpha-bars { overflow-x: auto; }
 
   /* AI panel */
   .ai-panel { padding: 14px; }
@@ -450,6 +479,7 @@ header {
   .fob-grid { grid-template-columns: 1fr !important; }
   .spot-price { font-size: 32px; }
   .tab { font-size: 8px; padding: 6px 8px; }
+  .prod-table, .reg-table { font-size: 9px; }
 }
 </style>
 </head>
@@ -603,6 +633,7 @@ header {
   </div>
   <div class="card full-width">
     <div class="card-title">PRODUCCIÓN POR AÑO · VIDA DE MINA 8 AÑOS</div>
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch">
     <table class="prod-table">
       <thead>
         <tr>
@@ -624,6 +655,7 @@ header {
       </thead>
       <tbody id="prod-tbody"></tbody>
     </table>
+    </div>
   </div>
 </div>
 
@@ -637,7 +669,7 @@ header {
       <div class="fob-kpi"><div class="fob-kpi-label">FORTALECER (25%)</div><div class="fob-kpi-val regalia-val" id="r-fort-reg">···</div></div>
       <div class="fob-kpi"><div class="fob-kpi-label">VIDA DE MINA (8 años)</div><div class="fob-kpi-val total-val" id="r-vida">···</div></div>
     </div>
-    <table class="reg-table">
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="reg-table">
       <thead>
         <tr>
           <th>AÑO</th>
@@ -649,7 +681,7 @@ header {
         </tr>
       </thead>
       <tbody id="reg-tbody"></tbody>
-    </table>
+    </table></div>
     <div style="margin-top:16px;padding:12px 16px;background:var(--bg3);border-radius:8px;border-left:3px solid var(--gold);font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);line-height:1.8">
       <strong style="color:var(--gold2)">DISTRIBUCIÓN:</strong> 75% → Jurisdicción general (Provincia, Municipios, Nación) · 25% → Fondo FORTALECER
     </div>
@@ -666,7 +698,7 @@ header {
       <div class="fob-kpi"><div class="fob-kpi-label">= 100% FORTALECER</div><div class="fob-kpi-val" style="color:var(--province)" id="imp-fort">···</div></div>
       <div class="fob-kpi"><div class="fob-kpi-label">PROMEDIO ANUAL</div><div class="fob-kpi-val total-val" id="imp-prom">···</div></div>
     </div>
-    <table class="reg-table">
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="reg-table">
       <thead>
         <tr>
           <th>AÑO</th>
@@ -678,7 +710,7 @@ header {
         </tr>
       </thead>
       <tbody id="imp-tbody"></tbody>
-    </table>
+    </table></div>
     <div style="margin-top:16px;padding:12px 16px;background:var(--bg3);border-radius:8px;border-left:3px solid var(--province);font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);line-height:1.8">
       <strong style="color:var(--silver2)">NOTA:</strong> El Impuesto para el Desarrollo es independiente de las Regalías. El 100% se destina al Área de Influencia del proyecto y se canaliza íntegramente al Fondo FORTALECER.
     </div>
@@ -695,7 +727,7 @@ header {
       <div class="fob-kpi"><div class="fob-kpi-label">COMPONENTE IMP. DESARROLLO</div><div class="fob-kpi-val" style="color:var(--province)" id="fort-comp-imp">···</div></div>
       <div class="fob-kpi"><div class="fob-kpi-label">PROMEDIO ANUAL</div><div class="fob-kpi-val total-val" id="fort-prom">···</div></div>
     </div>
-    <table class="reg-table">
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="reg-table">
       <thead>
         <tr>
           <th>AÑO</th>
@@ -707,7 +739,7 @@ header {
         </tr>
       </thead>
       <tbody id="fort-tbody"></tbody>
-    </table>
+    </table></div>
     <div style="margin-top:16px;padding:16px;background:linear-gradient(135deg,rgba(61,214,140,0.06),rgba(90,174,240,0.06));border-radius:8px;border:1px solid rgba(61,214,140,0.2)">
       <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--green);margin-bottom:12px">COMPOSICIÓN DEL FONDO</div>
       <div style="display:flex;gap:32px;flex-wrap:wrap">
@@ -736,7 +768,7 @@ header {
   <div class="main-grid">
     <div class="card">
       <div class="card-title">INDICADOR TÉCNICO Y α ENDÓGENO · Millán / Vera / Ilgner</div>
-      <table class="reg-table">
+      <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="reg-table">
         <thead>
           <tr>
             <th>AÑO</th>
@@ -749,7 +781,7 @@ header {
           </tr>
         </thead>
         <tbody id="alpha-tbody"></tbody>
-      </table>
+      </table></div>
     </div>
     <div class="card">
       <div class="card-title">COMPARACIÓN α POR AÑO</div>
@@ -823,7 +855,7 @@ header {
         <div class="esc-sub">Au $3.779 · Ag $53.9 (2029 proj.)</div>
       </div>
     </div>
-    <table class="reg-table">
+    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="reg-table">
       <thead>
         <tr>
           <th>AÑO</th>
@@ -835,7 +867,7 @@ header {
         </tr>
       </thead>
       <tbody id="esc-tbody"></tbody>
-    </table>
+    </table></div>
   </div>
 </div>
 
@@ -1465,6 +1497,73 @@ header {
     </div>
   </div>
 
+  <!-- PANEL: IMPUESTOS NACIONALES GENERADOS POR EL EMPLEO DIRECTO -->
+  <div style="margin-top:16px;background:var(--bg2);border:1px solid rgba(64,208,200,0.3);border-radius:10px;padding:20px;backdrop-filter:blur(12px)">
+    <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--nation);margin-bottom:4px">IMPUESTOS NACIONALES GENERADOS POR EL EMPLEO DIRECTO — FORM. 931 ARCA</div>
+    <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:16px">Dato real MCSAU mayo 2026 · 217 empleados en nómina · "Sueldos pagados e impuestos nacionales" · Ver en tab DISTRIBUCIÓN</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+      <!-- Carga patronal -->
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:10px;letter-spacing:1px">CARGA PATRONAL → NACIÓN</div>
+        <table style="width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:10px">
+          <tbody>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+              <td style="padding:6px 6px;color:var(--text3)">Contribuciones Seg. Social</td>
+              <td style="padding:6px 6px;text-align:right;color:var(--text)">$151.169 M/mes</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+              <td style="padding:6px 6px;color:var(--text3)">Contribuciones Obra Social</td>
+              <td style="padding:6px 6px;text-align:right;color:var(--text)">$39.835 M/mes</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+              <td style="padding:6px 6px;color:var(--text3)">L.R.T. (ART) — 217 CUILes</td>
+              <td style="padding:6px 6px;text-align:right;color:var(--text)">$19.910 M/mes</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+              <td style="padding:6px 6px;color:var(--text3)">Seg. Colectivo Vida Oblig.</td>
+              <td style="padding:6px 6px;text-align:right;color:var(--text)">$92 M/mes</td>
+            </tr>
+            <tr style="background:rgba(64,208,200,0.06)">
+              <td style="padding:7px 6px;color:var(--nation);font-weight:600">Subtotal patronal</td>
+              <td style="padding:7px 6px;text-align:right;color:var(--nation);font-weight:700">$211.006 M/mes</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Aportes trabajador -->
+      <div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:10px;letter-spacing:1px">APORTES TRABAJADOR → NACIÓN</div>
+        <table style="width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:10px">
+          <tbody>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+              <td style="padding:6px 6px;color:var(--text3)">Aportes Seg. Social (trabajador)</td>
+              <td style="padding:6px 6px;text-align:right;color:var(--text)">$91.925 M/mes</td>
+            </tr>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.05)">
+              <td style="padding:6px 6px;color:var(--text3)">Aportes Obra Social (trabajador)</td>
+              <td style="padding:6px 6px;text-align:right;color:var(--text)">$16.222 M/mes</td>
+            </tr>
+            <tr style="background:rgba(64,208,200,0.06)">
+              <td style="padding:7px 6px;color:var(--nation);font-weight:600">Subtotal trabajador</td>
+              <td style="padding:7px 6px;text-align:right;color:var(--nation);font-weight:700">$108.147 M/mes</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <!-- Total 931 -->
+        <div style="margin-top:12px;background:rgba(64,208,200,0.08);border:1px solid rgba(64,208,200,0.25);border-radius:8px;padding:12px 14px">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px">TOTAL FORM. 931 → NACIÓN</div>
+          <div style="font-family:'DM Mono',monospace;font-size:16px;color:var(--nation);font-weight:700">$319.153 M/mes</div>
+          <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--nation);margin-top:4px">≈ $3.830 M/año (×12 proyectado)</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:6px">Incluido en barra "Nación" del tab DISTRIBUCIÓN · Solo empleo directo MCSAU</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div><!-- /tab-empleo -->
 
 <!-- AI PANEL -->
@@ -1743,14 +1842,20 @@ function renderDistribucion(data) {
   const totCarga  = data.reduce((s,d) => s + d.cargaExport, 0);
   const fobNeto   = totFob - totCarga;
 
-  // Nación incluye: Imp.Gcias(12.8%) + DE Ag + Percepción Ganancias + Cred/Déb(0.12%) + Aportes(1.2%) + Combustibles(1.2%)
-  const pctNacionBase = 0.128 + 0.0012 + 0.012 + 0.012; // sin DE ni Percepción
-  const nacionTotal   = totFob * pctNacionBase + totCarga;
+  // Cargas sociales Form. 931 — dato real MCSAU mayo 2026 × 12 meses → USD
+  // Patronal: Contrib.SS $151.169M + Contrib.OS $39.835M + LRT $19.910M + SCVO $0.092M = $211.006M/mes
+  // Trabajador: Aportes SS $91.925M + Aportes OS $16.222M = $108.147M/mes
+  // Total 931 = $319.153M ARS/mes → anual = $3.829.836M ARS
+  const cargasSociales931_USD = (319153000 * 12) / TC_ARS;
+
+  // Nación incluye: Imp.Gcias(12.8%) + DE Ag + Percepción Ganancias + Cred/Déb(0.12%) + Aportes(1.2%) + Combustibles(1.2%) + Cargas sociales 931
+  const pctNacionBase = 0.128 + 0.0012 + 0.012 + 0.012;
+  const nacionTotal   = totFob * pctNacionBase + totCarga + cargasSociales931_USD;
   const pctNacion     = nacionTotal / totFob;
 
   const dist = [
-    { name:'Proveedores Locales',          val: totFob*0.25,         color:'var(--gold2)'    },
-    { name:'Nación (Impuestos + DE)',       val: nacionTotal,         color:'var(--nation)'   },
+    { name:'Proveedores Locales',          val: totFob*0.25,          color:'var(--gold2)'    },
+    { name:'Nación (Impuestos + DE + SS)', val: nacionTotal,          color:'var(--nation)'   },
     { name:'Salarios',                     val: totFob*0.13,         color:'var(--green)'    },
     { name:'Compras Exterior',             val: totFob*0.10,         color:'var(--silver2)'  },
     { name:'Prov. Nacionales',             val: totFob*0.10,         color:'var(--text2)'    },
@@ -1759,11 +1864,16 @@ function renderDistribucion(data) {
     { name:'Municipios/Comis. Fomento',    val: totFob*0.0126,       color:'var(--red)'      },
   ];
 
-  // Nota sobre Derechos de Exportación
-  const notaDE = `<div style="margin-bottom:12px;padding:10px 14px;background:var(--bg3);border-radius:6px;border-left:3px solid var(--nation);font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);line-height:1.8">
-    <strong style="color:var(--nation)">NACIÓN incluye Carga de Exportación:</strong>
-    DE Plata 4.5% = ${fmtUSD(totDeAg)} · Percepción Ganancias 1% = ${fmtUSD(totPercGan)} · Total Carga Export. = <strong style="color:var(--red)">${fmtUSD(totCarga)}</strong>
+  // Nota sobre Derechos de Exportación + Cargas Sociales
+  const notaDE = `<div style="margin-bottom:12px;padding:10px 14px;background:var(--bg3);border-radius:6px;border-left:3px solid var(--nation);font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);line-height:1.9">
+    <strong style="color:var(--nation)">NACIÓN — Carga de Exportación:</strong>
+    DE Plata 4.5% = ${fmtUSD(totDeAg)} · Percepción Ganancias 1% = ${fmtUSD(totPercGan)} · Total Export. = <strong style="color:var(--red)">${fmtUSD(totCarga)}</strong>
     &nbsp;|&nbsp; <strong style="color:var(--green)">FOB Neto = ${fmtUSD(fobNeto)}</strong>
+    <br><strong style="color:var(--nation)">+ Cargas Sociales (Form. 931 ARCA — sueldos pagados e impuestos nacionales):</strong>
+    Contrib. SS $151,2M · Contrib. OS $39,8M · ART $19,9M · SCVO $0,1M <em style="color:var(--text3)">(patronal)</em>
+    + Aportes SS $91,9M · Aportes OS $16,2M <em style="color:var(--text3)">(trabajador)</em>
+    = ARS $319 M/mes → proyección anual = <strong style="color:var(--nation)">${fmtUSD(cargasSociales931_USD)}</strong>
+    <span style="color:var(--text3);font-size:9px">(dato real MCSAU mayo 2026 × 12 · TC ARS ${TC_ARS.toLocaleString('es-AR')}) · Ver detalle en tab EMPLEO</span>
   </div>`;
 
   const maxVal = Math.max(...dist.map(d => d.val));
