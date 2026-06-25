@@ -765,55 +765,39 @@ header {
 <!-- TAB: COMPRAS -->
 <div class="tab-content" id="tab-compras">
 
-  <!-- AVISO METODOLÓGICO -->
   <div style="background:rgba(255,179,71,0.08);border:1px solid rgba(255,179,71,0.3);border-radius:8px;padding:10px 16px;margin-bottom:18px;font-family:'DM Mono',monospace;font-size:10px;color:#FFB347;letter-spacing:0.5px">
-    ⚠ DATOS BASE: Puesta en Marcha ene–may 2026 (5 meses reales) · Proyección anual extrapolada ×2,4 · Fuente: respuesta MCSAU al requerimiento NO-2026-00715226 · Importes en ARS corrientes
+    ⚠ DATOS BASE: Puesta en Marcha ene–may 2026 (5 meses reales) · Proyección anual extrapolada ×2,4 · Fuente: MCSAU — NO-2026-00715226 · ARS corrientes
   </div>
 
-  <!-- KPIs PRINCIPALES -->
+  <!-- KPIs -->
   <div class="fob-grid" style="grid-template-columns:repeat(4,1fr);margin-bottom:20px">
-    <div class="fob-kpi">
-      <div class="fob-kpi-label">TOTAL REAL (5 meses)</div>
-      <div class="fob-kpi-val" style="color:#FFB347">$17.943 M</div>
-    </div>
-    <div class="fob-kpi">
-      <div class="fob-kpi-label">PROYECCIÓN ANUAL 2026</div>
-      <div class="fob-kpi-val total-val">$43.063 M</div>
-    </div>
-    <div class="fob-kpi">
-      <div class="fob-kpi-label">RÍO NEGRO (proyect.)</div>
-      <div class="fob-kpi-val" style="color:var(--province)">$13.965 M</div>
-    </div>
-    <div class="fob-kpi">
-      <div class="fob-kpi-label">PROVEEDORES TOTALES</div>
-      <div class="fob-kpi-val" style="color:var(--green)">706</div>
-    </div>
+    <div class="fob-kpi"><div class="fob-kpi-label">TOTAL REAL (5 meses)</div><div class="fob-kpi-val" style="color:#FFB347">$17.943 M</div></div>
+    <div class="fob-kpi"><div class="fob-kpi-label">PROYECCIÓN ANUAL 2026</div><div class="fob-kpi-val total-val">$43.063 M</div></div>
+    <div class="fob-kpi"><div class="fob-kpi-label">RÍO NEGRO (proyect.)</div><div class="fob-kpi-val" style="color:var(--province)">$13.965 M</div></div>
+    <div class="fob-kpi"><div class="fob-kpi-label">PROVEEDORES TOTALES</div><div class="fob-kpi-val" style="color:var(--green)">706</div></div>
   </div>
 
-  <!-- DISTRIBUCIÓN POR ORIGEN -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+  <!-- FILA 1: Origen + RN interno -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
 
-    <!-- Panel izquierdo: barras origen -->
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;backdrop-filter:blur(12px)">
       <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--text3);margin-bottom:16px">DISTRIBUCIÓN POR ORIGEN — PROYECCIÓN 2026</div>
 
-      <!-- RN -->
       <div style="margin-bottom:14px">
         <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;margin-bottom:5px">
           <span style="color:var(--province)">🏔 Río Negro</span>
-          <span style="color:var(--province)">$13.965 M · <b>32,4%</b></span>
+          <span style="color:var(--province)">$13.965 M · 32,4%</span>
         </div>
         <div style="background:rgba(255,255,255,0.07);border-radius:4px;height:14px;overflow:hidden">
           <div style="width:32.4%;height:100%;background:linear-gradient(90deg,#5AAEF0,#3A8AC8);border-radius:4px"></div>
         </div>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:3px">205 proveedores · Jacobacci 70,6%</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:3px">205 proveedores · Jacobacci 70,6% del gasto RN</div>
       </div>
 
-      <!-- Nacional -->
       <div style="margin-bottom:14px">
         <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;margin-bottom:5px">
           <span style="color:var(--muni)">🇦🇷 Nacional (fuera RN)</span>
-          <span style="color:var(--muni)">$27.434 M · <b>63,7%</b></span>
+          <span style="color:var(--muni)">$27.434 M · 63,7%</span>
         </div>
         <div style="background:rgba(255,255,255,0.07);border-radius:4px;height:14px;overflow:hidden">
           <div style="width:63.7%;height:100%;background:linear-gradient(90deg,#FFB347,#E8943A);border-radius:4px"></div>
@@ -821,100 +805,85 @@ header {
         <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:3px">493 proveedores · AMBA concentra 67,9%</div>
       </div>
 
-      <!-- Importado -->
-      <div style="margin-bottom:8px">
+      <div style="margin-bottom:14px">
         <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;margin-bottom:5px">
           <span style="color:var(--nation)">🌍 Importado (exterior)</span>
-          <span style="color:var(--nation)">$1.664 M · <b>3,9%</b></span>
+          <span style="color:var(--nation)">$1.664 M · 3,9%</span>
         </div>
         <div style="background:rgba(255,255,255,0.07);border-radius:4px;height:14px;overflow:hidden">
           <div style="width:3.9%;height:100%;background:linear-gradient(90deg,#40D0C8,#2AADA6);border-radius:4px"></div>
         </div>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:3px">8 proveedores · FLSmidth 89,4%</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:3px">8 proveedores · FLSmidth 89,4% del gasto ext.</div>
       </div>
 
-      <!-- Nota extrapolación -->
-      <div style="margin-top:14px;padding:8px 12px;background:rgba(255,255,255,0.03);border-radius:6px;font-family:'DM Mono',monospace;font-size:9px;color:var(--text3)">
-        Real 5m: $17.943 M → Proyección ×2,4: $43.063 M · Factor ene-may 2026
+      <div style="padding:8px 12px;background:rgba(255,255,255,0.03);border-radius:6px;font-family:'DM Mono',monospace;font-size:9px;color:var(--text3)">
+        Real 5m: $17.943 M → Proyección ×2,4 = $43.063 M
       </div>
     </div>
 
-    <!-- Panel derecho: RN interno -->
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;backdrop-filter:blur(12px)">
-      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--text3);margin-bottom:16px">RÍO NEGRO — DISTRIBUCIÓN INTERNA</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--text3);margin-bottom:16px">RÍO NEGRO — DISTRIBUCIÓN INTERNA POR LOCALIDAD</div>
 
-      <!-- Jacobacci -->
-      <div style="margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;margin-bottom:5px">
-          <span style="color:var(--gold)">⭐ Ing. Jacobacci (Área influencia)</span>
-          <span style="color:var(--gold)">70,6%</span>
+      <div style="margin-bottom:11px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;margin-bottom:4px">
+          <span style="color:var(--gold)">⭐ Ing. Jacobacci</span><span style="color:var(--gold)">70,6%</span>
         </div>
-        <div style="background:rgba(255,255,255,0.07);border-radius:4px;height:12px;overflow:hidden">
-          <div style="width:70.6%;height:100%;background:linear-gradient(90deg,#D4AF5A,#B8943E);border-radius:4px"></div>
+        <div style="background:rgba(255,255,255,0.07);border-radius:3px;height:12px;overflow:hidden">
+          <div style="width:70.6%;height:100%;background:linear-gradient(90deg,#D4AF5A,#B8943E);border-radius:3px"></div>
         </div>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:2px">143 prov. · $13.444 M real · $32.266 M proy.</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:2px">143 prov. · $13.444 M real · Área de Influencia ✓</div>
       </div>
 
-      <!-- Gral Roca -->
-      <div style="margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;margin-bottom:5px">
-          <span style="color:var(--province)">General Roca</span>
-          <span style="color:var(--province)">17,7%</span>
+      <div style="margin-bottom:11px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;margin-bottom:4px">
+          <span style="color:var(--province)">General Roca</span><span style="color:var(--province)">17,7%</span>
         </div>
-        <div style="background:rgba(255,255,255,0.07);border-radius:4px;height:12px;overflow:hidden">
-          <div style="width:17.7%;height:100%;background:#5AAEF0;border-radius:4px"></div>
+        <div style="background:rgba(255,255,255,0.07);border-radius:3px;height:12px;overflow:hidden">
+          <div style="width:17.7%;height:100%;background:#5AAEF0;border-radius:3px"></div>
         </div>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:2px">11 proveedores · $3.370 M real</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:2px">11 prov. · $3.370 M real</div>
       </div>
 
-      <!-- Bariloche -->
-      <div style="margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;margin-bottom:5px">
-          <span style="color:var(--text2)">Bariloche</span>
-          <span style="color:var(--text2)">4,2%</span>
+      <div style="margin-bottom:11px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;margin-bottom:4px">
+          <span style="color:var(--text2)">Bariloche</span><span style="color:var(--text2)">4,2%</span>
         </div>
-        <div style="background:rgba(255,255,255,0.07);border-radius:4px;height:12px;overflow:hidden">
-          <div style="width:4.2%;height:100%;background:#90B8D8;border-radius:4px"></div>
+        <div style="background:rgba(255,255,255,0.07);border-radius:3px;height:12px;overflow:hidden">
+          <div style="width:4.2%;height:100%;background:#90B8D8;border-radius:3px"></div>
         </div>
       </div>
 
-      <!-- Viedma -->
-      <div style="margin-bottom:12px">
-        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;margin-bottom:5px">
-          <span style="color:var(--text2)">Viedma</span>
-          <span style="color:var(--text2)">4,0%</span>
+      <div style="margin-bottom:11px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;margin-bottom:4px">
+          <span style="color:var(--text2)">Viedma</span><span style="color:var(--text2)">4,0%</span>
         </div>
-        <div style="background:rgba(255,255,255,0.07);border-radius:4px;height:12px;overflow:hidden">
-          <div style="width:4.0%;height:100%;background:#90B8D8;border-radius:4px"></div>
+        <div style="background:rgba(255,255,255,0.07);border-radius:3px;height:12px;overflow:hidden">
+          <div style="width:4.0%;height:100%;background:#90B8D8;border-radius:3px"></div>
         </div>
       </div>
 
-      <!-- Sierra Grande -->
-      <div>
-        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;margin-bottom:5px">
-          <span style="color:var(--text2)">Sierra Grande</span>
-          <span style="color:var(--text2)">2,0%</span>
+      <div style="margin-bottom:14px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;margin-bottom:4px">
+          <span style="color:var(--text2)">Sierra Grande</span><span style="color:var(--text2)">2,0%</span>
         </div>
-        <div style="background:rgba(255,255,255,0.07);border-radius:4px;height:12px;overflow:hidden">
-          <div style="width:2.0%;height:100%;background:#90B8D8;border-radius:4px"></div>
+        <div style="background:rgba(255,255,255,0.07);border-radius:3px;height:12px;overflow:hidden">
+          <div style="width:2.0%;height:100%;background:#90B8D8;border-radius:3px"></div>
         </div>
       </div>
 
-      <!-- Indicador área influencia -->
-      <div style="margin-top:14px;padding:10px 14px;background:rgba(212,175,90,0.08);border:1px solid rgba(212,175,90,0.2);border-radius:6px">
+      <div style="padding:10px 14px;background:rgba(212,175,90,0.08);border:1px solid rgba(212,175,90,0.2);border-radius:6px">
         <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px">ÁREA DE INFLUENCIA DIRECTA (Línea Sur)</div>
-        <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--gold)">70,6% del gasto provincial</div>
+        <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--gold)">70,6% del gasto provincial</div>
         <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:2px">Jacobacci · Maquinchao · Los Menucos · Lipetren Chico</div>
       </div>
     </div>
   </div>
 
-  <!-- TOP PROVEEDORES RN + LICITACIONES -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+  <!-- FILA 2: Top proveedores + Licitaciones -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
 
-    <!-- Top 10 RN -->
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;backdrop-filter:blur(12px)">
-      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--text3);margin-bottom:14px">TOP 10 PROVEEDORES — RÍO NEGRO</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--text3);margin-bottom:14px">TOP PROVEEDORES — RÍO NEGRO</div>
       <table style="width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:10px">
         <thead>
           <tr style="border-bottom:1px solid var(--border)">
@@ -956,45 +925,43 @@ header {
           </tr>
           <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
             <td style="padding:5px 6px;color:var(--text3)">5</td>
-            <td style="padding:5px 6px;color:var(--text)">Transporte Vesprini</td>
+            <td style="padding:5px 6px;color:var(--text)">Transp. Vesprini</td>
             <td style="padding:5px 6px;color:var(--text2)">Bariloche</td>
             <td style="padding:5px 6px;text-align:right;color:var(--text)">$556 M</td>
             <td style="padding:5px 6px;text-align:right;color:var(--text2)">2,9%</td>
           </tr>
           <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
             <td style="padding:5px 6px;color:var(--text3)">6</td>
-            <td style="padding:5px 6px;color:var(--text)">Rodríguez F. (Dist. Roca)</td>
+            <td style="padding:5px 6px;color:var(--text)">Rodríguez F.</td>
             <td style="padding:5px 6px;color:var(--text2)">Jacobacci</td>
             <td style="padding:5px 6px;text-align:right;color:var(--text)">$516 M</td>
             <td style="padding:5px 6px;text-align:right;color:var(--text2)">2,7%</td>
           </tr>
           <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
             <td style="padding:5px 6px;color:var(--text3)">7</td>
-            <td style="padding:5px 6px;color:var(--text)">Gral. Fernández Oro</td>
+            <td style="padding:5px 6px;color:var(--text)">Gral. Fdez. Oro</td>
             <td style="padding:5px 6px;color:var(--text2)">Fdo. Oro</td>
             <td style="padding:5px 6px;text-align:right;color:var(--text)">$175 M</td>
             <td style="padding:5px 6px;text-align:right;color:var(--text2)">0,9%</td>
           </tr>
           <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
             <td style="padding:5px 6px;color:var(--text3)">8</td>
-            <td style="padding:5px 6px;color:var(--text)">Cipolletti prov.</td>
+            <td style="padding:5px 6px;color:var(--text)">Cipolletti (6 prov.)</td>
             <td style="padding:5px 6px;color:var(--text2)">Cipolletti</td>
             <td style="padding:5px 6px;text-align:right;color:var(--text)">$48 M</td>
             <td style="padding:5px 6px;text-align:right;color:var(--text2)">0,3%</td>
           </tr>
           <tr>
-            <td colspan="5" style="padding:6px 6px 0;font-family:'DM Mono',monospace;font-size:9px;color:var(--text3)">Top 2 (Agrovial + Paradigma) concentran 63,5% del gasto RN</td>
+            <td colspan="5" style="padding:8px 6px 0;font-family:'DM Mono',monospace;font-size:9px;color:var(--text3)">Top 2 (Agrovial + Paradigma) = 63,5% del gasto RN</td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <!-- Licitaciones -->
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;backdrop-filter:blur(12px)">
       <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--text3);margin-bottom:6px">LICITACIONES ADJUDICADAS — CORTE 23/03/2026</div>
       <div style="font-family:'DM Mono',monospace;font-size:9px;color:#F06060;margin-bottom:14px">⚠ Montos adjudicados (compromiso) — NO sumar a compras ejecutadas</div>
 
-      <!-- KPIs licitaciones -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px">
         <div style="background:var(--bg3);border-radius:6px;padding:10px 12px">
           <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3)">TOTAL ADJUDICADO</div>
@@ -1006,106 +973,211 @@ header {
         </div>
       </div>
 
-      <!-- Brecha ejecutado vs adjudicado -->
       <div style="background:rgba(69,232,154,0.06);border:1px solid rgba(69,232,154,0.2);border-radius:6px;padding:12px;margin-bottom:14px">
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:6px">BRECHA: EJECUTADO vs ADJUDICADO — RÍO NEGRO</div>
-        <div style="display:flex;align-items:center;gap:12px">
-          <div>
-            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3)">Compras ejecutadas</div>
-            <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--province)">27,7%</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:8px">BRECHA: EJECUTADO vs ADJUDICADO — RÍO NEGRO</div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <div style="text-align:center">
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3)">Ejecutado</div>
+            <div style="font-family:'DM Mono',monospace;font-size:16px;color:var(--province)">27,7%</div>
           </div>
-          <div style="font-size:18px;color:var(--text3)">→</div>
-          <div>
-            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3)">Licitaciones adjudicadas</div>
-            <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--green)">69,1%</div>
+          <div style="font-size:20px;color:var(--text3)">→</div>
+          <div style="text-align:center">
+            <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3)">Adjudicado</div>
+            <div style="font-family:'DM Mono',monospace;font-size:16px;color:var(--green)">69,1%</div>
           </div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--green);margin-left:auto">+41,4 pp</div>
+          <div style="margin-left:auto;font-family:'DM Mono',monospace;font-size:11px;color:var(--green)">+41,4 pp</div>
         </div>
       </div>
 
-      <!-- Embudo licitaciones -->
-      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:8px">EMBUDO DE PARTICIPACIÓN RN</div>
-      <div style="display:flex;gap:8px;align-items:center">
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:8px">EMBUDO LICITACIONES — PARTICIPACIÓN RN</div>
+      <div style="display:flex;gap:6px;align-items:center">
         <div style="flex:1;text-align:center;background:var(--bg3);border-radius:6px;padding:8px 4px">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:2px">Invitaciones</div>
-          <div style="font-size:13px;color:var(--text)">371</div>
-          <div style="font-size:9px;color:var(--province)">RN: 64,7%</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:2px">Invitaciones</div>
+          <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--text)">371</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--province)">RN: 64,7%</div>
         </div>
-        <div style="color:var(--text3)">→</div>
+        <div style="color:var(--text3);font-size:12px">→</div>
         <div style="flex:1;text-align:center;background:var(--bg3);border-radius:6px;padding:8px 4px">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:2px">Cotizaciones</div>
-          <div style="font-size:13px;color:var(--text)">176</div>
-          <div style="font-size:9px;color:var(--province)">RN: 60,8%</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:2px">Cotizaciones</div>
+          <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--text)">176</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--province)">RN: 60,8%</div>
         </div>
-        <div style="color:var(--text3)">→</div>
+        <div style="color:var(--text3);font-size:12px">→</div>
         <div style="flex:1;text-align:center;background:rgba(69,232,154,0.08);border:1px solid rgba(69,232,154,0.2);border-radius:6px;padding:8px 4px">
-          <div style="font-size:11px;color:var(--text3);margin-bottom:2px">Adjudicaciones</div>
-          <div style="font-size:13px;color:var(--green)">63</div>
-          <div style="font-size:9px;color:var(--green)">RN: 77,8%</div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:2px">Adjudicadas</div>
+          <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--green)">63</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--green)">RN: 77,8%</div>
         </div>
       </div>
-
-      <div style="margin-top:12px;font-family:'DM Mono',monospace;font-size:9px;color:var(--text3)">
-        Agrovial Sur concentra $5.691 M = 65,8% del adjudicado a RN
-      </div>
+      <div style="margin-top:10px;font-family:'DM Mono',monospace;font-size:9px;color:var(--text3)">Agrovial Sur: $5.691 M = 65,8% del adjudicado a RN</div>
     </div>
   </div>
 
-  <!-- NACIONALES POR JURISDICCIÓN + RUBROS -->
+  <!-- FILA 3: Nacionales por jurisdicción + Rubros RN -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:8px">
 
-    <!-- Nacionales por jurisdicción -->
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;backdrop-filter:blur(12px)">
       <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--text3);margin-bottom:14px">NACIONALES — TOP JURISDICCIONES</div>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:10px">493 proveedores · $43.752 M total</div>
-      ${[
-        ['Buenos Aires','39,3%','153 prov.','#FFB347',39.3],
-        ['C.A.B.A.','28,6%','178 prov.','#5AAEF0',28.6],
-        ['Chubut','12,8%','38 prov.','#40D0C8',12.8],
-        ['Mendoza','4,4%','24 prov.','#90B8D8',4.4],
-        ['San Juan','3,9%','19 prov.','#90B8D8',3.9],
-        ['Salta','2,6%','1 prov.','#90B8D8',2.6],
-        ['Tierra del Fuego','2,2%','1 prov.','#90B8D8',2.2],
-        ['Córdoba','1,8%','18 prov.','#90B8D8',1.8],
-        ['Neuquén','1,7%','22 prov.','#90B8D8',1.7],
-        ['Resto','2,7%','','#4A6E90',2.7],
-      ].map(([jur,pct,nprov,col,val])=>`
-        <div style="margin-bottom:8px">
-          <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
-            <span style="color:${col}">${jur}</span>
-            <span style="color:${col}">${pct}${nprov?' · '+nprov:''}</span>
-          </div>
-          <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:8px;overflow:hidden">
-            <div style="width:${val}%;height:100%;background:${col};border-radius:3px;opacity:0.8"></div>
-          </div>
-        </div>`).join('')}
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:12px">493 proveedores · $43.752 M total nacional</div>
+
+      <div style="margin-bottom:9px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
+          <span style="color:#FFB347">Buenos Aires</span><span style="color:#FFB347">39,3% · 153 prov.</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:9px;overflow:hidden">
+          <div style="width:39.3%;height:100%;background:#FFB347;border-radius:3px;opacity:0.8"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:9px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
+          <span style="color:#5AAEF0">C.A.B.A.</span><span style="color:#5AAEF0">28,6% · 178 prov.</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:9px;overflow:hidden">
+          <div style="width:28.6%;height:100%;background:#5AAEF0;border-radius:3px;opacity:0.8"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:9px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
+          <span style="color:#40D0C8">Chubut</span><span style="color:#40D0C8">12,8% · 38 prov.</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:9px;overflow:hidden">
+          <div style="width:12.8%;height:100%;background:#40D0C8;border-radius:3px;opacity:0.8"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:9px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
+          <span style="color:#90B8D8">Mendoza</span><span style="color:#90B8D8">4,4% · 24 prov.</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:9px;overflow:hidden">
+          <div style="width:4.4%;height:100%;background:#90B8D8;border-radius:3px;opacity:0.8"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:9px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
+          <span style="color:#90B8D8">San Juan</span><span style="color:#90B8D8">3,9% · 19 prov.</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:9px;overflow:hidden">
+          <div style="width:3.9%;height:100%;background:#90B8D8;border-radius:3px;opacity:0.8"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:9px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
+          <span style="color:#90B8D8">Salta</span><span style="color:#90B8D8">2,6% · 1 prov.</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:9px;overflow:hidden">
+          <div style="width:2.6%;height:100%;background:#90B8D8;border-radius:3px;opacity:0.8"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:9px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
+          <span style="color:#90B8D8">Tierra del Fuego</span><span style="color:#90B8D8">2,2% · 1 prov.</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:9px;overflow:hidden">
+          <div style="width:2.2%;height:100%;background:#90B8D8;border-radius:3px;opacity:0.8"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:9px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
+          <span style="color:#90B8D8">Córdoba</span><span style="color:#90B8D8">1,8% · 18 prov.</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:9px;overflow:hidden">
+          <div style="width:1.8%;height:100%;background:#90B8D8;border-radius:3px;opacity:0.8"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:9px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
+          <span style="color:#90B8D8">Neuquén</span><span style="color:#90B8D8">1,7% · 22 prov.</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:9px;overflow:hidden">
+          <div style="width:1.7%;height:100%;background:#90B8D8;border-radius:3px;opacity:0.8"></div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
+          <span style="color:#4A6E90">Resto</span><span style="color:#4A6E90">2,7%</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:9px;overflow:hidden">
+          <div style="width:2.7%;height:100%;background:#4A6E90;border-radius:3px;opacity:0.8"></div>
+        </div>
+      </div>
     </div>
 
-    <!-- Rubros RN -->
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;backdrop-filter:blur(12px)">
-      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--text3);margin-bottom:6px">COMPRAS RN POR RUBRO</div>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:12px">Solo Río Negro · 44 rubros en total</div>
-      ${[
-        ['Construcción','69,9%','#D4AF5A',69.9],
-        ['Transporte materiales','4,4%','#5AAEF0',4.4],
-        ['Almacén','3,8%','#5AAEF0',3.8],
-        ['Combustible','3,6%','#FFB347',3.6],
-        ['Ferretería','3,5%','#40D0C8',3.5],
-        ['Alquiler','2,8%','#90B8D8',2.8],
-        ['Transfer','1,4%','#90B8D8',1.4],
-        ['Hospedaje','1,3%','#90B8D8',1.3],
-        ['Rotisería','1,1%','#90B8D8',1.1],
-        ['Resto (35 rubros)','7,2%','#4A6E90',7.2],
-      ].map(([rub,pct,col,val])=>`
-        <div style="margin-bottom:8px">
-          <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
-            <span style="color:${col}">${rub}</span>
-            <span style="color:${col}">${pct}</span>
-          </div>
-          <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:8px;overflow:hidden">
-            <div style="width:${val}%;height:100%;background:${col};border-radius:3px;opacity:0.8"></div>
-          </div>
-        </div>`).join('')}
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--text3);margin-bottom:6px">COMPRAS RÍO NEGRO — POR RUBRO</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:14px">Solo Río Negro · 44 rubros en total · $19.062 M</div>
+
+      <div style="margin-bottom:9px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
+          <span style="color:#D4AF5A">Construcción</span><span style="color:#D4AF5A">69,9%</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:9px;overflow:hidden">
+          <div style="width:69.9%;height:100%;background:#D4AF5A;border-radius:3px;opacity:0.85"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:9px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
+          <span style="color:#5AAEF0">Transporte materiales</span><span style="color:#5AAEF0">4,4%</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:9px;overflow:hidden">
+          <div style="width:4.4%;height:100%;background:#5AAEF0;border-radius:3px;opacity:0.85"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:9px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
+          <span style="color:#5AAEF0">Almacén</span><span style="color:#5AAEF0">3,8%</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:9px;overflow:hidden">
+          <div style="width:3.8%;height:100%;background:#5AAEF0;border-radius:3px;opacity:0.85"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:9px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
+          <span style="color:#FFB347">Combustible</span><span style="color:#FFB347">3,6%</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:9px;overflow:hidden">
+          <div style="width:3.6%;height:100%;background:#FFB347;border-radius:3px;opacity:0.85"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:9px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
+          <span style="color:#40D0C8">Ferretería</span><span style="color:#40D0C8">3,5%</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:9px;overflow:hidden">
+          <div style="width:3.5%;height:100%;background:#40D0C8;border-radius:3px;opacity:0.85"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:9px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
+          <span style="color:#90B8D8">Alquiler</span><span style="color:#90B8D8">2,8%</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:9px;overflow:hidden">
+          <div style="width:2.8%;height:100%;background:#90B8D8;border-radius:3px;opacity:0.85"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:9px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
+          <span style="color:#90B8D8">Hospedaje</span><span style="color:#90B8D8">1,3%</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:9px;overflow:hidden">
+          <div style="width:1.3%;height:100%;background:#90B8D8;border-radius:3px;opacity:0.85"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:9px">
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
+          <span style="color:#90B8D8">Rotisería</span><span style="color:#90B8D8">1,1%</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:9px;overflow:hidden">
+          <div style="width:1.1%;height:100%;background:#90B8D8;border-radius:3px;opacity:0.85"></div>
+        </div>
+      </div>
+      <div>
+        <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px">
+          <span style="color:#4A6E90">Resto (36 rubros)</span><span style="color:#4A6E90">9,6%</span>
+        </div>
+        <div style="background:rgba(255,255,255,0.06);border-radius:3px;height:9px;overflow:hidden">
+          <div style="width:9.6%;height:100%;background:#4A6E90;border-radius:3px;opacity:0.85"></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1114,83 +1186,59 @@ header {
 <!-- TAB: EMPLEO -->
 <div class="tab-content" id="tab-empleo">
 
-  <!-- AVISO -->
   <div style="background:rgba(69,232,154,0.07);border:1px solid rgba(69,232,154,0.25);border-radius:8px;padding:10px 16px;margin-bottom:18px;font-family:'DM Mono',monospace;font-size:10px;color:var(--green);letter-spacing:0.5px">
-    ✦ Fuentes: Nómina MCSAU (08/06/2026) · DDJJ Form. 931 ARCA mayo 2026 · Indicadores reportados a Sec. Minería (18/06/2026) · Ley L N° 5804 — 4ta Mesa de trabajo
+    ✦ Fuentes: Nómina MCSAU (08/06/2026) · DDJJ Form. 931 ARCA mayo 2026 · Indicadores Sec. Minería (18/06/2026) · Ley L N° 5804 — 4ta Mesa de trabajo
   </div>
 
-  <!-- KPIs EMPLEO DIRECTOS -->
+  <!-- KPIs EMPLEO -->
   <div class="fob-grid" style="grid-template-columns:repeat(5,1fr);margin-bottom:20px">
-    <div class="fob-kpi">
-      <div class="fob-kpi-label">EMPLEADOS MCSAU</div>
-      <div class="fob-kpi-val" style="color:var(--green)">219</div>
-    </div>
-    <div class="fob-kpi">
-      <div class="fob-kpi-label">TASA PROVINCIAL</div>
-      <div class="fob-kpi-val" style="color:var(--province)">78%</div>
-    </div>
-    <div class="fob-kpi">
-      <div class="fob-kpi-label">TASA LOCAL (JACOBACCI)</div>
-      <div class="fob-kpi-val" style="color:var(--gold)">49%</div>
-    </div>
-    <div class="fob-kpi">
-      <div class="fob-kpi-label">MASA SALARIAL BRUTA/MES</div>
-      <div class="fob-kpi-val total-val">$781 M</div>
-    </div>
-    <div class="fob-kpi">
-      <div class="fob-kpi-label">SUELDOS NETOS LOC. (5m)</div>
-      <div class="fob-kpi-val" style="color:var(--gold)">$890 M</div>
-    </div>
+    <div class="fob-kpi"><div class="fob-kpi-label">EMPLEADOS MCSAU</div><div class="fob-kpi-val" style="color:var(--green)">219</div></div>
+    <div class="fob-kpi"><div class="fob-kpi-label">TASA PROVINCIAL</div><div class="fob-kpi-val" style="color:var(--province)">78%</div></div>
+    <div class="fob-kpi"><div class="fob-kpi-label">TASA LOCAL (JACOBACCI)</div><div class="fob-kpi-val" style="color:var(--gold)">49%</div></div>
+    <div class="fob-kpi"><div class="fob-kpi-label">MASA SALARIAL BRUTA/MES</div><div class="fob-kpi-val total-val">$781 M</div></div>
+    <div class="fob-kpi"><div class="fob-kpi-label">SUELDOS NETOS LOC. (5m)</div><div class="fob-kpi-val" style="color:var(--gold)">$890 M</div></div>
   </div>
 
-  <!-- PANEL PRINCIPAL -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px">
+  <!-- FILA 1: Origen MO + Por área -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
 
-    <!-- Origen mano de obra -->
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;backdrop-filter:blur(12px)">
       <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--text3);margin-bottom:16px">ORIGEN DE LA MANO DE OBRA — MCSAU (08/06/2026)</div>
 
-      <!-- Local -->
       <div style="margin-bottom:14px">
         <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;margin-bottom:5px">
-          <span style="color:var(--gold)">⭐ Local (Área influencia)</span>
-          <span style="color:var(--gold)">49%</span>
+          <span style="color:var(--gold)">⭐ Local (Área de influencia)</span><span style="color:var(--gold)">49%</span>
         </div>
         <div style="background:rgba(255,255,255,0.07);border-radius:4px;height:14px;overflow:hidden">
           <div style="width:49%;height:100%;background:linear-gradient(90deg,#D4AF5A,#B8943E);border-radius:4px"></div>
         </div>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:3px">Domicilio real en Área de Influencia directa · Jacobacci y zona</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:3px">Domicilio real en Área de Influencia directa (Jacobacci y zona)</div>
       </div>
 
-      <!-- Resto RN -->
       <div style="margin-bottom:14px">
         <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;margin-bottom:5px">
-          <span style="color:var(--province)">🏔 Resto Río Negro</span>
-          <span style="color:var(--province)">29%</span>
+          <span style="color:var(--province)">🏔 Resto Río Negro</span><span style="color:var(--province)">29%</span>
         </div>
         <div style="background:rgba(255,255,255,0.07);border-radius:4px;height:14px;overflow:hidden">
           <div style="width:29%;height:100%;background:linear-gradient(90deg,#5AAEF0,#3A8AC8);border-radius:4px"></div>
         </div>
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:3px">Provincial total: 78% · Resto = 78% − 49%</div>
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:3px">Provincial total 78% − Local 49% = Resto RN 29%</div>
       </div>
 
-      <!-- Foráneo -->
-      <div style="margin-bottom:14px">
+      <div style="margin-bottom:16px">
         <div style="display:flex;justify-content:space-between;font-family:'DM Mono',monospace;font-size:11px;margin-bottom:5px">
-          <span style="color:var(--text2)">Foráneo (fuera de RN)</span>
-          <span style="color:var(--text2)">22%</span>
+          <span style="color:var(--text2)">Foráneo (fuera de RN)</span><span style="color:var(--text2)">22%</span>
         </div>
         <div style="background:rgba(255,255,255,0.07);border-radius:4px;height:14px;overflow:hidden">
           <div style="width:22%;height:100%;background:#4A6E90;border-radius:4px"></div>
         </div>
       </div>
 
-      <!-- Género -->
-      <div style="margin-top:16px;padding:12px;background:rgba(255,255,255,0.03);border-radius:8px">
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:8px">DOTACIÓN POR GÉNERO</div>
-        <div style="display:flex;gap:0;border-radius:6px;overflow:hidden;height:24px">
+      <div style="padding:12px;background:rgba(255,255,255,0.03);border-radius:8px">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:8px">DOTACIÓN POR GÉNERO — MCSAU</div>
+        <div style="display:flex;border-radius:6px;overflow:hidden;height:26px">
           <div style="width:83%;background:#5AAEF0;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:10px;color:#fff">
-            ♂ 183 (83%)
+            ♂ Hombres 183 (83%)
           </div>
           <div style="width:17%;background:#D4AF5A;display:flex;align-items:center;justify-content:center;font-family:'DM Mono',monospace;font-size:10px;color:#0A1428">
             ♀ 36 (17%)
@@ -1199,57 +1247,46 @@ header {
       </div>
     </div>
 
-    <!-- Distribución por área -->
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;backdrop-filter:blur(12px)">
-      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--text3);margin-bottom:14px">PERSONAL POR ÁREA — MCSAU</div>
-      ${[
-        ['MINA','68','#D4AF5A',68],
-        ['MANTENIMIENTO','54','#5AAEF0',54],
-        ['RRHH','39','#40D0C8',39],
-        ['PLANTA','16','#FFB347',16],
-        ['EXPLORACIÓN','10','#90B8D8',10],
-        ['ABASTECIMIENTO','9','#90B8D8',9],
-        ['SEGURIDAD','8','#F06060',8],
-        ['CONSTRUCCIONES','4','#90B8D8',4],
-        ['ESG','4','#45E89A',4],
-        ['LABORATORIO','4','#90B8D8',4],
-        ['IT','3','#4A6E90',3],
-      ].map(([area,n,col,val])=>`
-        <div style="margin-bottom:8px;display:flex;align-items:center;gap:10px">
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:${col};width:110px;flex-shrink:0">${area}</div>
-          <div style="flex:1;background:rgba(255,255,255,0.06);border-radius:3px;height:10px;overflow:hidden">
-            <div style="width:${(val/68*100).toFixed(0)}%;height:100%;background:${col};border-radius:3px;opacity:0.85"></div>
-          </div>
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:${col};width:20px;text-align:right">${n}</div>
-        </div>`).join('')}
-      <div style="margin-top:10px;font-family:'DM Mono',monospace;font-size:9px;color:var(--text3)">Total: 219 empleados directos MCSAU · Nómina 08/06/2026</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--text3);margin-bottom:14px">PERSONAL POR ÁREA — 219 empleados MCSAU</div>
+
+      <div style="margin-bottom:8px"><div style="display:flex;align-items:center;gap:10px"><div style="font-family:'DM Mono',monospace;font-size:10px;color:#D4AF5A;width:120px">MINA</div><div style="flex:1;background:rgba(255,255,255,0.06);border-radius:3px;height:10px;overflow:hidden"><div style="width:100%;height:100%;background:#D4AF5A;border-radius:3px;opacity:0.85"></div></div><div style="font-family:'DM Mono',monospace;font-size:10px;color:#D4AF5A;width:22px;text-align:right">68</div></div></div>
+      <div style="margin-bottom:8px"><div style="display:flex;align-items:center;gap:10px"><div style="font-family:'DM Mono',monospace;font-size:10px;color:#5AAEF0;width:120px">MANTENIMIENTO</div><div style="flex:1;background:rgba(255,255,255,0.06);border-radius:3px;height:10px;overflow:hidden"><div style="width:79%;height:100%;background:#5AAEF0;border-radius:3px;opacity:0.85"></div></div><div style="font-family:'DM Mono',monospace;font-size:10px;color:#5AAEF0;width:22px;text-align:right">54</div></div></div>
+      <div style="margin-bottom:8px"><div style="display:flex;align-items:center;gap:10px"><div style="font-family:'DM Mono',monospace;font-size:10px;color:#40D0C8;width:120px">RRHH</div><div style="flex:1;background:rgba(255,255,255,0.06);border-radius:3px;height:10px;overflow:hidden"><div style="width:57%;height:100%;background:#40D0C8;border-radius:3px;opacity:0.85"></div></div><div style="font-family:'DM Mono',monospace;font-size:10px;color:#40D0C8;width:22px;text-align:right">39</div></div></div>
+      <div style="margin-bottom:8px"><div style="display:flex;align-items:center;gap:10px"><div style="font-family:'DM Mono',monospace;font-size:10px;color:#FFB347;width:120px">PLANTA</div><div style="flex:1;background:rgba(255,255,255,0.06);border-radius:3px;height:10px;overflow:hidden"><div style="width:24%;height:100%;background:#FFB347;border-radius:3px;opacity:0.85"></div></div><div style="font-family:'DM Mono',monospace;font-size:10px;color:#FFB347;width:22px;text-align:right">16</div></div></div>
+      <div style="margin-bottom:8px"><div style="display:flex;align-items:center;gap:10px"><div style="font-family:'DM Mono',monospace;font-size:10px;color:#90B8D8;width:120px">EXPLORACIÓN</div><div style="flex:1;background:rgba(255,255,255,0.06);border-radius:3px;height:10px;overflow:hidden"><div style="width:15%;height:100%;background:#90B8D8;border-radius:3px;opacity:0.85"></div></div><div style="font-family:'DM Mono',monospace;font-size:10px;color:#90B8D8;width:22px;text-align:right">10</div></div></div>
+      <div style="margin-bottom:8px"><div style="display:flex;align-items:center;gap:10px"><div style="font-family:'DM Mono',monospace;font-size:10px;color:#90B8D8;width:120px">ABASTECIMIENTO</div><div style="flex:1;background:rgba(255,255,255,0.06);border-radius:3px;height:10px;overflow:hidden"><div style="width:13%;height:100%;background:#90B8D8;border-radius:3px;opacity:0.85"></div></div><div style="font-family:'DM Mono',monospace;font-size:10px;color:#90B8D8;width:22px;text-align:right">9</div></div></div>
+      <div style="margin-bottom:8px"><div style="display:flex;align-items:center;gap:10px"><div style="font-family:'DM Mono',monospace;font-size:10px;color:#F06060;width:120px">SEGURIDAD</div><div style="flex:1;background:rgba(255,255,255,0.06);border-radius:3px;height:10px;overflow:hidden"><div style="width:12%;height:100%;background:#F06060;border-radius:3px;opacity:0.85"></div></div><div style="font-family:'DM Mono',monospace;font-size:10px;color:#F06060;width:22px;text-align:right">8</div></div></div>
+      <div style="margin-bottom:8px"><div style="display:flex;align-items:center;gap:10px"><div style="font-family:'DM Mono',monospace;font-size:10px;color:#90B8D8;width:120px">CONSTRUCCIONES</div><div style="flex:1;background:rgba(255,255,255,0.06);border-radius:3px;height:10px;overflow:hidden"><div style="width:6%;height:100%;background:#90B8D8;border-radius:3px;opacity:0.85"></div></div><div style="font-family:'DM Mono',monospace;font-size:10px;color:#90B8D8;width:22px;text-align:right">4</div></div></div>
+      <div style="margin-bottom:8px"><div style="display:flex;align-items:center;gap:10px"><div style="font-family:'DM Mono',monospace;font-size:10px;color:#45E89A;width:120px">ESG</div><div style="flex:1;background:rgba(255,255,255,0.06);border-radius:3px;height:10px;overflow:hidden"><div style="width:6%;height:100%;background:#45E89A;border-radius:3px;opacity:0.85"></div></div><div style="font-family:'DM Mono',monospace;font-size:10px;color:#45E89A;width:22px;text-align:right">4</div></div></div>
+      <div style="margin-bottom:8px"><div style="display:flex;align-items:center;gap:10px"><div style="font-family:'DM Mono',monospace;font-size:10px;color:#90B8D8;width:120px">LABORATORIO</div><div style="flex:1;background:rgba(255,255,255,0.06);border-radius:3px;height:10px;overflow:hidden"><div style="width:6%;height:100%;background:#90B8D8;border-radius:3px;opacity:0.85"></div></div><div style="font-family:'DM Mono',monospace;font-size:10px;color:#90B8D8;width:22px;text-align:right">4</div></div></div>
+      <div><div style="display:flex;align-items:center;gap:10px"><div style="font-family:'DM Mono',monospace;font-size:10px;color:#4A6E90;width:120px">IT</div><div style="flex:1;background:rgba(255,255,255,0.06);border-radius:3px;height:10px;overflow:hidden"><div style="width:4%;height:100%;background:#4A6E90;border-radius:3px;opacity:0.85"></div></div><div style="font-family:'DM Mono',monospace;font-size:10px;color:#4A6E90;width:22px;text-align:right">3</div></div></div>
     </div>
   </div>
 
-  <!-- MASA SALARIAL + FORM 931 + CONTRATISTAS -->
+  <!-- FILA 2: Form 931 + Contratistas -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:8px">
 
-    <!-- Masa salarial -->
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;backdrop-filter:blur(12px)">
-      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--text3);margin-bottom:14px">MASA SALARIAL — FUENTE DDJJ ARCA FORM. 931</div>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:14px">CUIT 30-70044731-2 · Minera Calcatreu SAU · Mayo 2026 · 217 empleados en nómina</div>
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--text3);margin-bottom:6px">MASA SALARIAL — DDJJ FORM. 931 ARCA</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:14px">CUIT 30-70044731-2 · Minera Calcatreu SAU · Mayo 2026</div>
 
       <table style="width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:10px">
         <tbody>
           <tr style="border-bottom:1px solid rgba(255,255,255,0.06)">
-            <td style="padding:7px 6px;color:var(--text3)">Empleados en nómina (mayo 26)</td>
+            <td style="padding:7px 6px;color:var(--text3)">Empleados en nómina</td>
             <td style="padding:7px 6px;text-align:right;color:var(--text)">217</td>
           </tr>
-          <tr style="border-bottom:1px solid rgba(255,255,255,0.06)">
-            <td style="padding:7px 6px;color:var(--text)">Masa salarial bruta (Suma Rem. 2)</td>
-            <td style="padding:7px 6px;text-align:right;color:var(--gold);font-weight:600">$781.086 M</td>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.06);background:rgba(212,175,90,0.05)">
+            <td style="padding:7px 6px;color:var(--text)"><b>Masa salarial bruta (Suma Rem. 2)</b></td>
+            <td style="padding:7px 6px;text-align:right;color:var(--gold);font-weight:700">$781.086 M</td>
           </tr>
           <tr style="border-bottom:1px solid rgba(255,255,255,0.06)">
-            <td style="padding:7px 6px;color:var(--text3)">Aportes SS a pagar</td>
+            <td style="padding:7px 6px;color:var(--text3)">Aportes Seg. Social</td>
             <td style="padding:7px 6px;text-align:right;color:var(--text)">$91.925 M</td>
           </tr>
           <tr style="border-bottom:1px solid rgba(255,255,255,0.06)">
-            <td style="padding:7px 6px;color:var(--text3)">Contribuciones SS a pagar</td>
+            <td style="padding:7px 6px;color:var(--text3)">Contribuciones SS</td>
             <td style="padding:7px 6px;text-align:right;color:var(--text)">$151.169 M</td>
           </tr>
           <tr style="border-bottom:1px solid rgba(255,255,255,0.06)">
@@ -1261,7 +1298,7 @@ header {
             <td style="padding:7px 6px;text-align:right;color:var(--text)">$39.835 M</td>
           </tr>
           <tr style="border-bottom:1px solid rgba(255,255,255,0.06)">
-            <td style="padding:7px 6px;color:var(--text3)">L.R.T. (ART)</td>
+            <td style="padding:7px 6px;color:var(--text3)">L.R.T. (ART) · 217 CUILes</td>
             <td style="padding:7px 6px;text-align:right;color:var(--text)">$19.910 M</td>
           </tr>
           <tr>
@@ -1271,25 +1308,23 @@ header {
         </tbody>
       </table>
 
-      <!-- Sueldos netos -->
-      <div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px">
         <div style="background:rgba(90,174,240,0.08);border:1px solid rgba(90,174,240,0.2);border-radius:6px;padding:10px">
           <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3)">SUELDOS NETOS PROV. (ene-may 26)</div>
           <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--province);margin-top:4px">$1.380 M</div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:2px">Empleados con domicilio en RN</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:2px">Domicilio en Río Negro</div>
         </div>
         <div style="background:rgba(212,175,90,0.08);border:1px solid rgba(212,175,90,0.2);border-radius:6px;padding:10px">
           <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3)">SUELDOS NETOS LOC. (ene-may 26)</div>
           <div style="font-family:'DM Mono',monospace;font-size:13px;color:var(--gold);margin-top:4px">$890 M</div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:2px">Empleados domicilio Jacobacci/zona</div>
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-top:2px">Domicilio Jacobacci/zona</div>
         </div>
       </div>
     </div>
 
-    <!-- Contratistas principales -->
     <div style="background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:20px;backdrop-filter:blur(12px)">
       <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--text3);margin-bottom:6px">CONTRATISTAS ACTIVOS — PERSONAL REGISTRADO</div>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:14px">Ene 2025 – May 2026 · Plataforma digital de ingreso a Proyecto</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:14px">Ene 2025–May 2026 · Plataforma digital ingreso Proyecto</div>
 
       <table style="width:100%;border-collapse:collapse;font-family:'DM Mono',monospace;font-size:10px">
         <thead>
@@ -1300,27 +1335,60 @@ header {
           </tr>
         </thead>
         <tbody>
-          ${[
-            ['Agrovial Sur','22 (Jacobacci)','4 (Tuc/SJ/Chu/SL)'],
-            ['Paradigma','15 (Jac/Roca/Cipo/Allen)','6 (Neuquén)'],
-            ['ENAEX','4 (Sierra Gde/Jacobacci)','17 (multi-prov)'],
-            ['AVD Oil & Gas','10 (Jacobacci/Las Grutas)','1 (Bs.As.)'],
-            ['Novasur','5 (Viedma/Jac/SAO/SG)','9 (Chubut)'],
-            ['Alselec','3 (Jacobacci/Bariloche)','4 (SC/BA/Jujuy)'],
-            ['4 Elementos','5 (Cipolletti/Jacobacci)','3 (BA/Neuquén)'],
-            ['Finning Sol. Mineras','—','6 (Chubut/SC)'],
-            ['Brinks Argentina','—','13 (Bs.As.)'],
-            ['Eco Minera','—','12 (San Juan)'],
-          ].map(([emp,rn,for_])=>`
-            <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
-              <td style="padding:5px 6px;color:var(--text)">${emp}</td>
-              <td style="padding:5px 6px;color:var(--province);font-size:9px">${rn}</td>
-              <td style="padding:5px 6px;color:var(--text3);font-size:9px">${for_}</td>
-            </tr>`).join('')}
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+            <td style="padding:5px 6px;color:var(--gold)">Agrovial Sur</td>
+            <td style="padding:5px 6px;color:var(--province);font-size:9px">22 (Jacobacci/Lamarque)</td>
+            <td style="padding:5px 6px;color:var(--text3);font-size:9px">4 (Tuc/SJ/Chu/SL)</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+            <td style="padding:5px 6px;color:var(--text)">Paradigma</td>
+            <td style="padding:5px 6px;color:var(--province);font-size:9px">15 (Jac/Roca/Cipo/Allen)</td>
+            <td style="padding:5px 6px;color:var(--text3);font-size:9px">6 (Neuquén)</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+            <td style="padding:5px 6px;color:var(--text)">ENAEX</td>
+            <td style="padding:5px 6px;color:var(--province);font-size:9px">4 (Sierra Gde/Jacobacci)</td>
+            <td style="padding:5px 6px;color:var(--text3);font-size:9px">17 (multi-prov.)</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+            <td style="padding:5px 6px;color:var(--text)">AVD Oil & Gas</td>
+            <td style="padding:5px 6px;color:var(--province);font-size:9px">10 (Jacobacci/Las Grutas)</td>
+            <td style="padding:5px 6px;color:var(--text3);font-size:9px">1 (Bs.As.)</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+            <td style="padding:5px 6px;color:var(--text)">Novasur</td>
+            <td style="padding:5px 6px;color:var(--province);font-size:9px">5 (Viedma/Jac/SAO/SG)</td>
+            <td style="padding:5px 6px;color:var(--text3);font-size:9px">9 (Chubut)</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+            <td style="padding:5px 6px;color:var(--text)">Alselec</td>
+            <td style="padding:5px 6px;color:var(--province);font-size:9px">3 (Jacobacci/Bariloche)</td>
+            <td style="padding:5px 6px;color:var(--text3);font-size:9px">4 (SC/BA/Jujuy)</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+            <td style="padding:5px 6px;color:var(--text)">4 Elementos</td>
+            <td style="padding:5px 6px;color:var(--province);font-size:9px">5 (Cipolletti/Jacobacci)</td>
+            <td style="padding:5px 6px;color:var(--text3);font-size:9px">3 (BA/Neuquén)</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+            <td style="padding:5px 6px;color:var(--text)">Finning Sol. Min.</td>
+            <td style="padding:5px 6px;color:var(--text3);font-size:9px">—</td>
+            <td style="padding:5px 6px;color:var(--text3);font-size:9px">6 (Chubut/SC)</td>
+          </tr>
+          <tr style="border-bottom:1px solid rgba(255,255,255,0.04)">
+            <td style="padding:5px 6px;color:var(--text)">Brinks Argentina</td>
+            <td style="padding:5px 6px;color:var(--text3);font-size:9px">—</td>
+            <td style="padding:5px 6px;color:var(--text3);font-size:9px">13 (Bs.As.)</td>
+          </tr>
+          <tr>
+            <td style="padding:5px 6px;color:var(--text)">Eco Minera</td>
+            <td style="padding:5px 6px;color:var(--text3);font-size:9px">—</td>
+            <td style="padding:5px 6px;color:var(--text3);font-size:9px">12 (San Juan)</td>
+          </tr>
         </tbody>
       </table>
       <div style="margin-top:10px;font-family:'DM Mono',monospace;font-size:9px;color:var(--text3)">
-        + ARQCON (subcontrat. Agrovial) · Datum · Corvalán · Novasur · Intermares · Comercial y Energía · Covema · Pequeñas Construcciones · El Mangrullo · otros
+        + ARQCON · Datum · Corvalán · Intermares · Comercial y Energía · Covema · Pequeñas Const. · El Mangrullo · Grúas San Blas · Lynch · FDS Gases · Ziede · International Cargo · Gauss Ing.
       </div>
     </div>
   </div>
