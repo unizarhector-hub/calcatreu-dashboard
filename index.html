@@ -1842,38 +1842,65 @@ function renderDistribucion(data) {
   const totCarga  = data.reduce((s,d) => s + d.cargaExport, 0);
   const fobNeto   = totFob - totCarga;
 
-  // Cargas sociales Form. 931 — dato real MCSAU mayo 2026 × 12 meses → USD
-  // Patronal: Contrib.SS $151.169M + Contrib.OS $39.835M + LRT $19.910M + SCVO $0.092M = $211.006M/mes
-  // Trabajador: Aportes SS $91.925M + Aportes OS $16.222M = $108.147M/mes
-  // Total 931 = $319.153M ARS/mes → anual = $3.829.836M ARS
-  const cargasSociales931_USD = (319153000 * 12) / TC_ARS;
+  // ── CARGAS SOCIALES FORM. 931 — MONTO FIJO EN ARS (no % del FOB) ──
+  // Dato real MCSAU ene-may 2026: promedio mensual ARS $180.755.857
+  // Proyectado anual × 12 → ARS $2.169.070.282 → USD fijo (TC referencia)
+  // NOTA: SS es independiente del precio del oro — varía en % del FOB pero no en monto absoluto
+  const SS_ARS_ANUAL = 180755857 * 12;      // Promedio real ene-may 2026 × 12
+  const cargasSociales931_USD = SS_ARS_ANUAL / TC_ARS;
 
-  // Nación incluye: Imp.Gcias(12.8%) + DE Ag + Percepción Ganancias + Cred/Déb(0.12%) + Aportes(1.2%) + Combustibles(1.2%) + Cargas sociales 931
+  // ── MASA SALARIAL — MONTO FIJO EN ARS (dato real MCSAU mayo 2026) ──
+  const MASA_SAL_ARS_ANUAL = 781085910.53 * 12;
+  const salarios_USD = MASA_SAL_ARS_ANUAL / TC_ARS;
+
+  // ── NACIÓN — componentes mixtos: algunos % FOB, otros montos fijos ──
+  // Imp. Ganancias 12.8% + Cred/Déb 0.12% + Aportes 1.2% + Combustibles 1.2% = 15.32% FOB
+  // + Carga Export. (DE Ag + Percepción) — varía con precio spot
+  // + SS Form.931 — monto fijo en ARS convertido a USD
   const pctNacionBase = 0.128 + 0.0012 + 0.012 + 0.012;
   const nacionTotal   = totFob * pctNacionBase + totCarga + cargasSociales931_USD;
-  const pctNacion     = nacionTotal / totFob;
+
+  // ── COMPRAS: distribuyen el residuo del FOB ──
+  // Metodología: FOB − componentes fijos = pool de compras
+  // Proporciones puesta en marcha 2026: RN 32.4% / Nacionales 63.7% / Exterior 3.9%
+  const reg_total  = totFob * 0.021;                  // Regalías 2.1%
+  const imp_des    = totFob * 0.0375;                 // Imp. Desarrollo 3.75%
+  const fort_total = reg_total * 0.25 + imp_des;      // FORTALECER
+  const prov_reg   = reg_total * 0.65;                // Provincia
+  const muni_reg   = reg_total * 0.10;                // Municipios
+  const ganancia   = totFob * 0.1364;                 // Ganancia 13.64%
+
+  const subtFijo   = nacionTotal + salarios_USD + ganancia + prov_reg + muni_reg + fort_total;
+  const compTotal  = totFob - subtFijo;
+
+  const PROP_TOTAL = 32.4 + 63.7 + 3.9;
+  const comp_rn    = compTotal * (32.4 / PROP_TOTAL);
+  const comp_nac   = compTotal * (63.7 / PROP_TOTAL);
+  const comp_ext   = compTotal * (3.9  / PROP_TOTAL);
 
   const dist = [
-    { name:'Proveedores Locales',          val: totFob*0.25,          color:'var(--gold2)'    },
-    { name:'Nación (Impuestos + DE + SS)', val: nacionTotal,          color:'var(--nation)'   },
-    { name:'Salarios',                     val: totFob*0.13,         color:'var(--green)'    },
-    { name:'Compras Exterior',             val: totFob*0.10,         color:'var(--silver2)'  },
-    { name:'Prov. Nacionales',             val: totFob*0.10,         color:'var(--text2)'    },
-    { name:'Ganancia Empresa',             val: totFob*0.1364,       color:'var(--province)' },
-    { name:'Fondos Provincia (Regalías)',  val: totFob*0.0459,       color:'var(--muni)'     },
-    { name:'Municipios/Comis. Fomento',    val: totFob*0.0126,       color:'var(--red)'      },
+    { name:'Proveedores Locales (RN)',         val: comp_rn,       color:'var(--gold2)'    },
+    { name:'Nación (Impuestos + DE + SS)',      val: nacionTotal,   color:'var(--nation)'   },
+    { name:'Salarios MCSAU (empleo directo)',   val: salarios_USD,  color:'var(--green)'    },
+    { name:'Compras Exterior',                  val: comp_ext,      color:'var(--silver2)'  },
+    { name:'Prov. Nacionales (fuera RN)',        val: comp_nac,      color:'var(--text2)'    },
+    { name:'Ganancia Empresa',                  val: ganancia,      color:'var(--province)' },
+    { name:'FORTALECER',                        val: fort_total,    color:'var(--green)'    },
+    { name:'Fondos Provincia (Regalías)',        val: prov_reg,      color:'var(--muni)'     },
+    { name:'Municipios/Comis. Fomento',          val: muni_reg,      color:'var(--red)'      },
   ];
 
   // Nota sobre Derechos de Exportación + Cargas Sociales
   const notaDE = `<div style="margin-bottom:12px;padding:10px 14px;background:var(--bg3);border-radius:6px;border-left:3px solid var(--nation);font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);line-height:1.9">
-    <strong style="color:var(--nation)">NACIÓN — Carga de Exportación:</strong>
-    DE Plata 4.5% = ${fmtUSD(totDeAg)} · Percepción Ganancias 1% = ${fmtUSD(totPercGan)} · Total Export. = <strong style="color:var(--red)">${fmtUSD(totCarga)}</strong>
+    <strong style="color:var(--nation)">NACIÓN (Impuestos + DE + SS):</strong>
+    Ganancias 12.8% + Cred/Déb 0.12% + Aportes 1.2% + Combustibles 1.2% = 15.32% FOB
+    · DE Ag 4.5% = ${fmtUSD(totDeAg)} · Percepción 1% = ${fmtUSD(totPercGan)}
+    · <strong style="color:var(--nation)">SS Form.931 = ${fmtUSD(cargasSociales931_USD)}</strong>
+    <span style="color:var(--text3);font-size:9px">(promedio real ene-may 2026 × 12 · ARS fijo / TC ${TC_ARS.toLocaleString('es-AR')})</span>
     &nbsp;|&nbsp; <strong style="color:var(--green)">FOB Neto = ${fmtUSD(fobNeto)}</strong>
-    <br><strong style="color:var(--nation)">+ Cargas Sociales (Form. 931 ARCA — sueldos pagados e impuestos nacionales):</strong>
-    Contrib. SS $151,2M · Contrib. OS $39,8M · ART $19,9M · SCVO $0,1M <em style="color:var(--text3)">(patronal)</em>
-    + Aportes SS $91,9M · Aportes OS $16,2M <em style="color:var(--text3)">(trabajador)</em>
-    = ARS $319 M/mes → proyección anual = <strong style="color:var(--nation)">${fmtUSD(cargasSociales931_USD)}</strong>
-    <span style="color:var(--text3);font-size:9px">(dato real MCSAU mayo 2026 × 12 · TC ARS ${TC_ARS.toLocaleString('es-AR')}) · Ver detalle en tab EMPLEO</span>
+    <br><strong style="color:var(--gold2)">COMPRAS:</strong> Residuo distribuido por proporciones puesta en marcha 2026 → RN 32.4% · Nacionales 63.7% · Exterior 3.9%
+    · <strong style="color:var(--green)">Salarios MCSAU = ${fmtUSD(salarios_USD)}</strong>
+    <span style="color:var(--text3);font-size:9px">(217 emp. · ARS $781M/mes real · monto fijo independiente del precio del metal)</span>
   </div>`;
 
   const maxVal = Math.max(...dist.map(d => d.val));
