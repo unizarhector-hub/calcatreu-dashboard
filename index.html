@@ -2449,96 +2449,99 @@ function aplicarManual() {
 
 // ── RENDER COPARTICIPACIÓN — Ley 23.548 ───────────────────────
 function renderCoparticipacion() {
-  if (pAu === 0) { document.getElementById('copat-content').innerHTML = '<p style="color:var(--text3)">Cargando precios...</p>'; return; }
-  const data     = calcData(pAu, pAg);
-  const fob1     = data[0].fobTotal;
-  const percGan1 = data[0].percGan;
+  var el = document.getElementById('copat-content');
+  if (!el) return;
+  if (pAu === 0) { el.innerHTML = '<p style="color:var(--text3);padding:20px">Esperando precios...</p>'; return; }
 
-  // Ganancia bruta Año 2026 (14.64% FOB)
-  const gan_bruta  = fob1 * 0.1364 + percGan1;
-  const imp_gan    = gan_bruta * 0.35;
-  const copat_nac  = imp_gan * 0.4234;
-  const copat_prov = imp_gan * 0.5666;
-  const atm        = imp_gan * 0.01;
-  const rn_copat   = copat_prov * 0.025;
-  const gan_neta   = gan_bruta - imp_gan;
+  var data    = calcData(pAu, pAg);
+  var fob1    = data[0].fobTotal;
+  var perc1   = data[0].percGan;
+  var gan     = fob1 * 0.1364 + perc1;
+  var imp     = gan * 0.35;
+  var cnac    = imp * 0.4234;
+  var cprov   = imp * 0.5666;
+  var atm     = imp * 0.01;
+  var rn      = cprov * 0.025;
+  var gneta   = gan - imp;
+  var reg     = fob1 * 0.021;
+  var imd     = fob1 * 0.035050;
+  var iibb    = fob1 * 0.0075;
+  var pdir    = reg + imd + iibb;
 
-  // Provinciales directos
-  const regalias = fob1 * 0.021;
-  const imp_des  = fob1 * 0.035050;
-  const iibb     = fob1 * 0.0075;
-  const prov_dir = regalias + imp_des + iibb;
+  function row(nombre, val, sub, color, bold) {
+    var fs = bold ? '11' : '10';
+    var fw = bold ? '700' : '400';
+    var fv = bold ? '13' : '11';
+    return '<div style="display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04)">' +
+      '<div>' +
+        '<div style="font-family:DM Mono,monospace;font-size:' + fs + 'px;color:' + color + ';font-weight:' + fw + '">' + nombre + '</div>' +
+        '<div style="font-size:9px;color:var(--text3);font-style:italic">' + sub + '</div>' +
+      '</div>' +
+      '<div style="font-family:DM Mono,monospace;font-size:' + fv + 'px;font-weight:' + fw + ';color:' + color + ';white-space:nowrap;margin-left:8px">' + fmtUSD(val) + '</div>' +
+    '</div>';
+  }
 
-  document.getElementById('copat-content').innerHTML = `
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+  function card4(nombre, pct, val, color, norma) {
+    return '<div style="background:var(--bg3);border-radius:6px;padding:12px;text-align:center;border:1px solid ' + color + '44">' +
+      '<div style="font-size:10px;color:var(--text3);margin-bottom:4px;font-family:DM Mono,monospace">' + nombre + '</div>' +
+      '<div style="font-size:20px;font-weight:700;color:' + color + ';margin:6px 0">' + fmtUSD(val) + '</div>' +
+      '<div style="font-size:10px;color:' + color + ';font-family:DM Mono,monospace;margin-bottom:4px">' + pct + '</div>' +
+      '<div style="font-size:9px;color:var(--text3);font-style:italic">' + norma + '</div>' +
+    '</div>';
+  }
 
-    <!-- Cascada -->
-    <div style="background:var(--bg2);border:1px solid rgba(255,165,0,0.2);border-radius:8px;padding:16px">
-      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1px;margin-bottom:12px">CASCADA: GANANCIA → IMP. GANANCIAS → COPARTICIPACIÓN</div>
-      ${[
-        {n:'Ganancia Empresa (bruta)',       v:gan_bruta,  sub:'FOB 2026 × 14,64% (13.64%+Perc.1%)',    c:'var(--province)', bold:true},
-        {n:'↳ Imp. Ganancias (35%)',         v:imp_gan,    sub:'35% s/ ganancia · Ley Imp. Ganancias',  c:'var(--nation)',   bold:false},
-        {n:'   ↳ Nación (42,34%)',           v:copat_nac,  sub:'Art. 3° Ley 23.548',                    c:'var(--text2)',    bold:false},
-        {n:'   ↳ Provincias (56,66%)',       v:copat_prov, sub:'Art. 3° Ley 23.548',                    c:'var(--silver2)', bold:false},
-        {n:'      ↳ RÍO NEGRO (2,50%)',      v:rn_copat,   sub:'Anexo Ley 23.548 · Coef. secundario',   c:'var(--gold2)',   bold:true},
-        {n:'      ↳ Otras provincias',       v:copat_prov-rn_copat, sub:'97,50% de masa provincial',    c:'var(--text3)',   bold:false},
-        {n:'   ↳ ATN (1,00%)',               v:atm,        sub:'Aportes Tesoro Nacional · Discrecional', c:'var(--text3)',   bold:false},
-        {n:'↳ Ganancia NETA Patagonia Gold', v:gan_neta,   sub:'Después del Imp. Ganancias',            c:'var(--green)',   bold:true},
-      ].map(r=>`
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
-          <div>
-            <div style="font-family:'DM Mono',monospace;font-size:${r.bold?'11':'10'}px;color:${r.c};font-weight:${r.bold?'700':'400'}">${r.n}</div>
-            <div style="font-size:9px;color:var(--text3);font-style:italic">${r.sub}</div>
-          </div>
-          <div style="font-family:'DM Mono',monospace;font-size:${r.bold?'13':'11'}px;font-weight:${r.bold?'700':'400'};color:${r.c};white-space:nowrap;margin-left:8px">${fmtUSD(r.v)}</div>
-        </div>`).join('')}
-    </div>
+  var cascada =
+    row('Ganancia Empresa (bruta)',       gan,        'FOB 2026 × 14,64% (13,64%+Perc.1%)',     'var(--province)', true)  +
+    row('↳ Imp. Ganancias (35%)',         imp,        '35% s/ ganancia · Ley Imp. Ganancias',   'var(--nation)',   false) +
+    row('   ↳ Nación (42,34%)',           cnac,       'Art. 3° Ley 23.548',                     'var(--text2)',    false) +
+    row('   ↳ Provincias (56,66%)',       cprov,      'Art. 3° Ley 23.548',                     'var(--silver2)',  false) +
+    row('      ↳ RÍO NEGRO (2,50%)',      rn,         'Anexo Ley 23.548 · Coef. secundario',    'var(--gold2)',    true)  +
+    row('      ↳ Otras provincias',       cprov - rn, '97,50% de masa provincial',              'var(--text3)',    false) +
+    row('   ↳ ATN (1,00%)',               atm,        'Aportes Tesoro Nacional · Discrecional', 'var(--text3)',    false) +
+    row('↳ Ganancia NETA Patagonia Gold', gneta,      'Después del Imp. Ganancias',             'var(--green)',    true);
 
-    <!-- Impacto RN -->
-    <div style="background:var(--bg2);border:1px solid rgba(255,215,0,0.2);border-radius:8px;padding:16px">
-      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1px;margin-bottom:12px">IMPACTO TOTAL EN RÍO NEGRO — AÑO 2026</div>
-      ${[
-        {n:'Imp. y Regalías Provinciales', v:prov_dir,         sub:'Regalías+Imp.Des.+IIBB — directo',                c:'var(--muni)',   bold:false},
-        {n:'Copart. Imp. Ganancias → RN',  v:rn_copat,         sub:'2,50%×56,66%×Imp.Gan. · Ley 23.548',             c:'var(--gold2)', bold:false},
-        {n:'TOTAL ESTIMADO RÍO NEGRO',     v:prov_dir+rn_copat,sub:'Directo + Coparticipación',                       c:'var(--gold2)', bold:true},
-      ].map(r=>`
-        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
-          <div>
-            <div style="font-family:'DM Mono',monospace;font-size:${r.bold?'12':'10'}px;color:${r.c};font-weight:${r.bold?'700':'400'}">${r.n}</div>
-            <div style="font-size:9px;color:var(--text3);font-style:italic">${r.sub}</div>
-          </div>
-          <div style="font-family:'DM Mono',monospace;font-size:${r.bold?'16':'12'}px;font-weight:700;color:${r.c};white-space:nowrap;margin-left:8px">${fmtUSD(r.v)}</div>
-        </div>`).join('')}
-      <div style="margin-top:14px;padding:10px;background:var(--bg3);border-radius:6px;border-left:3px solid var(--gold2)">
-        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);line-height:1.7">
-          <strong style="color:var(--gold2)">Ley 23.548:</strong> 42,34% Nación · 56,66% Provincias · 1% ATN<br>
-          <strong style="color:var(--gold2)">RN:</strong> 2,50% de masa provincial · distribución automática diaria
-        </div>
-      </div>
-    </div>
-  </div>
+  var impactoRN =
+    row('Imp. y Regalías Provinciales', pdir,       'Regalías+Imp.Des.+IIBB · directo',       'var(--muni)',   false) +
+    row('Copart. Imp. Ganancias → RN',  rn,         '2,50%×56,66%×Imp.Gan. · Ley 23.548',    'var(--gold2)', false) +
+    row('TOTAL ESTIMADO RÍO NEGRO',     pdir + rn,  'Directo + Coparticipación',              'var(--gold2)', true);
 
-  <!-- Distribución del Impuesto a las Ganancias -->
-  <div style="background:var(--bg2);border:1px solid rgba(90,174,240,0.15);border-radius:8px;padding:16px">
-    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1px;margin-bottom:12px">
-      DISTRIBUCIÓN DEL IMP. A LAS GANANCIAS — ${fmtUSD(imp_gan)} (= 35% × ${fmtUSD(gan_bruta)})
-    </div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
-      ${[
-        {n:'Tesoro Nacional',       pct:'42,34%',      v:copat_nac,           c:'var(--nation)',   src:'Art. 3° Ley 23.548'},
-        {n:'Provincias (total)',    pct:'56,66%',      v:copat_prov,          c:'var(--silver2)', src:'Art. 3° Ley 23.548'},
-        {n:'Río Negro',            pct:'2,50% s/prov.',v:rn_copat,           c:'var(--gold2)',   src:'Anexo Ley 23.548'},
-        {n:'ATN',                  pct:'1,00%',        v:atm,                 c:'var(--text3)',   src:'Art. 3° Ley 23.548'},
-      ].map(r=>`
-        <div style="background:var(--bg3);border-radius:6px;padding:12px;text-align:center;border:1px solid ${r.c}33">
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:4px">${r.n}</div>
-          <div style="font-size:20px;font-weight:700;color:${r.c};margin:6px 0">${fmtUSD(r.v)}</div>
-          <div style="font-size:10px;color:${r.c};font-family:'DM Mono',monospace;margin-bottom:4px">${r.pct}</div>
-          <div style="font-size:9px;color:var(--text3);font-style:italic">${r.src}</div>
-        </div>`).join('')}
-    </div>
-  </div>`;
+  var cards4 =
+    card4('Tesoro Nacional',    '42,34%',       cnac,  'var(--nation)',   'Art. 3° Ley 23.548') +
+    card4('Provincias (total)', '56,66%',       cprov, 'var(--silver2)', 'Art. 3° Ley 23.548') +
+    card4('Río Negro',          '2,50% s/prov.',rn,    'var(--gold2)',   'Anexo Ley 23.548')    +
+    card4('ATN',                '1,00%',        atm,   'var(--text3)',   'Art. 3° Ley 23.548');
+
+  el.innerHTML =
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">' +
+
+      '<div style="background:var(--bg2);border:1px solid rgba(255,165,0,0.2);border-radius:8px;padding:16px">' +
+        '<div style="font-family:DM Mono,monospace;font-size:10px;color:var(--text3);letter-spacing:1px;margin-bottom:12px">CASCADA: GANANCIA → IMP. GANANCIAS → COPARTICIPACIÓN</div>' +
+        cascada +
+      '</div>' +
+
+      '<div style="background:var(--bg2);border:1px solid rgba(255,215,0,0.2);border-radius:8px;padding:16px">' +
+        '<div style="font-family:DM Mono,monospace;font-size:10px;color:var(--text3);letter-spacing:1px;margin-bottom:12px">IMPACTO TOTAL EN RÍO NEGRO — AÑO 2026</div>' +
+        impactoRN +
+        '<div style="margin-top:14px;padding:10px;background:var(--bg3);border-radius:6px;border-left:3px solid var(--gold2)">' +
+          '<div style="font-family:DM Mono,monospace;font-size:10px;color:var(--text3);line-height:1.7">' +
+            '<strong style="color:var(--gold2)">Ley 23.548:</strong> 42,34% Nación · 56,66% Provincias · 1% ATN<br>' +
+            '<strong style="color:var(--gold2)">RN:</strong> 2,50% de masa provincial · distribución automática diaria' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
+
+    '</div>' +
+
+    '<div style="background:var(--bg2);border:1px solid rgba(90,174,240,0.15);border-radius:8px;padding:16px">' +
+      '<div style="font-family:DM Mono,monospace;font-size:10px;color:var(--text3);letter-spacing:1px;margin-bottom:12px">' +
+        'DISTRIBUCIÓN DEL IMP. A LAS GANANCIAS — ' + fmtUSD(imp) + ' (= 35% × ' + fmtUSD(gan) + ')' +
+      '</div>' +
+      '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">' +
+        cards4 +
+      '</div>' +
+    '</div>';
 }
+
 
 
 // ── RENDER COPARTICIPACIÓN BARS (en tab Distribución) ─────────
@@ -2546,85 +2549,93 @@ let copat_years_selected = new Set([1,2,3,4,5,6,7,8]);
 
 function renderCopatBars() {
   if (pAu === 0) return;
-  const data = calcData(pAu, pAg);
-  const slicer = document.getElementById('copat-slicer');
-  const barsEl = document.getElementById('copat-bars');
-  const totalEl = document.getElementById('copat-total');
+  var data    = calcData(pAu, pAg);
+  var slicer  = document.getElementById('copat-slicer');
+  var barsEl  = document.getElementById('copat-bars');
+  var totalEl = document.getElementById('copat-total');
   if (!slicer || !barsEl) return;
 
-  // Build slicer buttons
+  // Build slicer buttons once
   if (slicer.children.length === 0) {
-    data.forEach((d,i) => {
-      const yr = i+1;
-      const btn = document.createElement('button');
-      btn.id = `copat-yr-${yr}`;
-      btn.textContent = d.label.replace(' (Año '+yr+')','');
-      btn.style.cssText = `font-family:'DM Mono',monospace;font-size:10px;padding:3px 10px;border-radius:4px;cursor:pointer;border:1px solid var(--gold2);transition:all 0.2s`;
+    data.forEach(function(d, i) {
+      var yr = i + 1;
+      var btn = document.createElement('button');
+      btn.id = 'copat-yr-' + yr;
+      btn.textContent = d.label.split(' (')[0];
+      btn.style.cssText = 'font-family:DM Mono,monospace;font-size:10px;padding:3px 10px;border-radius:4px;cursor:pointer;border:1px solid var(--gold2);transition:all 0.2s';
       btn.style.background = copat_years_selected.has(yr) ? 'var(--gold2)' : 'var(--bg3)';
       btn.style.color = copat_years_selected.has(yr) ? '#000' : 'var(--text2)';
-      btn.onclick = () => { copat_toggle(yr); };
+      btn.onclick = function() { copat_toggle(yr); };
       slicer.appendChild(btn);
     });
   } else {
-    data.forEach((_,i) => {
-      const yr=i+1; const btn=document.getElementById(`copat-yr-${yr}`);
-      if(btn){ btn.style.background=copat_years_selected.has(yr)?'var(--gold2)':'var(--bg3)'; btn.style.color=copat_years_selected.has(yr)?'#000':'var(--text2)'; }
+    data.forEach(function(_, i) {
+      var yr = i + 1;
+      var btn = document.getElementById('copat-yr-' + yr);
+      if (btn) {
+        btn.style.background = copat_years_selected.has(yr) ? 'var(--gold2)' : 'var(--bg3)';
+        btn.style.color = copat_years_selected.has(yr) ? '#000' : 'var(--text2)';
+      }
     });
   }
 
-  // Calculate coparticipación per year
-  const rows = data.map((d,i) => {
-    const yr = i+1;
-    const percGan = d.percGan;
-    const gan_bruta = d.fobTotal * 0.1364 + percGan;
-    const imp_gan   = gan_bruta * 0.35;
-    const copat_prov= imp_gan * 0.5666;
-    const rn_copat  = copat_prov * 0.025;
-    const nac_copat = imp_gan * 0.4234;
-    const atm       = imp_gan * 0.01;
-    return { yr, label:d.label, fob:d.fobTotal, gan_bruta, imp_gan, copat_prov, rn_copat, nac_copat, atm, selected:copat_years_selected.has(yr) };
+  // Calculate per year
+  var rows = data.map(function(d, i) {
+    var yr      = i + 1;
+    var gan     = d.fobTotal * 0.1364 + d.percGan;
+    var imp     = gan * 0.35;
+    var cprov   = imp * 0.5666;
+    var cnac    = imp * 0.4234;
+    var rn      = cprov * 0.025;
+    var atm     = imp * 0.01;
+    return { yr:yr, label:d.label, fob:d.fobTotal, gan:gan, imp:imp, cprov:cprov, cnac:cnac, rn:rn, atm:atm };
   });
 
-  const selected = rows.filter(r=>r.selected);
-  const totImpGan = selected.reduce((s,r)=>s+r.imp_gan,0);
-  const totRN     = selected.reduce((s,r)=>s+r.rn_copat,0);
-  const totNac    = selected.reduce((s,r)=>s+r.nac_copat,0);
-  const totProv   = selected.reduce((s,r)=>s+r.copat_prov,0);
-  const maxVal    = Math.max(...rows.map(r=>r.imp_gan));
+  var selected = rows.filter(function(r) { return copat_years_selected.has(r.yr); });
+  var totImp  = selected.reduce(function(s,r){ return s+r.imp; }, 0);
+  var totRN   = selected.reduce(function(s,r){ return s+r.rn; }, 0);
+  var totNac  = selected.reduce(function(s,r){ return s+r.cnac; }, 0);
+  var totProv = selected.reduce(function(s,r){ return s+r.cprov; }, 0);
+  var maxVal  = Math.max.apply(null, rows.map(function(r){ return r.imp; }));
 
-  barsEl.innerHTML = rows.map(r => {
-    const op = r.selected ? '1' : '0.3';
-    const pctRN   = r.rn_copat / r.imp_gan;
-    const pctNac  = r.nac_copat / r.imp_gan;
-    const pctProv = r.copat_prov / r.imp_gan;
-    return `<div class="dist-bar-wrap" style="opacity:${op}">
-      <div class="dist-bar-header">
-        <span class="dist-bar-name">${r.label}</span>
-        <span class="dist-bar-val" style="color:var(--nation)">Imp.Gan.=${fmtUSD(r.imp_gan)} · <span style="color:var(--gold2)">RN=${fmtUSD(r.rn_copat)}</span></span>
-      </div>
-      <div class="dist-bar-track" style="position:relative;height:10px;background:var(--bg3);border-radius:4px;overflow:hidden">
-        <div style="position:absolute;left:0;top:0;height:100%;width:${(r.imp_gan/maxVal*100).toFixed(1)}%;display:flex">
-          <div style="width:${(pctNac*100).toFixed(1)}%;background:var(--nation);height:100%"></div>
-          <div style="width:${(pctProv*100).toFixed(1)}%;background:var(--silver2);height:100%"></div>
-        </div>
-      </div>
-      <div style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:2px">
-        Nación ${fmtUSD(r.nac_copat)} · Provincias ${fmtUSD(r.copat_prov)} · RN <strong style="color:var(--gold2)">${fmtUSD(r.rn_copat)}</strong> · ATN ${fmtUSD(r.atm)}
-      </div>
-    </div>`;
-  }).join('');
+  var html = '';
+  rows.forEach(function(r) {
+    var op = copat_years_selected.has(r.yr) ? '1' : '0.3';
+    var wTotal = maxVal > 0 ? (r.imp/maxVal*100).toFixed(1) : '0';
+    var wNac   = r.imp > 0 ? (r.cnac/r.imp*100).toFixed(1) : '0';
+    var wProv  = r.imp > 0 ? (r.cprov/r.imp*100).toFixed(1) : '0';
+    html += '<div class="dist-bar-wrap" style="opacity:' + op + '">' +
+      '<div class="dist-bar-header">' +
+        '<span class="dist-bar-name">' + r.label + '</span>' +
+        '<span class="dist-bar-val" style="color:var(--nation)">Imp.Gan.=' + fmtUSD(r.imp) +
+          ' · <span style="color:var(--gold2)">RN=' + fmtUSD(r.rn) + '</span></span>' +
+      '</div>' +
+      '<div class="dist-bar-track" style="position:relative;height:10px;background:var(--bg3);border-radius:4px;overflow:hidden">' +
+        '<div style="position:absolute;left:0;top:0;height:100%;width:' + wTotal + '%;display:flex">' +
+          '<div style="width:' + wNac + '%;background:var(--nation);height:100%"></div>' +
+          '<div style="width:' + wProv + '%;background:var(--silver2);height:100%"></div>' +
+        '</div>' +
+      '</div>' +
+      '<div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;margin-top:2px">' +
+        'Nación ' + fmtUSD(r.cnac) + ' · Provincias ' + fmtUSD(r.cprov) +
+        ' · RN <strong style="color:var(--gold2)">' + fmtUSD(r.rn) + '</strong> · ATN ' + fmtUSD(r.atm) +
+      '</div>' +
+    '</div>';
+  });
+  barsEl.innerHTML = html;
 
-  if(totalEl) totalEl.innerHTML = `
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;padding:10px;background:var(--bg3);border-radius:6px">
-      ${[
-        ['Imp.Gan. (años sel.)',totImpGan,'var(--nation)'],
-        ['→ Nación (42,34%)',totNac,'var(--text2)'],
-        ['→ Provincias (56,66%)',totProv,'var(--silver2)'],
-        ['→ RÍO NEGRO (2,50%)',totRN,'var(--gold2)'],
-      ].map(([n,v,col])=>`<div style="text-align:center"><div style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace">${n}</div><div style="font-size:14px;font-weight:700;color:${col}">${fmtUSD(v)}</div></div>`).join('')}
-    </div>
-    <div style="font-size:9px;color:var(--text3);margin-top:6px;font-style:italic">Ley 23.548 · Distribución automática diaria · Años seleccionados: ${selected.length} de 8</div>`;
+  if (totalEl) {
+    totalEl.innerHTML =
+      '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;padding:10px;background:var(--bg3);border-radius:6px">' +
+        '<div style="text-align:center"><div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace">Imp.Gan. (sel.)</div><div style="font-size:14px;font-weight:700;color:var(--nation)">' + fmtUSD(totImp) + '</div></div>' +
+        '<div style="text-align:center"><div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace">→ Nación (42,34%)</div><div style="font-size:14px;font-weight:700;color:var(--text2)">' + fmtUSD(totNac) + '</div></div>' +
+        '<div style="text-align:center"><div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace">→ Provincias (56,66%)</div><div style="font-size:14px;font-weight:700;color:var(--silver2)">' + fmtUSD(totProv) + '</div></div>' +
+        '<div style="text-align:center"><div style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace">→ RÍO NEGRO (2,50%)</div><div style="font-size:16px;font-weight:700;color:var(--gold2)">' + fmtUSD(totRN) + '</div></div>' +
+      '</div>' +
+      '<div style="font-size:9px;color:var(--text3);margin-top:6px;font-style:italic">Ley 23.548 · Distribución automática diaria · Años seleccionados: ' + selected.length + ' de 8</div>';
+  }
 }
+
 
 function copat_toggle(yr) {
   if(copat_years_selected.has(yr)) copat_years_selected.delete(yr);
