@@ -581,6 +581,7 @@ header {
   <button class="tab" onclick="showTab('escenarios')">ESCENARIOS</button>
   <button class="tab" onclick="showTab('compras')">COMPRAS</button>
   <button class="tab" onclick="showTab('empleo')">EMPLEO</button>
+  <button class="tab" onclick="showTab('coparticipacion')">COPARTICIPACIÓN</button>
 </div>
 
 <!-- BARRA TASAS EXPORTACIÓN -->
@@ -830,6 +831,18 @@ header {
     <div class="card">
       <div class="card-title">DISTRIBUCIÓN DE REGALÍAS PROVINCIA</div>
       <div id="prov-bars"></div>
+    </div>
+    <div class="card" style="margin-top:16px">
+      <div class="card-title">COPARTICIPACIÓN IMP. GANANCIAS · Ley 23.548</div>
+      <!-- Slicer de años -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center">
+        <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1px">FILTRAR AÑOS →</span>
+        <div id="copat-slicer" style="display:flex;gap:6px;flex-wrap:wrap"></div>
+        <button onclick="copat_selectAll()" style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 10px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:4px;cursor:pointer">TODOS</button>
+        <button onclick="copat_clearAll()" style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 10px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:4px;cursor:pointer">NINGUNO</button>
+      </div>
+      <div id="copat-bars"></div>
+      <div id="copat-total" style="margin-top:10px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)"></div>
     </div>
   </div>
 </div>
@@ -1613,6 +1626,20 @@ header {
       </button>
     </div>
   </div>
+
+<!-- TAB: COPARTICIPACIÓN -->
+<div class="tab-content" id="tab-coparticipacion">
+  <div class="card full-width">
+    <div class="card-title">COPARTICIPACIÓN FEDERAL — IMP. A LAS GANANCIAS</div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:16px;padding:10px 14px;background:var(--bg3);border-radius:6px;border-left:3px solid var(--nation);line-height:1.8">
+      <strong style="color:var(--nation)">Basamento legal: Ley N° 23.548</strong> — Régimen Transitorio de Distribución de Recursos Fiscales (vigente desde 1/1/1988).
+      Distribución primaria Art. 3°: <strong style="color:var(--nation)">42,34% Nación</strong> · <strong style="color:var(--silver2)">56,66% Provincias</strong> · <strong style="color:var(--text3)">1% ATN</strong>.
+      Coeficiente Río Negro en distribución secundaria: <strong style="color:var(--gold2)">2,50%</strong> sobre masa provincial (Anexo Ley 23.548).
+    </div>
+    <div id="copat-content"></div>
+  </div>
+</div>
+
 </div>
 
 <script>
@@ -1834,6 +1861,7 @@ function renderAlpha(data) {
 }
 
 // ── RENDER DISTRIBUCIÓN ───────────────────────────────────────
+// ── RENDER DISTRIBUCIÓN — V5 ──────────────────────────────────
 function renderDistribucion(data) {
   if (pAu === 0) return;
   const totFob    = data.reduce((s,d) => s + d.fobTotal, 0);
@@ -1842,65 +1870,66 @@ function renderDistribucion(data) {
   const totCarga  = data.reduce((s,d) => s + d.cargaExport, 0);
   const fobNeto   = totFob - totCarga;
 
-  // ── CARGAS SOCIALES FORM. 931 — MONTO FIJO EN ARS (no % del FOB) ──
-  // Dato real MCSAU ene-may 2026: promedio mensual ARS $180.755.857
-  // Proyectado anual × 12 → ARS $2.169.070.282 → USD fijo (TC referencia)
-  // NOTA: SS es independiente del precio del oro — varía en % del FOB pero no en monto absoluto
-  const SS_ARS_ANUAL = 180755857 * 12;      // Promedio real ene-may 2026 × 12
-  const cargasSociales931_USD = SS_ARS_ANUAL / TC_ARS;
+  // ── V5: NACIÓN (Impuestos + DE + Aportes/Contr. SS) ──────────
+  // Ganancias 12.8% + Créd/Déb 0.12% + Combustibles 1.2% = 14.12% FOB
+  // + DE Ag 4.5% (dinámico, sin Percepción que va a Ganancia)
+  // + SS Form.931 × 13 meses: aportes trab + contrib patronal + ART (FIJO ARS)
+  const pctNacionBase = 0.128 + 0.0012 + 0.012;
+  const SS_NACION_MES = 91925405.92 + 16222130.18 + 151168830.00 + 39835381.39 + 19910152.77;
+  const ss_nacion_USD = (SS_NACION_MES * 13) / TC_ARS;
+  const nacionTotal   = totFob * pctNacionBase + totDeAg + ss_nacion_USD;
 
-  // ── MASA SALARIAL — MONTO FIJO EN ARS (dato real MCSAU mayo 2026) ──
-  const MASA_SAL_ARS_ANUAL = 781085910.53 * 12;
-  const salarios_USD = MASA_SAL_ARS_ANUAL / TC_ARS;
+  // ── V5: SALARIOS — NETO AMPLIO × 13 MESES (SAC) ─────────────
+  // Monto fijo ARS — independiente del precio del metal
+  const NETO_AMPLIO_MES = 781085910.53 - 91925405.92 - 16222130.18
+                          - 151168830.00 - 39835381.39 - 19910152.77 - 92142.54;
+  const salarios_USD = (NETO_AMPLIO_MES * 13) / TC_ARS;
 
-  // ── NACIÓN — componentes mixtos: algunos % FOB, otros montos fijos ──
-  // Imp. Ganancias 12.8% + Cred/Déb 0.12% + Aportes 1.2% + Combustibles 1.2% = 15.32% FOB
-  // + Carga Export. (DE Ag + Percepción) — varía con precio spot
-  // + SS Form.931 — monto fijo en ARS convertido a USD
-  const pctNacionBase = 0.128 + 0.0012 + 0.012 + 0.012;
-  const nacionTotal   = totFob * pctNacionBase + totCarga + cargasSociales931_USD;
+  // ── V5: IMPUESTOS Y REGALÍAS PROVINCIALES ────────────────────
+  const regalias_total = totFob * 0.021;
+  const imp_des        = totFob * 0.035050;
+  const iibb           = totFob * 0.0075;
+  const prov_total     = regalias_total + imp_des + iibb;
 
-  // ── COMPRAS: distribuyen el residuo del FOB ──
-  // Metodología: FOB − componentes fijos = pool de compras
-  // Proporciones puesta en marcha 2026: RN 32.4% / Nacionales 63.7% / Exterior 3.9%
-  const reg_total  = totFob * 0.021;                  // Regalías 2.1%
-  const imp_des    = totFob * 0.0375;                 // Imp. Desarrollo 3.75%
-  const fort_total = reg_total * 0.25 + imp_des;      // FORTALECER
-  const prov_reg   = reg_total * 0.65;                // Provincia
-  const muni_reg   = reg_total * 0.10;                // Municipios
-  const ganancia   = totFob * 0.1364;                 // Ganancia 13.64%
+  // ── V5: GANANCIA EMPRESA (incluye Percepción 1% — pago a cuenta recuperable)
+  const ganancia = totFob * 0.1364 + totPercGan;
 
-  const subtFijo   = nacionTotal + salarios_USD + ganancia + prov_reg + muni_reg + fort_total;
-  const compTotal  = totFob - subtFijo;
-
-  const PROP_TOTAL = 32.4 + 63.7 + 3.9;
-  const comp_rn    = compTotal * (32.4 / PROP_TOTAL);
-  const comp_nac   = compTotal * (63.7 / PROP_TOTAL);
-  const comp_ext   = compTotal * (3.9  / PROP_TOTAL);
+  // ── V5: COMPRAS — RESIDUO con proporciones universo ajustado ──
+  // RN 37.5% / Nacionales 62.5% del pool RN+Nac · Exterior 3.9% del total
+  const subtFijo  = nacionTotal + salarios_USD + ganancia + prov_total;
+  const compTotal = totFob - subtFijo;
+  const comp_ext  = compTotal * 0.039;
+  const comp_rn   = (compTotal - comp_ext) * 0.375;
+  const comp_nac  = (compTotal - comp_ext) * 0.625;
 
   const dist = [
-    { name:'Proveedores Locales (RN)',         val: comp_rn,       color:'var(--gold2)'    },
-    { name:'Nación (Impuestos + DE + SS)',      val: nacionTotal,   color:'var(--nation)'   },
-    { name:'Salarios MCSAU (empleo directo)',   val: salarios_USD,  color:'var(--green)'    },
-    { name:'Compras Exterior',                  val: comp_ext,      color:'var(--silver2)'  },
-    { name:'Prov. Nacionales (fuera RN)',        val: comp_nac,      color:'var(--text2)'    },
-    { name:'Ganancia Empresa',                  val: ganancia,      color:'var(--province)' },
-    { name:'FORTALECER',                        val: fort_total,    color:'var(--green)'    },
-    { name:'Fondos Provincia (Regalías)',        val: prov_reg,      color:'var(--muni)'     },
-    { name:'Municipios/Comis. Fomento',          val: muni_reg,      color:'var(--red)'      },
+    { name:'Proveedores Locales (RN)',                  val: comp_rn,      color:'var(--gold2)'    },
+    { name:'Proveedores Nacionales (fuera RN)',          val: comp_nac,     color:'var(--text2)'    },
+    { name:'Compras Exterior',                           val: comp_ext,     color:'var(--silver2)'  },
+    { name:'Nación (Imp + DE + Aportes/Contr. SS)',     val: nacionTotal,  color:'var(--nation)'   },
+    { name:'Salarios MCSAU (neto amplio ×13)',           val: salarios_USD, color:'var(--green)'    },
+    { name:'Impuestos y Regalías Provinciales',          val: prov_total,   color:'var(--muni)'     },
+    { name:'Ganancia Empresa (incl. Percepción 1%)',     val: ganancia,     color:'var(--province)' },
   ];
 
-  // Nota sobre Derechos de Exportación + Cargas Sociales
   const notaDE = `<div style="margin-bottom:12px;padding:10px 14px;background:var(--bg3);border-radius:6px;border-left:3px solid var(--nation);font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);line-height:1.9">
-    <strong style="color:var(--nation)">NACIÓN (Impuestos + DE + SS):</strong>
-    Ganancias 12.8% + Cred/Déb 0.12% + Aportes 1.2% + Combustibles 1.2% = 15.32% FOB
-    · DE Ag 4.5% = ${fmtUSD(totDeAg)} · Percepción 1% = ${fmtUSD(totPercGan)}
-    · <strong style="color:var(--nation)">SS Form.931 = ${fmtUSD(cargasSociales931_USD)}</strong>
-    <span style="color:var(--text3);font-size:9px">(promedio real ene-may 2026 × 12 · ARS fijo / TC ${TC_ARS.toLocaleString('es-AR')})</span>
-    &nbsp;|&nbsp; <strong style="color:var(--green)">FOB Neto = ${fmtUSD(fobNeto)}</strong>
-    <br><strong style="color:var(--gold2)">COMPRAS:</strong> Residuo distribuido por proporciones puesta en marcha 2026 → RN 32.4% · Nacionales 63.7% · Exterior 3.9%
-    · <strong style="color:var(--green)">Salarios MCSAU = ${fmtUSD(salarios_USD)}</strong>
-    <span style="color:var(--text3);font-size:9px">(217 emp. · ARS $781M/mes real · monto fijo independiente del precio del metal)</span>
+    <strong style="color:var(--nation)">NACIÓN V5 (Imp+DE+SS):</strong>
+    Ganancias 12.8%·Créd/Déb 0.12%·Comb.1.2%·DE Ag=${fmtUSD(totDeAg)}
+    ·SS Form.931×13=${fmtUSD(ss_nacion_USD)}
+    ·<strong style="color:var(--nation)">TOTAL=${fmtUSD(nacionTotal)}</strong>
+    &nbsp;|&nbsp;<strong style="color:var(--green)">FOB Neto=${fmtUSD(fobNeto)}</strong>
+    <br><strong style="color:var(--muni)">PROVINCIALES:</strong>
+    Regalías 2.1%=${fmtUSD(regalias_total)}·Imp.Des.3.5050%=${fmtUSD(imp_des)}·IIBB 0.75%=${fmtUSD(iibb)}
+    ·<strong style="color:var(--muni)">TOTAL=${fmtUSD(prov_total)}</strong>
+    <span style="color:var(--text3);font-size:9px">(Ley 5.001 RN·Normativa·Base IIBB: FOB total exportado)</span>
+    <br><strong style="color:var(--green)">SALARIOS:</strong>
+    Neto amplio×13 meses(SAC)÷TC ${TC_ARS.toLocaleString('es-AR')}=<strong style="color:var(--green)">${fmtUSD(salarios_USD)}</strong>
+    <span style="color:var(--text3);font-size:9px">(217 emp.·monto fijo ARS·ver tab COPARTICIPACIÓN para desglose Ganancias)</span>
+    <br><strong style="color:var(--gold2)">COMPRAS:</strong>
+    Residuo ${fmtUSD(compTotal)}→RN 37.5%·Nac.62.5%(universo ajustado)·Ext.3.9%
+    <br><strong style="color:var(--province)">GANANCIA:</strong>
+    13.64%FOB+Percepción 1%(RG5815/2026,recuperable)=<strong style="color:var(--province)">${fmtUSD(ganancia)}</strong>
+    ·<span style="color:var(--text3);font-size:9px">Ver tab COPARTICIPACIÓN→distribución vía Ley 23.548</span>
   </div>`;
 
   const maxVal = Math.max(...dist.map(d => d.val));
@@ -2083,6 +2112,8 @@ function renderAll() {
     renderFortalecer(data);
     renderAlpha(data);
     renderDistribucion(data);
+    renderCopatBars();
+    if (document.getElementById('copat-content')) renderCoparticipacion();
     renderEscenarios();
     console.log('renderAll OK — Au:', pAu, 'Ag:', pAg);
   } catch(e) {
@@ -2128,9 +2159,9 @@ function setSpotUI(au, ag, fuente) {
 function usarPreciosReferencia(motivo) {
   console.warn('Fallback precios referencia:', motivo);
   setSpotUI(
-    { price:3312.0, open:3295.0, high:3330.0, low:3290.0, chg:0.52 },
-    { price:32.85,  open:32.60,  high:33.10,  low:32.40,  chg:0.77 },
-    '⚠ Referencia estimada'
+    { price:4160.26, open:4210.05, high:4213.66, low:4120.89, chg:-1.18 },
+    { price:69.71,   open:67.91,   high:69.77,   low:67.87,   chg:+2.65 },
+    '📅 Fallback · Cierre 19/06/2026'
   );
   document.getElementById('au-ts').textContent = '⚠ Sin conexión — estimación basada en datos recientes';
   document.getElementById('ag-ts').textContent = '⚠ Sin conexión — estimación basada en datos recientes';
@@ -2206,10 +2237,14 @@ function showTab(id) {
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
   document.getElementById('tab-' + id).classList.add('active');
   event.target.classList.add('active');
-  // Renderizar tabs nuevos si tienen datos
   if (pAu > 0) {
-    if (id === 'impuesto')   renderImpuesto(calcData(pAu, pAg));
-    if (id === 'fortalecer') renderFortalecer(calcData(pAu, pAg));
+    const data = calcData(pAu, pAg);
+    if (id === 'impuesto')         renderImpuesto(data);
+    if (id === 'fortalecer')       renderFortalecer(data);
+    if (id === 'distribucion')     { renderDistribucion(data); renderCopatBars(); }
+    if (id === 'coparticipacion')  renderCoparticipacion();
+    if (id === 'empleo')           renderEmpleo();
+    if (id === 'compras')          renderCompras();
   }
 }
 
@@ -2411,7 +2446,204 @@ function aplicarManual() {
   setTimeout(() => document.getElementById('manual-status').textContent = '', 3000);
 }
 
-// ── INIT ──────────────────────────────────────────────────────
+
+// ── RENDER COPARTICIPACIÓN — Ley 23.548 ───────────────────────
+function renderCoparticipacion() {
+  if (pAu === 0) { document.getElementById('copat-content').innerHTML = '<p style="color:var(--text3)">Cargando precios...</p>'; return; }
+  const data     = calcData(pAu, pAg);
+  const fob1     = data[0].fobTotal;
+  const percGan1 = data[0].percGan;
+
+  // Ganancia bruta Año 2026 (14.64% FOB)
+  const gan_bruta  = fob1 * 0.1364 + percGan1;
+  const imp_gan    = gan_bruta * 0.35;
+  const copat_nac  = imp_gan * 0.4234;
+  const copat_prov = imp_gan * 0.5666;
+  const atm        = imp_gan * 0.01;
+  const rn_copat   = copat_prov * 0.025;
+  const gan_neta   = gan_bruta - imp_gan;
+
+  // Provinciales directos
+  const regalias = fob1 * 0.021;
+  const imp_des  = fob1 * 0.035050;
+  const iibb     = fob1 * 0.0075;
+  const prov_dir = regalias + imp_des + iibb;
+
+  document.getElementById('copat-content').innerHTML = `
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+
+    <!-- Cascada -->
+    <div style="background:var(--bg2);border:1px solid rgba(255,165,0,0.2);border-radius:8px;padding:16px">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1px;margin-bottom:12px">CASCADA: GANANCIA → IMP. GANANCIAS → COPARTICIPACIÓN</div>
+      ${[
+        {n:'Ganancia Empresa (bruta)',       v:gan_bruta,  sub:'FOB 2026 × 14,64% (13.64%+Perc.1%)',    c:'var(--province)', bold:true},
+        {n:'↳ Imp. Ganancias (35%)',         v:imp_gan,    sub:'35% s/ ganancia · Ley Imp. Ganancias',  c:'var(--nation)',   bold:false},
+        {n:'   ↳ Nación (42,34%)',           v:copat_nac,  sub:'Art. 3° Ley 23.548',                    c:'var(--text2)',    bold:false},
+        {n:'   ↳ Provincias (56,66%)',       v:copat_prov, sub:'Art. 3° Ley 23.548',                    c:'var(--silver2)', bold:false},
+        {n:'      ↳ RÍO NEGRO (2,50%)',      v:rn_copat,   sub:'Anexo Ley 23.548 · Coef. secundario',   c:'var(--gold2)',   bold:true},
+        {n:'      ↳ Otras provincias',       v:copat_prov-rn_copat, sub:'97,50% de masa provincial',    c:'var(--text3)',   bold:false},
+        {n:'   ↳ ATN (1,00%)',               v:atm,        sub:'Aportes Tesoro Nacional · Discrecional', c:'var(--text3)',   bold:false},
+        {n:'↳ Ganancia NETA Patagonia Gold', v:gan_neta,   sub:'Después del Imp. Ganancias',            c:'var(--green)',   bold:true},
+      ].map(r=>`
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:5px 0;border-bottom:1px solid rgba(255,255,255,0.04)">
+          <div>
+            <div style="font-family:'DM Mono',monospace;font-size:${r.bold?'11':'10'}px;color:${r.c};font-weight:${r.bold?'700':'400'}">${r.n}</div>
+            <div style="font-size:9px;color:var(--text3);font-style:italic">${r.sub}</div>
+          </div>
+          <div style="font-family:'DM Mono',monospace;font-size:${r.bold?'13':'11'}px;font-weight:${r.bold?'700':'400'};color:${r.c};white-space:nowrap;margin-left:8px">${fmtUSD(r.v)}</div>
+        </div>`).join('')}
+    </div>
+
+    <!-- Impacto RN -->
+    <div style="background:var(--bg2);border:1px solid rgba(255,215,0,0.2);border-radius:8px;padding:16px">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1px;margin-bottom:12px">IMPACTO TOTAL EN RÍO NEGRO — AÑO 2026</div>
+      ${[
+        {n:'Imp. y Regalías Provinciales', v:prov_dir,         sub:'Regalías+Imp.Des.+IIBB — directo',                c:'var(--muni)',   bold:false},
+        {n:'Copart. Imp. Ganancias → RN',  v:rn_copat,         sub:'2,50%×56,66%×Imp.Gan. · Ley 23.548',             c:'var(--gold2)', bold:false},
+        {n:'TOTAL ESTIMADO RÍO NEGRO',     v:prov_dir+rn_copat,sub:'Directo + Coparticipación',                       c:'var(--gold2)', bold:true},
+      ].map(r=>`
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid rgba(255,255,255,0.05)">
+          <div>
+            <div style="font-family:'DM Mono',monospace;font-size:${r.bold?'12':'10'}px;color:${r.c};font-weight:${r.bold?'700':'400'}">${r.n}</div>
+            <div style="font-size:9px;color:var(--text3);font-style:italic">${r.sub}</div>
+          </div>
+          <div style="font-family:'DM Mono',monospace;font-size:${r.bold?'16':'12'}px;font-weight:700;color:${r.c};white-space:nowrap;margin-left:8px">${fmtUSD(r.v)}</div>
+        </div>`).join('')}
+      <div style="margin-top:14px;padding:10px;background:var(--bg3);border-radius:6px;border-left:3px solid var(--gold2)">
+        <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);line-height:1.7">
+          <strong style="color:var(--gold2)">Ley 23.548:</strong> 42,34% Nación · 56,66% Provincias · 1% ATN<br>
+          <strong style="color:var(--gold2)">RN:</strong> 2,50% de masa provincial · distribución automática diaria
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Distribución del Impuesto a las Ganancias -->
+  <div style="background:var(--bg2);border:1px solid rgba(90,174,240,0.15);border-radius:8px;padding:16px">
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1px;margin-bottom:12px">
+      DISTRIBUCIÓN DEL IMP. A LAS GANANCIAS — ${fmtUSD(imp_gan)} (= 35% × ${fmtUSD(gan_bruta)})
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+      ${[
+        {n:'Tesoro Nacional',       pct:'42,34%',      v:copat_nac,           c:'var(--nation)',   src:'Art. 3° Ley 23.548'},
+        {n:'Provincias (total)',    pct:'56,66%',      v:copat_prov,          c:'var(--silver2)', src:'Art. 3° Ley 23.548'},
+        {n:'Río Negro',            pct:'2,50% s/prov.',v:rn_copat,           c:'var(--gold2)',   src:'Anexo Ley 23.548'},
+        {n:'ATN',                  pct:'1,00%',        v:atm,                 c:'var(--text3)',   src:'Art. 3° Ley 23.548'},
+      ].map(r=>`
+        <div style="background:var(--bg3);border-radius:6px;padding:12px;text-align:center;border:1px solid ${r.c}33">
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:4px">${r.n}</div>
+          <div style="font-size:20px;font-weight:700;color:${r.c};margin:6px 0">${fmtUSD(r.v)}</div>
+          <div style="font-size:10px;color:${r.c};font-family:'DM Mono',monospace;margin-bottom:4px">${r.pct}</div>
+          <div style="font-size:9px;color:var(--text3);font-style:italic">${r.src}</div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+
+// ── RENDER COPARTICIPACIÓN BARS (en tab Distribución) ─────────
+let copat_years_selected = new Set([1,2,3,4,5,6,7,8]);
+
+function renderCopatBars() {
+  if (pAu === 0) return;
+  const data = calcData(pAu, pAg);
+  const slicer = document.getElementById('copat-slicer');
+  const barsEl = document.getElementById('copat-bars');
+  const totalEl = document.getElementById('copat-total');
+  if (!slicer || !barsEl) return;
+
+  // Build slicer buttons
+  if (slicer.children.length === 0) {
+    data.forEach((d,i) => {
+      const yr = i+1;
+      const btn = document.createElement('button');
+      btn.id = `copat-yr-${yr}`;
+      btn.textContent = d.label.replace(' (Año '+yr+')','');
+      btn.style.cssText = `font-family:'DM Mono',monospace;font-size:10px;padding:3px 10px;border-radius:4px;cursor:pointer;border:1px solid var(--gold2);transition:all 0.2s`;
+      btn.style.background = copat_years_selected.has(yr) ? 'var(--gold2)' : 'var(--bg3)';
+      btn.style.color = copat_years_selected.has(yr) ? '#000' : 'var(--text2)';
+      btn.onclick = () => { copat_toggle(yr); };
+      slicer.appendChild(btn);
+    });
+  } else {
+    data.forEach((_,i) => {
+      const yr=i+1; const btn=document.getElementById(`copat-yr-${yr}`);
+      if(btn){ btn.style.background=copat_years_selected.has(yr)?'var(--gold2)':'var(--bg3)'; btn.style.color=copat_years_selected.has(yr)?'#000':'var(--text2)'; }
+    });
+  }
+
+  // Calculate coparticipación per year
+  const rows = data.map((d,i) => {
+    const yr = i+1;
+    const percGan = d.percGan;
+    const gan_bruta = d.fobTotal * 0.1364 + percGan;
+    const imp_gan   = gan_bruta * 0.35;
+    const copat_prov= imp_gan * 0.5666;
+    const rn_copat  = copat_prov * 0.025;
+    const nac_copat = imp_gan * 0.4234;
+    const atm       = imp_gan * 0.01;
+    return { yr, label:d.label, fob:d.fobTotal, gan_bruta, imp_gan, copat_prov, rn_copat, nac_copat, atm, selected:copat_years_selected.has(yr) };
+  });
+
+  const selected = rows.filter(r=>r.selected);
+  const totImpGan = selected.reduce((s,r)=>s+r.imp_gan,0);
+  const totRN     = selected.reduce((s,r)=>s+r.rn_copat,0);
+  const totNac    = selected.reduce((s,r)=>s+r.nac_copat,0);
+  const totProv   = selected.reduce((s,r)=>s+r.copat_prov,0);
+  const maxVal    = Math.max(...rows.map(r=>r.imp_gan));
+
+  barsEl.innerHTML = rows.map(r => {
+    const op = r.selected ? '1' : '0.3';
+    const pctRN   = r.rn_copat / r.imp_gan;
+    const pctNac  = r.nac_copat / r.imp_gan;
+    const pctProv = r.copat_prov / r.imp_gan;
+    return `<div class="dist-bar-wrap" style="opacity:${op}">
+      <div class="dist-bar-header">
+        <span class="dist-bar-name">${r.label}</span>
+        <span class="dist-bar-val" style="color:var(--nation)">Imp.Gan.=${fmtUSD(r.imp_gan)} · <span style="color:var(--gold2)">RN=${fmtUSD(r.rn_copat)}</span></span>
+      </div>
+      <div class="dist-bar-track" style="position:relative;height:10px;background:var(--bg3);border-radius:4px;overflow:hidden">
+        <div style="position:absolute;left:0;top:0;height:100%;width:${(r.imp_gan/maxVal*100).toFixed(1)}%;display:flex">
+          <div style="width:${(pctNac*100).toFixed(1)}%;background:var(--nation);height:100%"></div>
+          <div style="width:${(pctProv*100).toFixed(1)}%;background:var(--silver2);height:100%"></div>
+        </div>
+      </div>
+      <div style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-top:2px">
+        Nación ${fmtUSD(r.nac_copat)} · Provincias ${fmtUSD(r.copat_prov)} · RN <strong style="color:var(--gold2)">${fmtUSD(r.rn_copat)}</strong> · ATN ${fmtUSD(r.atm)}
+      </div>
+    </div>`;
+  }).join('');
+
+  if(totalEl) totalEl.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:8px;padding:10px;background:var(--bg3);border-radius:6px">
+      ${[
+        ['Imp.Gan. (años sel.)',totImpGan,'var(--nation)'],
+        ['→ Nación (42,34%)',totNac,'var(--text2)'],
+        ['→ Provincias (56,66%)',totProv,'var(--silver2)'],
+        ['→ RÍO NEGRO (2,50%)',totRN,'var(--gold2)'],
+      ].map(([n,v,col])=>`<div style="text-align:center"><div style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace">${n}</div><div style="font-size:14px;font-weight:700;color:${col}">${fmtUSD(v)}</div></div>`).join('')}
+    </div>
+    <div style="font-size:9px;color:var(--text3);margin-top:6px;font-style:italic">Ley 23.548 · Distribución automática diaria · Años seleccionados: ${selected.length} de 8</div>`;
+}
+
+function copat_toggle(yr) {
+  if(copat_years_selected.has(yr)) copat_years_selected.delete(yr);
+  else copat_years_selected.add(yr);
+  renderCopatBars();
+}
+function copat_selectAll() { [1,2,3,4,5,6,7,8].forEach(y=>copat_years_selected.add(y)); renderCopatBars(); }
+function copat_clearAll() { copat_years_selected.clear(); renderCopatBars(); }
+
+// ── INIT ─────
+// Localhost CORS fix: si no hay precios en 4 segundos, usar referencia
+setTimeout(() => {
+  if (pAu === 0) {
+    console.warn('Timeout: usando precios de referencia (posible CORS en localhost)');
+    usarPreciosReferencia('timeout-cors');
+  }
+}, 4000);
+
+─────────────────────────────────────────────────
 updateTS();
 setInterval(updateTS, 1000);
 
