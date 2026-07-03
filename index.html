@@ -1599,6 +1599,20 @@ header {
   </div>
 </div>
 
+
+<!-- TAB: COPARTICIPACIÓN -->
+<div class="tab-content" id="tab-coparticipacion">
+  <div class="card full-width">
+    <div class="card-title">COPARTICIPACIÓN FEDERAL — IMP. A LAS GANANCIAS</div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:16px;padding:10px 14px;background:var(--bg3);border-radius:6px;border-left:3px solid var(--nation);line-height:1.8">
+      <strong style="color:var(--nation)">Basamento legal: Ley N° 23.548</strong> — Régimen Transitorio de Distribución de Recursos Fiscales (vigente desde 1/1/1988).
+      Distribución primaria Art. 3°: <strong style="color:var(--nation)">42,34% Nación</strong> · <strong style="color:var(--silver2)">56,66% Provincias</strong> · <strong style="color:var(--text3)">1% ATN</strong>.
+      Coeficiente Río Negro en distribución secundaria: <strong style="color:var(--gold2)">2,50%</strong> sobre masa provincial (Anexo Ley 23.548).
+    </div>
+    <div id="copat-content"></div>
+  </div>
+</div>
+
 </div><!-- /wrap -->
 
 <!-- MODAL API KEY -->
@@ -1621,26 +1635,18 @@ header {
       Anthropic Console → Claves de API → Crear clave
     </div>
     <div style="margin-top:8px;text-align:center">
+      <button onclick="cerrarModalKey()" style="background:transparent;border:none;color:#90B8D8;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;text-decoration:underline;margin-right:12px">
+        Continuar con precios de referencia
+      </button>
       <button onclick="limpiarLocalStorage()" style="background:transparent;border:none;color:#3A5A78;font-family:'DM Mono',monospace;font-size:9px;cursor:pointer;text-decoration:underline">
         Limpiar caché del navegador
       </button>
     </div>
   </div>
 
-<!-- TAB: COPARTICIPACIÓN -->
-<div class="tab-content" id="tab-coparticipacion">
-  <div class="card full-width">
-    <div class="card-title">COPARTICIPACIÓN FEDERAL — IMP. A LAS GANANCIAS</div>
-    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:16px;padding:10px 14px;background:var(--bg3);border-radius:6px;border-left:3px solid var(--nation);line-height:1.8">
-      <strong style="color:var(--nation)">Basamento legal: Ley N° 23.548</strong> — Régimen Transitorio de Distribución de Recursos Fiscales (vigente desde 1/1/1988).
-      Distribución primaria Art. 3°: <strong style="color:var(--nation)">42,34% Nación</strong> · <strong style="color:var(--silver2)">56,66% Provincias</strong> · <strong style="color:var(--text3)">1% ATN</strong>.
-      Coeficiente Río Negro en distribución secundaria: <strong style="color:var(--gold2)">2,50%</strong> sobre masa provincial (Anexo Ley 23.548).
-    </div>
-    <div id="copat-content"></div>
-  </div>
-</div>
 
-</div>
+
+</div><!-- /modal-key -->
 
 <script>
 // ── DATOS GEOLÓGICOS CALCATREU ────────────────────────────────
@@ -1659,8 +1665,8 @@ const REC_AU = 0.63;
 const REC_AG = 0.30;
 const G_PER_OZ = 31.1035;
 const TASA_REGALIA = 0.021;
-const TASA_DESARROLLO = 0.0375;
-const TC_ARS = 933.42; // tipo de cambio referencia
+const TASA_DESARROLLO = 0.035050;
+const TC_ARS = 1450;
 
 // ── DERECHOS DE EXPORTACIÓN (editables) ──────────────────────
 // Doré: Au 0% · Ag 4.5% · Percepción Ganancias RG5815/2026: 1%
@@ -1864,131 +1870,94 @@ function renderAlpha(data) {
 // ── RENDER DISTRIBUCIÓN — V5 ──────────────────────────────────
 function renderDistribucion(data) {
   if (pAu === 0) return;
-  const totFob    = data.reduce((s,d) => s + d.fobTotal, 0);
-  const totDeAg   = data.reduce((s,d) => s + d.deAg, 0);
-  const totPercGan= data.reduce((s,d) => s + d.percGan, 0);
-  const totCarga  = data.reduce((s,d) => s + d.cargaExport, 0);
-  const fobNeto   = totFob - totCarga;
+  var totFob    = data.reduce(function(s,d){ return s+d.fobTotal; },0);
+  var totDeAg   = data.reduce(function(s,d){ return s+d.deAg; },0);
+  var totPercGan= data.reduce(function(s,d){ return s+d.percGan; },0);
+  var totCarga  = data.reduce(function(s,d){ return s+d.cargaExport; },0);
+  var fobNeto   = totFob - totCarga;
 
-  // ── V5: NACIÓN (Impuestos + DE + Aportes/Contr. SS) ──────────
-  // Ganancias 12.8% + Créd/Déb 0.12% + Combustibles 1.2% = 14.12% FOB
-  // + DE Ag 4.5% (dinámico, sin Percepción que va a Ganancia)
-  // + SS Form.931 × 13 meses: aportes trab + contrib patronal + ART (FIJO ARS)
-  const pctNacionBase = 0.128 + 0.0012 + 0.012;
-  const SS_NACION_MES = 91925405.92 + 16222130.18 + 151168830.00 + 39835381.39 + 19910152.77;
-  const ss_nacion_USD = (SS_NACION_MES * 13) / TC_ARS;
-  const nacionTotal   = totFob * pctNacionBase + totDeAg + ss_nacion_USD;
+  // ── V8.1: SALARIOS — Modelo 3 × 13 meses (FIJO ARS / TC BNA 1450) ──
+  var salarios_USD = 10280958059 / TC_ARS / 1e6;
 
-  // ── V5: SALARIOS — NETO AMPLIO × 13 MESES (SAC) ─────────────
-  // Monto fijo ARS — independiente del precio del metal
-  const NETO_AMPLIO_MES = 781085910.53 - 91925405.92 - 16222130.18
-                          - 151168830.00 - 39835381.39 - 19910152.77 - 92142.54;
-  const salarios_USD = (NETO_AMPLIO_MES * 13) / TC_ARS;
+  // ── V8.1: CONTRIB. PATRONAL → NACIÓN (FIJO × 13) ────────────
+  var SS_PATRON_MES = 151168830.00 + 39835381.39 + 19910152.77;
+  var ss_patron_USD = (SS_PATRON_MES * 13) / TC_ARS / 1e6;
 
-  // ── V5: IMPUESTOS Y REGALÍAS PROVINCIALES ────────────────────
-  const regalias_total = totFob * 0.021;
-  const imp_des        = totFob * 0.035050;
-  const iibb           = totFob * 0.0075;
-  const prov_total     = regalias_total + imp_des + iibb;
+  // ── V8.1: GANANCIA + COPARTICIPACIÓN (base: Ganancia × 35%) ──
+  var ganancia     = totFob * 0.1364 + totPercGan;
+  var imp_gan      = ganancia * 0.35;
+  var nac_gan_neto = imp_gan * 0.4234;
+  var nac_cdb      = totFob * 0.0012;
+  var nac_comb     = totFob * 0.012;
+  var nacionTotal  = nac_gan_neto + nac_cdb + nac_comb + totDeAg + ss_patron_USD;
 
-  // ── V5: GANANCIA EMPRESA (incluye Percepción 1% — pago a cuenta recuperable)
-  const ganancia = totFob * 0.1364 + totPercGan;
+  // ── V8.1: PROVINCIALES + Copart. RN ──────────────────────────
+  var regalias_total = totFob * 0.021;
+  var imp_des        = totFob * 0.035050;
+  var iibb           = totFob * 0.0075;
+  var rn_copat       = imp_gan * 0.5666 * 0.025;
+  var prov_total     = regalias_total + imp_des + iibb + rn_copat;
 
-  // ── V5: COMPRAS — RESIDUO con proporciones universo ajustado ──
-  // RN 37.5% / Nacionales 62.5% del pool RN+Nac · Exterior 3.9% del total
-  const subtFijo  = nacionTotal + salarios_USD + ganancia + prov_total;
-  const compTotal = totFob - subtFijo;
-  const comp_ext  = compTotal * 0.039;
-  const comp_rn   = (compTotal - comp_ext) * 0.375;
-  const comp_nac  = (compTotal - comp_ext) * 0.625;
+  // ── V8.1: COMPRAS — RESIDUO universo ajustado MCSAU ──────────
+  var subtFijo  = nacionTotal + salarios_USD + ganancia + prov_total;
+  var compTotal = totFob - subtFijo;
+  var comp_ext  = compTotal * 0.039;
+  var comp_rn   = (compTotal - comp_ext) * 0.375;
+  var comp_nac  = (compTotal - comp_ext) * 0.625;
 
-  const dist = [
-    { name:'Proveedores Locales (RN)',                  val: comp_rn,      color:'var(--gold2)'    },
-    { name:'Proveedores Nacionales (fuera RN)',          val: comp_nac,     color:'var(--text2)'    },
-    { name:'Compras Exterior',                           val: comp_ext,     color:'var(--silver2)'  },
-    { name:'Nación (Imp + DE + Aportes/Contr. SS)',     val: nacionTotal,  color:'var(--nation)'   },
-    { name:'Salarios MCSAU (neto amplio ×13)',           val: salarios_USD, color:'var(--green)'    },
-    { name:'Impuestos y Regalías Provinciales',          val: prov_total,   color:'var(--muni)'     },
-    { name:'Ganancia Empresa (incl. Percepción 1%)',     val: ganancia,     color:'var(--province)' },
+  var dist = [
+    { name:'Proveedores Locales (RN)',                        val: comp_rn,      color:'var(--gold2)'    },
+    { name:'Proveedores Nacionales (fuera RN)',               val: comp_nac,     color:'var(--text2)'    },
+    { name:'Compras Exterior',                                val: comp_ext,     color:'var(--silver2)'  },
+    { name:'Nación (Imp+DE+Contrib.SS+Copart.→Nac.)',        val: nacionTotal,  color:'var(--nation)'   },
+    { name:'Salarios MCSAU (Modelo 3 ×13)',                   val: salarios_USD, color:'var(--green)'    },
+    { name:'Imp. y Regalías Provinciales (incl. Copart. RN)',val: prov_total,   color:'var(--muni)'     },
+    { name:'Ganancia Empresa (incl. Percepción 1%)',          val: ganancia,     color:'var(--province)' },
   ];
 
-  const notaDE = `<div style="margin-bottom:12px;padding:10px 14px;background:var(--bg3);border-radius:6px;border-left:3px solid var(--nation);font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);line-height:1.9">
-    <strong style="color:var(--nation)">NACIÓN V5 (Imp+DE+SS):</strong>
-    Ganancias 12.8%·Créd/Déb 0.12%·Comb.1.2%·DE Ag=${fmtUSD(totDeAg)}
-    ·SS Form.931×13=${fmtUSD(ss_nacion_USD)}
-    ·<strong style="color:var(--nation)">TOTAL=${fmtUSD(nacionTotal)}</strong>
-    &nbsp;|&nbsp;<strong style="color:var(--green)">FOB Neto=${fmtUSD(fobNeto)}</strong>
-    <br><strong style="color:var(--muni)">PROVINCIALES:</strong>
-    Regalías 2.1%=${fmtUSD(regalias_total)}·Imp.Des.3.5050%=${fmtUSD(imp_des)}·IIBB 0.75%=${fmtUSD(iibb)}
-    ·<strong style="color:var(--muni)">TOTAL=${fmtUSD(prov_total)}</strong>
-    <span style="color:var(--text3);font-size:9px">(Ley 5.001 RN·Normativa·Base IIBB: FOB total exportado)</span>
-    <br><strong style="color:var(--green)">SALARIOS:</strong>
-    Neto amplio×13 meses(SAC)÷TC ${TC_ARS.toLocaleString('es-AR')}=<strong style="color:var(--green)">${fmtUSD(salarios_USD)}</strong>
-    <span style="color:var(--text3);font-size:9px">(217 emp.·monto fijo ARS·ver tab COPARTICIPACIÓN para desglose Ganancias)</span>
-    <br><strong style="color:var(--gold2)">COMPRAS:</strong>
-    Residuo ${fmtUSD(compTotal)}→RN 37.5%·Nac.62.5%(universo ajustado)·Ext.3.9%
-    <br><strong style="color:var(--province)">GANANCIA:</strong>
-    13.64%FOB+Percepción 1%(RG5815/2026,recuperable)=<strong style="color:var(--province)">${fmtUSD(ganancia)}</strong>
-    ·<span style="color:var(--text3);font-size:9px">Ver tab COPARTICIPACIÓN→distribución vía Ley 23.548</span>
-  </div>`;
+  var notaDE =
+    '<div style="margin-bottom:12px;padding:10px 14px;background:var(--bg3);border-radius:6px;' +
+    'border-left:3px solid var(--nation);font-family:DM Mono,monospace;font-size:10px;' +
+    'color:var(--text3);line-height:1.9">' +
+    '<strong style="color:var(--nation)">NACIÓN V8.1:</strong> ' +
+    'Gan.×35%×42,34%=' + fmtUSD(nac_gan_neto) +
+    ' · Créd/Déb+Comb.=' + fmtUSD(nac_cdb+nac_comb) +
+    ' · DE Ag=' + fmtUSD(totDeAg) +
+    ' · Contrib.Patron.×13=' + fmtUSD(ss_patron_USD) +
+    ' · <strong style="color:var(--nation)">TOTAL=' + fmtUSD(nacionTotal) + '</strong>' +
+    ' | <strong style="color:var(--green)">FOB Neto=' + fmtUSD(fobNeto) + '</strong><br>' +
+    '<strong style="color:var(--muni)">PROVINCIALES:</strong> ' +
+    'Regalías=' + fmtUSD(regalias_total) +
+    ' · Imp.Des.3,5050%=' + fmtUSD(imp_des) +
+    ' · IIBB=' + fmtUSD(iibb) +
+    ' · <strong style="color:var(--muni)">Copart.RN=' + fmtUSD(rn_copat) + '</strong>' +
+    ' (Gan.×35%×56,66%×2,50% · Ley 23.548)<br>' +
+    '<strong style="color:var(--green)">SALARIOS:</strong> ' +
+    'Modelo 3 R²=0,9984 ×13 SAC · TC BNA ' + TC_ARS.toLocaleString('es-AR') +
+    ' = <strong style="color:var(--green)">' + fmtUSD(salarios_USD) + '</strong>' +
+    ' (Neto=Bruto−Ap.SS−Ap.OS)<br>' +
+    '<strong style="color:var(--gold2)">COMPRAS:</strong> Residuo ' + fmtUSD(compTotal) +
+    ' → RN 37,5% · Nac.62,5% · Ext.3,9% (universo ajustado MCSAU)' +
+    '</div>';
 
-  const maxVal = Math.max(...dist.map(d => d.val));
-  const bars = document.getElementById('dist-bars');
-  bars.innerHTML = notaDE + dist.map(d => {
-    const pct = d.val / totFob;
-    return `<div class="dist-bar-wrap">
-      <div class="dist-bar-header">
-        <span class="dist-bar-name">${d.name}</span>
-        <span class="dist-bar-val" style="color:${d.color}">${fmtUSD(d.val)} · ${(pct*100).toFixed(1)}%</span>
-      </div>
-      <div class="dist-bar-track">
-        <div class="dist-bar-fill" style="width:${Math.min(pct*100,100)}%;background:${d.color}"></div>
-      </div>
-    </div>`;
+  // Resto del render (barras + juris)
+  var total = dist.reduce(function(s,d){ return s+d.val; }, 0);
+  var html = notaDE;
+  html += dist.map(function(d) {
+    var pct = total > 0 ? d.val/total : 0;
+    return '<div class="dist-bar-wrap">' +
+      '<div class="dist-bar-header">' +
+        '<span class="dist-bar-name">' + d.name + '</span>' +
+        '<span class="dist-bar-val">' + fmtUSD(d.val) + ' <span style="color:var(--text3)">(' + (pct*100).toFixed(1) + '%)</span></span>' +
+      '</div>' +
+      '<div class="dist-bar-track">' +
+        '<div class="dist-bar-fill" style="width:' + (pct*80) + '%;background:' + d.color + '"></div>' +
+      '</div>' +
+    '</div>';
   }).join('');
-
-  // Jurisdicción
-  const totReg = data.reduce((s,d) => s + d.totalRec, 0);
-  document.getElementById('juris-cards').innerHTML = `
-    <div class="juris-card provincia">
-      <div class="juris-name">PROVINCIA (TOTAL)</div>
-      <div class="juris-usd">${fmtUSD(totFob*0.4385)}</div>
-      <div class="juris-ars">ARS ${(totFob*0.4385*TC_ARS/1e9).toFixed(1)}B</div>
-    </div>
-    <div class="juris-card nacion">
-      <div class="juris-name">NACIÓN</div>
-      <div class="juris-usd">${fmtUSD(totFob*0.325)}</div>
-      <div class="juris-ars">ARS ${(totFob*0.325*TC_ARS/1e9).toFixed(1)}B</div>
-    </div>
-    <div class="juris-card municipio">
-      <div class="juris-name">EXTRANJERO</div>
-      <div class="juris-usd">${fmtUSD(totFob*0.236)}</div>
-      <div class="juris-ars">ARS ${(totFob*0.236*TC_ARS/1e9).toFixed(1)}B</div>
-    </div>`;
-
-  // Distribución interna regalías provincia
-  const provDist = [
-    { name:'F.F. Desarrollo Regional (3.75%)', pct:1.0,  color:'var(--province)',  tasa:0.0375 },
-    { name:'Coparticipación General',           pct:0.50, color:'var(--gold2)',     tasa:0.0105 },
-    { name:'F.F. Obras Infraestructura',        pct:0.15, color:'var(--nation)',    tasa:0.00525},
-    { name:'Coparticipación Municipio',         pct:0.15, color:'var(--muni)',      tasa:0.00315},
-    { name:'Coparticipación SECMIN',            pct:0.10, color:'var(--silver2)',   tasa:0.0021 },
-  ];
-  const fobTot = data.reduce((s,d) => s+d.fobTotal, 0);
-  const provBars = document.getElementById('prov-bars');
-  provBars.innerHTML = provDist.map(d => {
-    const usd = fobTot * d.tasa;
-    return `<div class="dist-bar-wrap">
-      <div class="dist-bar-header">
-        <span class="dist-bar-name">${d.name}</span>
-        <span class="dist-bar-val" style="color:${d.color}">${fmtUSD(usd)}</span>
-      </div>
-      <div class="dist-bar-track">
-        <div class="dist-bar-fill" style="width:${d.pct*80}%;background:${d.color}"></div>
-      </div>
-    </div>`;
-  }).join('');
+  document.getElementById('dist-bars').innerHTML = html;
 }
+
 
 // ── RENDER ESCENARIOS ─────────────────────────────────────────
 function renderEscenarios() {
@@ -2122,8 +2091,7 @@ function renderAll() {
 }
 
 // ── ANTHROPIC API KEY ────────────────────────────────────────
-const _k = ['sk-ant-api03-fe7UxJ0','KSLwdFMQOEKznsIlesA0','hXLjHU2aTN0dQ83rF7ZV','szzgtE-Ge-mgI7EVyb_8VVXzfOOPhODjCZmFPiQ-YyYfFgAA'];
-let ANTHROPIC_KEY = _k.join('');
+let ANTHROPIC_KEY = ''; // Nunca guardar claves privadas dentro del HTML o del repositorio
 
 function setSpotUI(au, ag, fuente) {
   const ts = new Date().toLocaleTimeString('es-AR');
@@ -2163,19 +2131,32 @@ function usarPreciosReferencia(motivo) {
     { price:69.71,   open:67.91,   high:69.77,   low:67.87,   chg:+2.65 },
     '📅 Fallback · Cierre 19/06/2026'
   );
-  document.getElementById('au-ts').textContent = '⚠ Sin conexión — estimación basada en datos recientes';
-  document.getElementById('ag-ts').textContent = '⚠ Sin conexión — estimación basada en datos recientes';
+  document.getElementById('au-ts').textContent = '⚠ Precio de referencia — no es cotización en vivo';
+  document.getElementById('ag-ts').textContent = '⚠ Precio de referencia — no es cotización en vivo';
+  const badge = document.getElementById('precio-fecha-badge');
+  if (badge) badge.textContent = '⚠ Precios de referencia cargados (cierre 19/06/2026). Configurá tu clave para consultar valores actuales.';
 }
 
 async function fetchSpot() {
-  document.getElementById('au-price').innerHTML = '<span class="loading-text">···</span>';
-  document.getElementById('ag-price').innerHTML = '<span class="loading-text">···</span>';
-  document.getElementById('au-ts').textContent  = '⚡ Buscando precio en tiempo real...';
-  document.getElementById('ag-ts').textContent  = '⚡ Buscando precio en tiempo real...';
+  if (!ANTHROPIC_KEY || !ANTHROPIC_KEY.startsWith('sk-ant-')) {
+    usarPreciosReferencia('sin-api-key');
+    return;
+  }
+  // Solo mostrar "···" si todavía no hay precios cargados
+  if (pAu === 0) {
+    document.getElementById('au-price').innerHTML = '<span class="loading-text">···</span>';
+    document.getElementById('ag-price').innerHTML = '<span class="loading-text">···</span>';
+  }
+  // Actualizar timestamp sin borrar los precios actuales
+  document.getElementById('au-ts').textContent = '⚡ Actualizando precio...';
+  document.getElementById('ag-ts').textContent = '⚡ Actualizando precio...';
 
   try {
+    var controller = new AbortController();
+    var _ft = setTimeout(function(){ controller.abort(); }, 12000);
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
+      signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': ANTHROPIC_KEY,
@@ -2210,13 +2191,16 @@ Todos valores numéricos en USD. chg = variación % del día.`,
     if (!prices.au?.price || prices.au.price < 100) throw new Error('Precio oro inválido');
     if (!prices.ag?.price || prices.ag.price < 1)   throw new Error('Precio plata inválido');
 
+    clearTimeout(_ft);
     setSpotUI(prices.au, prices.ag, '⚡ Claude · Tiempo real');
 
   } catch(e) {
+    clearTimeout(_ft);
+    if (e.name === 'AbortError') { usarPreciosReferencia('timeout-12s'); return; }
     console.error('fetchSpot error:', e.message);
     if (e.message.includes('401') || e.message.includes('403')) {
       // Key inválida — limpiar y pedir nueva
-      localStorage.removeItem('calcatreu_api_key');
+      removeStoredKey();
       ANTHROPIC_KEY = '';
       mostrarModalKey();
       document.getElementById('modal-error').textContent = '⚠ Key inválida o revocada — ingresá una nueva';
@@ -2232,19 +2216,31 @@ Todos valores numéricos en USD. chg = variación % del día.`,
 }
 
 // ── TABS ──────────────────────────────────────────────────────
-function showTab(id) {
+function showTab(id, button) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('tab-' + id).classList.add('active');
-  event.target.classList.add('active');
+
+  const panel = document.getElementById('tab-' + id);
+  if (!panel) {
+    console.warn('Pestaña no encontrada:', id);
+    return;
+  }
+  panel.classList.add('active');
+
+  const activeButton = button || Array.from(document.querySelectorAll('.tab')).find(btn =>
+    (btn.getAttribute('onclick') || '').includes("'" + id + "'")
+  );
+  if (activeButton) activeButton.classList.add('active');
+
   if (pAu > 0) {
     const data = calcData(pAu, pAg);
     if (id === 'impuesto')         renderImpuesto(data);
     if (id === 'fortalecer')       renderFortalecer(data);
     if (id === 'distribucion')     { renderDistribucion(data); renderCopatBars(); }
     if (id === 'coparticipacion')  renderCoparticipacion();
-    if (id === 'empleo')           renderEmpleo();
-    if (id === 'compras')          renderCompras();
+    // Compras y Empleo ya contienen contenido estático en el HTML.
+    if (id === 'empleo' && typeof renderEmpleo === 'function') renderEmpleo();
+    if (id === 'compras' && typeof renderCompras === 'function') renderCompras();
   }
 }
 
@@ -2287,6 +2283,11 @@ Respondé en español, de forma técnica pero clara. Máximo 4 párrafos. Enfoca
 async function askAI(presetQuery) {
   const query = presetQuery || document.getElementById('ai-query').value.trim();
   if (!query) return;
+  if (!ANTHROPIC_KEY || !ANTHROPIC_KEY.startsWith('sk-ant-')) {
+    mostrarModalKey();
+    document.getElementById('modal-error').textContent = 'Ingresá una clave válida para utilizar el análisis con IA.';
+    return;
+  }
   if (pAu === 0) { document.getElementById('ai-output').innerHTML = '<span style="color:var(--red)">Esperá que carguen las cotizaciones primero.</span>'; return; }
 
   const output = document.getElementById('ai-output');
@@ -2326,6 +2327,11 @@ document.getElementById('ai-query').addEventListener('keydown', e => {
 async function fetchPrecioHoy() {
   const btn = document.getElementById('btn-hoy');
   const status = document.getElementById('manual-status');
+  if (!ANTHROPIC_KEY || !ANTHROPIC_KEY.startsWith('sk-ant-')) {
+    mostrarModalKey();
+    document.getElementById('modal-error').textContent = 'Ingresá una clave válida para consultar el precio actual.';
+    return;
+  }
   btn.textContent = '⏳ Buscando...';
   btn.disabled = true;
   status.textContent = '';
@@ -2333,7 +2339,12 @@ async function fetchPrecioHoy() {
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 500,
@@ -2646,27 +2657,45 @@ function copat_selectAll() { [1,2,3,4,5,6,7,8].forEach(y=>copat_years_selected.a
 function copat_clearAll() { copat_years_selected.clear(); renderCopatBars(); }
 
 // ── INIT ─────
-// Localhost CORS fix: si no hay precios en 4 segundos, usar referencia
-setTimeout(() => {
-  if (pAu === 0) {
-    console.warn('Timeout: usando precios de referencia (posible CORS en localhost)');
-    usarPreciosReferencia('timeout-cors');
-  }
-}, 4000);
+// CARGA INMEDIATA — precios de referencia al instante, API en paralelo
+usarPreciosReferencia('inicio-inmediato');
 
-─────────────────────────────────────────────────
+// ─────────────────────────────────────────────────
 updateTS();
 setInterval(updateTS, 1000);
 
-// Mostrar modal si no hay key, sino intentar fetch
-// Siempre mostrar modal para ingresar/confirmar key
-mostrarModalKey();
-setInterval(() => {
+// Si hay una clave guardada, actualizar el precio en paralelo.
+// Sin clave, el dashboard queda operativo con los precios de referencia.
+var savedKey = getStoredKey();
+if (savedKey && savedKey.startsWith('sk-ant-')) {
+  ANTHROPIC_KEY = savedKey;
+  setTimeout(function(){ fetchSpot(); }, 800);
+}
+setInterval(function() {
   if (ANTHROPIC_KEY && ANTHROPIC_KEY.length > 20) fetchSpot();
-}, 60 * 60 * 1000); // cada 60 min
+}, 60 * 60 * 1000);
+
+function getStoredKey() {
+  try { return localStorage.getItem('calcatreu_api_key') || ''; }
+  catch (e) { console.warn('localStorage no disponible:', e.message); return ''; }
+}
+
+function setStoredKey(key) {
+  try { setStoredKey(key); return true; }
+  catch (e) { console.warn('No se pudo guardar la clave:', e.message); return false; }
+}
+
+function removeStoredKey() {
+  try { localStorage.removeItem('calcatreu_api_key'); }
+  catch (e) { console.warn('No se pudo limpiar la clave:', e.message); }
+}
 
 function mostrarModalKey() {
   document.getElementById('modal-key').style.display = 'flex';
+}
+
+function cerrarModalKey() {
+  document.getElementById('modal-key').style.display = 'none';
 }
 
 function guardarKey() {
@@ -2676,19 +2705,21 @@ function guardarKey() {
     return;
   }
   ANTHROPIC_KEY = key;
-  localStorage.setItem('calcatreu_api_key', key);
+  setStoredKey(key);
   document.getElementById('modal-error').textContent = '';
   document.getElementById('modal-key').style.display = 'none';
   fetchSpot();
 }
 
 function limpiarLocalStorage() {
-  localStorage.clear();
-  location.reload();
+  removeStoredKey();
+  ANTHROPIC_KEY = '';
+  cerrarModalKey();
+  usarPreciosReferencia('clave-eliminada');
 }
 
 function cambiarKey() {
-  localStorage.removeItem('calcatreu_api_key');
+  removeStoredKey();
   ANTHROPIC_KEY = '';
   document.getElementById('input-api-key').value = '';
   document.getElementById('modal-error').textContent = '';
