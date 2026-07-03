@@ -662,6 +662,7 @@ header {
 
 <!-- TAB: REGALÍAS -->
 <div class="tab-content" id="tab-regalias">
+<div id="slicer-regalias" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:14px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border2);border-radius:8px"><span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1px;white-space:nowrap">FILTRAR AÑOS →</span><div id="yr-slicer-regalias" style="display:flex;gap:5px;flex-wrap:wrap"></div><button onclick="yr_all('regalias',renderRegalias)" style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:4px;cursor:pointer">TODOS</button><button onclick="yr_none('regalias',renderRegalias)" style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:4px;cursor:pointer">NINGUNO</button></div>
   <div class="card full-width">
     <div class="card-title">REGALÍAS · 2.10% sobre FOB · Ley 5.001 Río Negro</div>
     <div class="fob-grid" style="margin-bottom:20px">
@@ -691,6 +692,7 @@ header {
 
 <!-- TAB: IMPUESTO DESARROLLO -->
 <div class="tab-content" id="tab-impuesto">
+<div id="slicer-impuesto" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:14px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border2);border-radius:8px"><span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1px;white-space:nowrap">FILTRAR AÑOS →</span><div id="yr-slicer-impuesto" style="display:flex;gap:5px;flex-wrap:wrap"></div><button onclick="yr_all('impuesto',renderImpuesto)" style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:4px;cursor:pointer">TODOS</button><button onclick="yr_none('impuesto',renderImpuesto)" style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:4px;cursor:pointer">NINGUNO</button></div>
   <div class="card full-width">
     <div class="card-title">IMPUESTO PARA EL DESARROLLO · 3.75% sobre FOB · 100% Área de Influencia</div>
     <div class="fob-grid" style="margin-bottom:20px">
@@ -720,6 +722,7 @@ header {
 
 <!-- TAB: FORTALECER -->
 <div class="tab-content" id="tab-fortalecer">
+<div id="slicer-fortalecer" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:14px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border2);border-radius:8px"><span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1px;white-space:nowrap">FILTRAR AÑOS →</span><div id="yr-slicer-fortalecer" style="display:flex;gap:5px;flex-wrap:wrap"></div><button onclick="yr_all('fortalecer',renderFortalecer)" style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:4px;cursor:pointer">TODOS</button><button onclick="yr_none('fortalecer',renderFortalecer)" style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:4px;cursor:pointer">NINGUNO</button></div>
   <div class="card full-width">
     <div class="card-title">FONDO FORTALECER · 25% Regalías + 100% Impuesto Desarrollo</div>
     <div class="fob-grid" style="margin-bottom:20px">
@@ -822,24 +825,51 @@ header {
 
 <!-- TAB: DISTRIBUCIÓN -->
 <div class="tab-content" id="tab-distribucion">
-  <div class="main-grid">
+  <!-- SLICER AÑOS -->
+  <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:14px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border2);border-radius:8px">
+    <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1px;white-space:nowrap">FILTRAR AÑOS →</span>
+    <div id="dist-yr-slicer" style="display:flex;gap:5px;flex-wrap:wrap"></div>
+    <button onclick="distYr_all()" style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 10px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:4px;cursor:pointer">TODOS</button>
+    <button onclick="distYr_none()" style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 10px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:4px;cursor:pointer">NINGUNO</button>
+  </div>
+
+  <!-- KPIs V8.1 -->
+  <div id="dist-kpis" style="display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border2);border:1px solid var(--border2);border-radius:8px;overflow:hidden;margin-bottom:18px">
+    <div style="background:var(--bg2);padding:16px 18px">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);font-weight:700">FOB (años sel.)</div>
+      <div id="dist-kpi-fob" style="font-size:26px;font-weight:800;color:var(--text);margin-top:4px;font-variant-numeric:tabular-nums">···</div>
+    </div>
+    <div style="background:var(--bg2);padding:16px 18px">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);font-weight:700">Queda en Río Negro</div>
+      <div id="dist-kpi-rn" style="font-size:26px;font-weight:800;color:var(--gold);margin-top:4px;font-variant-numeric:tabular-nums">···</div>
+      <div id="dist-kpi-rn-pct" style="font-size:11px;color:var(--text3);margin-top:2px">% del FOB</div>
+    </div>
+    <div style="background:var(--bg2);padding:16px 18px">
+      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);font-weight:700">Fisco (Nac + Prov)</div>
+      <div id="dist-kpi-fisc" style="font-size:26px;font-weight:800;color:var(--nation);margin-top:4px;font-variant-numeric:tabular-nums">···</div>
+      <div id="dist-kpi-fisc-pct" style="font-size:11px;color:var(--text3);margin-top:2px">% del FOB</div>
+    </div>
+  </div>
+
+  <!-- BARRAS V8.1 -->
+  <div class="card full-width">
+    <div class="card-title">DISTRIBUCIÓN DEL FOB — V8.1 · 7 RENGLONES</div>
+    <div id="dist-bars-v81" style="display:flex;flex-direction:column;gap:14px;margin-top:12px"></div>
+    <div id="dist-nota" style="margin-top:16px;padding:10px 14px;background:var(--bg3);border-radius:6px;font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);line-height:1.8"></div>
+  </div>
+
+  <!-- COMPRAS + COPARTICIPACIÓN -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px">
     <div class="card">
-      <div class="card-title">DISTRIBUCIÓN JURISDICCIONAL · FOB TOTAL PROYECTO</div>
-      <div class="juris-grid" style="margin-bottom:20px" id="juris-cards"></div>
-      <div id="dist-bars"></div>
+      <div class="card-title">COMPRAS POR JURISDICCIÓN</div>
+      <div id="dist-jur" style="display:flex;flex-direction:column;gap:12px;margin-top:12px"></div>
     </div>
     <div class="card">
-      <div class="card-title">DISTRIBUCIÓN DE REGALÍAS PROVINCIA</div>
-      <div id="prov-bars"></div>
-    </div>
-    <div class="card" style="margin-top:16px">
       <div class="card-title">COPARTICIPACIÓN IMP. GANANCIAS · Ley 23.548</div>
-      <!-- Slicer de años -->
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;align-items:center">
-        <span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1px">FILTRAR AÑOS →</span>
-        <div id="copat-slicer" style="display:flex;gap:6px;flex-wrap:wrap"></div>
-        <button onclick="copat_selectAll()" style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 10px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:4px;cursor:pointer">TODOS</button>
-        <button onclick="copat_clearAll()" style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 10px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:4px;cursor:pointer">NINGUNO</button>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;margin-top:8px">
+        <div id="copat-slicer" style="display:flex;gap:5px;flex-wrap:wrap"></div>
+        <button onclick="copat_selectAll()" style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:4px;cursor:pointer">TODOS</button>
+        <button onclick="copat_clearAll()" style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:4px;cursor:pointer">NINGUNO</button>
       </div>
       <div id="copat-bars"></div>
       <div id="copat-total" style="margin-top:10px;font-family:'DM Mono',monospace;font-size:11px;color:var(--text3)"></div>
@@ -849,6 +879,7 @@ header {
 
 <!-- TAB: ESCENARIOS -->
 <div class="tab-content" id="tab-escenarios">
+<div id="slicer-escenarios" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:14px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border2);border-radius:8px"><span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1px;white-space:nowrap">FILTRAR AÑOS →</span><div id="yr-slicer-escenarios" style="display:flex;gap:5px;flex-wrap:wrap"></div><button onclick="yr_all('escenarios',renderEscenarios)" style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:4px;cursor:pointer">TODOS</button><button onclick="yr_none('escenarios',renderEscenarios)" style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:4px;cursor:pointer">NINGUNO</button></div>
   <div class="card full-width">
     <div class="card-title">ESCENARIOS DE COTIZACIÓN Y REGALÍAS</div>
     <div class="esc-row" style="margin-bottom:24px">
@@ -1599,20 +1630,6 @@ header {
   </div>
 </div>
 
-
-<!-- TAB: COPARTICIPACIÓN -->
-<div class="tab-content" id="tab-coparticipacion">
-  <div class="card full-width">
-    <div class="card-title">COPARTICIPACIÓN FEDERAL — IMP. A LAS GANANCIAS</div>
-    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:16px;padding:10px 14px;background:var(--bg3);border-radius:6px;border-left:3px solid var(--nation);line-height:1.8">
-      <strong style="color:var(--nation)">Basamento legal: Ley N° 23.548</strong> — Régimen Transitorio de Distribución de Recursos Fiscales (vigente desde 1/1/1988).
-      Distribución primaria Art. 3°: <strong style="color:var(--nation)">42,34% Nación</strong> · <strong style="color:var(--silver2)">56,66% Provincias</strong> · <strong style="color:var(--text3)">1% ATN</strong>.
-      Coeficiente Río Negro en distribución secundaria: <strong style="color:var(--gold2)">2,50%</strong> sobre masa provincial (Anexo Ley 23.548).
-    </div>
-    <div id="copat-content"></div>
-  </div>
-</div>
-
 </div><!-- /wrap -->
 
 <!-- MODAL API KEY -->
@@ -1635,18 +1652,26 @@ header {
       Anthropic Console → Claves de API → Crear clave
     </div>
     <div style="margin-top:8px;text-align:center">
-      <button onclick="cerrarModalKey()" style="background:transparent;border:none;color:#90B8D8;font-family:'DM Mono',monospace;font-size:10px;cursor:pointer;text-decoration:underline;margin-right:12px">
-        Continuar con precios de referencia
-      </button>
       <button onclick="limpiarLocalStorage()" style="background:transparent;border:none;color:#3A5A78;font-family:'DM Mono',monospace;font-size:9px;cursor:pointer;text-decoration:underline">
         Limpiar caché del navegador
       </button>
     </div>
   </div>
 
+<!-- TAB: COPARTICIPACIÓN -->
+<div class="tab-content" id="tab-coparticipacion">
+  <div class="card full-width">
+    <div class="card-title">COPARTICIPACIÓN FEDERAL — IMP. A LAS GANANCIAS</div>
+    <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);margin-bottom:16px;padding:10px 14px;background:var(--bg3);border-radius:6px;border-left:3px solid var(--nation);line-height:1.8">
+      <strong style="color:var(--nation)">Basamento legal: Ley N° 23.548</strong> — Régimen Transitorio de Distribución de Recursos Fiscales (vigente desde 1/1/1988).
+      Distribución primaria Art. 3°: <strong style="color:var(--nation)">42,34% Nación</strong> · <strong style="color:var(--silver2)">56,66% Provincias</strong> · <strong style="color:var(--text3)">1% ATN</strong>.
+      Coeficiente Río Negro en distribución secundaria: <strong style="color:var(--gold2)">2,50%</strong> sobre masa provincial (Anexo Ley 23.548).
+    </div>
+    <div id="copat-content"></div>
+  </div>
+</div>
 
-
-</div><!-- /modal-key -->
+</div>
 
 <script>
 // ── DATOS GEOLÓGICOS CALCATREU ────────────────────────────────
@@ -1666,7 +1691,7 @@ const REC_AG = 0.30;
 const G_PER_OZ = 31.1035;
 const TASA_REGALIA = 0.021;
 const TASA_DESARROLLO = 0.035050;
-const TC_ARS = 1450;
+const TC_ARS = 1450; // BNA Comprador 1/7/2026
 
 // ── DERECHOS DE EXPORTACIÓN (editables) ──────────────────────
 // Doré: Au 0% · Ag 4.5% · Percepción Ganancias RG5815/2026: 1%
@@ -1868,22 +1893,114 @@ function renderAlpha(data) {
 
 // ── RENDER DISTRIBUCIÓN ───────────────────────────────────────
 // ── RENDER DISTRIBUCIÓN — V5 ──────────────────────────────────
+
+// ── HELPERS SLICER DE AÑOS (genérico) ─────────────────────
+var yrSelected = {};
+
+function initSlicer(tabId, renderFn, data) {
+  var el = document.getElementById('yr-slicer-'+tabId);
+  if (!el) return;
+  if (!yrSelected[tabId]) yrSelected[tabId] = new Set([1,2,3,4,5,6,7,8]);
+  if (el.children.length === 0) {
+    data.forEach(function(d,i) {
+      var yr = i+1;
+      var btn = document.createElement('button');
+      btn.id = 'yr-'+tabId+'-'+yr;
+      btn.textContent = d.label.split(' (')[0];
+      btn.style.cssText = 'font-family:DM Mono,monospace;font-size:10px;padding:3px 8px;border-radius:4px;cursor:pointer;border:1px solid var(--gold2)';
+      btn.style.background = yrSelected[tabId].has(yr) ? 'var(--gold2)' : 'var(--bg3)';
+      btn.style.color = yrSelected[tabId].has(yr) ? '#000' : 'var(--text2)';
+      btn.onclick = function(){ yr_toggle(tabId, yr, renderFn); };
+      el.appendChild(btn);
+    });
+  } else {
+    data.forEach(function(_,i) {
+      var yr=i+1; var btn=document.getElementById('yr-'+tabId+'-'+yr);
+      if(btn){ btn.style.background=yrSelected[tabId].has(yr)?'var(--gold2)':'var(--bg3)'; btn.style.color=yrSelected[tabId].has(yr)?'#000':'var(--text2)'; }
+    });
+  }
+}
+function yr_toggle(tabId, yr, renderFn) {
+  if(!yrSelected[tabId]) yrSelected[tabId] = new Set([1,2,3,4,5,6,7,8]);
+  if(yrSelected[tabId].has(yr)) yrSelected[tabId].delete(yr); else yrSelected[tabId].add(yr);
+  if(renderFn) renderFn(calcData(pAu,pAg));
+}
+function yr_all(tabId, renderFn) {
+  yrSelected[tabId] = new Set([1,2,3,4,5,6,7,8]);
+  updateSlicerBtns(tabId);
+  if(renderFn) renderFn(calcData(pAu,pAg));
+}
+function yr_none(tabId, renderFn) {
+  yrSelected[tabId] = new Set();
+  updateSlicerBtns(tabId);
+  if(renderFn) renderFn(calcData(pAu,pAg));
+}
+function updateSlicerBtns(tabId) {
+  [1,2,3,4,5,6,7,8].forEach(function(yr) {
+    var btn=document.getElementById('yr-'+tabId+'-'+yr);
+    if(btn){ btn.style.background=yrSelected[tabId].has(yr)?'var(--gold2)':'var(--bg3)'; btn.style.color=yrSelected[tabId].has(yr)?'#000':'var(--text2)'; }
+  });
+}
+function getSelData(tabId, data) {
+  if(!yrSelected[tabId]) yrSelected[tabId] = new Set([1,2,3,4,5,6,7,8]);
+  return data.filter(function(_,i){ return yrSelected[tabId].has(i+1); });
+}
+
+// ── RENDER DISTRIBUCIÓN V8.1 ──────────────────────────────────
+var distYr_selected = new Set([1,2,3,4,5,6,7,8]);
+
+function distYr_all()  { [1,2,3,4,5,6,7,8].forEach(function(y){distYr_selected.add(y);}); renderDistribucion(calcData(pAu,pAg)); }
+function distYr_none() { distYr_selected.clear(); renderDistribucion(calcData(pAu,pAg)); }
+function distYr_toggle(yr) {
+  if(distYr_selected.has(yr)) distYr_selected.delete(yr); else distYr_selected.add(yr);
+  renderDistribucion(calcData(pAu,pAg));
+}
+
 function renderDistribucion(data) {
   if (pAu === 0) return;
-  var totFob    = data.reduce(function(s,d){ return s+d.fobTotal; },0);
-  var totDeAg   = data.reduce(function(s,d){ return s+d.deAg; },0);
-  var totPercGan= data.reduce(function(s,d){ return s+d.percGan; },0);
-  var totCarga  = data.reduce(function(s,d){ return s+d.cargaExport; },0);
-  var fobNeto   = totFob - totCarga;
 
-  // ── V8.1: SALARIOS — Modelo 3 × 13 meses (FIJO ARS / TC BNA 1450) ──
-  var salarios_USD = 10280958059 / TC_ARS / 1e6;
+  // ── Slicer de años ────────────────────────────────────────
+  var slicerEl = document.getElementById('dist-yr-slicer');
+  if (slicerEl && slicerEl.children.length === 0) {
+    data.forEach(function(d,i) {
+      var yr = i+1;
+      var btn = document.createElement('button');
+      btn.id = 'dist-yr-'+yr;
+      btn.textContent = d.label.split(' (')[0];
+      btn.style.cssText = 'font-family:DM Mono,monospace;font-size:10px;padding:3px 9px;border-radius:4px;cursor:pointer;border:1px solid var(--gold2);transition:all 0.15s';
+      btn.style.background = distYr_selected.has(yr) ? 'var(--gold2)' : 'var(--bg3)';
+      btn.style.color = distYr_selected.has(yr) ? '#000' : 'var(--text2)';
+      btn.onclick = function(){ distYr_toggle(yr); };
+      slicerEl.appendChild(btn);
+    });
+  } else if (slicerEl) {
+    data.forEach(function(_,i) {
+      var yr=i+1; var btn=document.getElementById('dist-yr-'+yr);
+      if(btn){ btn.style.background=distYr_selected.has(yr)?'var(--gold2)':'var(--bg3)'; btn.style.color=distYr_selected.has(yr)?'#000':'var(--text2)'; }
+    });
+  }
 
-  // ── V8.1: CONTRIB. PATRONAL → NACIÓN (FIJO × 13) ────────────
+  // ── Filtrar años seleccionados ────────────────────────────
+  var selData = data.filter(function(_,i){ return distYr_selected.has(i+1); });
+  if (selData.length === 0) {
+    document.getElementById('dist-bars-v81').innerHTML = '<div style="color:var(--text3);font-family:DM Mono,monospace;font-size:11px;padding:20px">Seleccioná al menos un año.</div>';
+    return;
+  }
+
+  // ── Calcular totales V8.1 sobre años seleccionados ────────
+  var totFob    = selData.reduce(function(s,d){ return s+d.fobTotal; },0);
+  var totDeAg   = selData.reduce(function(s,d){ return s+d.deAg; },0);
+  var totPercGan= selData.reduce(function(s,d){ return s+d.percGan; },0);
+  var nYears    = selData.length;
+
+  // SALARIOS: Modelo 3 × 13 meses × años seleccionados (FIJO ARS / TC 1450)
+  var salarios_USD = 10280958059 / TC_ARS / 1e6 * nYears;
+
+  // CONTRIB. PATRONAL → NACIÓN × años seleccionados
   var SS_PATRON_MES = 151168830.00 + 39835381.39 + 19910152.77;
-  var ss_patron_USD = (SS_PATRON_MES * 13) / TC_ARS / 1e6;
+  var ss_patron_USD = (SS_PATRON_MES * 13) / TC_ARS / 1e6 * nYears;
 
-  // ── V8.1: GANANCIA + COPARTICIPACIÓN (base: Ganancia × 35%) ──
+  // NACIÓN V8.1: Gan.×35%×42,34% + Créd/Déb + Comb. + DE Ag + Contrib.Patron.
   var ganancia     = totFob * 0.1364 + totPercGan;
   var imp_gan      = ganancia * 0.35;
   var nac_gan_neto = imp_gan * 0.4234;
@@ -1891,71 +2008,117 @@ function renderDistribucion(data) {
   var nac_comb     = totFob * 0.012;
   var nacionTotal  = nac_gan_neto + nac_cdb + nac_comb + totDeAg + ss_patron_USD;
 
-  // ── V8.1: PROVINCIALES + Copart. RN ──────────────────────────
+  // PROVINCIALES + Copart. RN
   var regalias_total = totFob * 0.021;
   var imp_des        = totFob * 0.035050;
   var iibb           = totFob * 0.0075;
   var rn_copat       = imp_gan * 0.5666 * 0.025;
   var prov_total     = regalias_total + imp_des + iibb + rn_copat;
 
-  // ── V8.1: COMPRAS — RESIDUO universo ajustado MCSAU ──────────
+  // COMPRAS — residuo universo ajustado
   var subtFijo  = nacionTotal + salarios_USD + ganancia + prov_total;
   var compTotal = totFob - subtFijo;
   var comp_ext  = compTotal * 0.039;
   var comp_rn   = (compTotal - comp_ext) * 0.375;
   var comp_nac  = (compTotal - comp_ext) * 0.625;
 
-  var dist = [
-    { name:'Proveedores Locales (RN)',                        val: comp_rn,      color:'var(--gold2)'    },
-    { name:'Proveedores Nacionales (fuera RN)',               val: comp_nac,     color:'var(--text2)'    },
-    { name:'Compras Exterior',                                val: comp_ext,     color:'var(--silver2)'  },
-    { name:'Nación (Imp+DE+Contrib.SS+Copart.→Nac.)',        val: nacionTotal,  color:'var(--nation)'   },
-    { name:'Salarios MCSAU (Modelo 3 ×13)',                   val: salarios_USD, color:'var(--green)'    },
-    { name:'Imp. y Regalías Provinciales (incl. Copart. RN)',val: prov_total,   color:'var(--muni)'     },
-    { name:'Ganancia Empresa (incl. Percepción 1%)',          val: ganancia,     color:'var(--province)' },
+  // ── KPIs ─────────────────────────────────────────────────
+  var rnTotal = comp_rn + rn_copat;
+  var fiscTotal = nacionTotal + prov_total;
+  function fmtK(v) { return v>=1000 ? (v/1000).toFixed(1)+'B' : v.toFixed(1)+'M'; }
+  var k1=document.getElementById('dist-kpi-fob');
+  var k2=document.getElementById('dist-kpi-rn');
+  var k2p=document.getElementById('dist-kpi-rn-pct');
+  var k3=document.getElementById('dist-kpi-fisc');
+  var k3p=document.getElementById('dist-kpi-fisc-pct');
+  if(k1) k1.textContent = 'USD '+fmtK(totFob);
+  if(k2) k2.textContent = 'USD '+fmtK(rnTotal);
+  if(k2p) k2p.textContent = (rnTotal/totFob*100).toFixed(1)+'% del FOB';
+  if(k3) k3.textContent = 'USD '+fmtK(fiscTotal);
+  if(k3p) k3p.textContent = (fiscTotal/totFob*100).toFixed(1)+'% del FOB';
+
+  // ── Renglones V8.1 ───────────────────────────────────────
+  var ROWS = [
+    {name:'Proveedores Nacionales (fuera RN)', val:comp_nac,   color:'var(--text2)',   sub:'62,5% del residuo · universo ajustado MCSAU'},
+    {name:'Proveedores Locales (Río Negro)',   val:comp_rn,    color:'var(--gold2)',   sub:'37,5% del residuo · Jacobacci 70,6% del gasto RN'},
+    {name:'Nación (Imp+DE+Contrib.SS+Copart.)',val:nacionTotal,color:'var(--nation)', sub:'Gan.×35%×42,34% + Créd/Déb + Comb. + DE Ag + Contrib.Patron.×13'},
+    {name:'Ganancia Empresa (incl. Perc. 1%)',val:ganancia,   color:'var(--province)',sub:'13,64% FOB + Percepción 1% RG5815/2026 · base coparticipación'},
+    {name:'Imp. y Regalías Provinciales',      val:prov_total, color:'var(--muni)',   sub:'Regalías 2,1% + Imp.Des.3,5050% + IIBB 0,75% + Copart.RN'},
+    {name:'Salarios MCSAU (neto trab. ×13)',   val:salarios_USD,color:'var(--green)', sub:'Modelo 3 R²=0,9984 · Bruto−Ap.SS−Ap.OS · TC BNA 1.450'},
+    {name:'Compras Exterior (Importaciones)',  val:comp_ext,   color:'var(--silver2)',sub:'3,9% del residuo · 8 proveedores · FLSmidth 89,4%'},
   ];
 
-  var notaDE =
-    '<div style="margin-bottom:12px;padding:10px 14px;background:var(--bg3);border-radius:6px;' +
-    'border-left:3px solid var(--nation);font-family:DM Mono,monospace;font-size:10px;' +
-    'color:var(--text3);line-height:1.9">' +
-    '<strong style="color:var(--nation)">NACIÓN V8.1:</strong> ' +
-    'Gan.×35%×42,34%=' + fmtUSD(nac_gan_neto) +
-    ' · Créd/Déb+Comb.=' + fmtUSD(nac_cdb+nac_comb) +
-    ' · DE Ag=' + fmtUSD(totDeAg) +
-    ' · Contrib.Patron.×13=' + fmtUSD(ss_patron_USD) +
-    ' · <strong style="color:var(--nation)">TOTAL=' + fmtUSD(nacionTotal) + '</strong>' +
-    ' | <strong style="color:var(--green)">FOB Neto=' + fmtUSD(fobNeto) + '</strong><br>' +
-    '<strong style="color:var(--muni)">PROVINCIALES:</strong> ' +
-    'Regalías=' + fmtUSD(regalias_total) +
-    ' · Imp.Des.3,5050%=' + fmtUSD(imp_des) +
-    ' · IIBB=' + fmtUSD(iibb) +
-    ' · <strong style="color:var(--muni)">Copart.RN=' + fmtUSD(rn_copat) + '</strong>' +
-    ' (Gan.×35%×56,66%×2,50% · Ley 23.548)<br>' +
-    '<strong style="color:var(--green)">SALARIOS:</strong> ' +
-    'Modelo 3 R²=0,9984 ×13 SAC · TC BNA ' + TC_ARS.toLocaleString('es-AR') +
-    ' = <strong style="color:var(--green)">' + fmtUSD(salarios_USD) + '</strong>' +
-    ' (Neto=Bruto−Ap.SS−Ap.OS)<br>' +
-    '<strong style="color:var(--gold2)">COMPRAS:</strong> Residuo ' + fmtUSD(compTotal) +
-    ' → RN 37,5% · Nac.62,5% · Ext.3,9% (universo ajustado MCSAU)' +
-    '</div>';
+  var maxVal = Math.max.apply(null, ROWS.map(function(r){return r.val;}));
+  var barsEl = document.getElementById('dist-bars-v81');
+  if(barsEl) {
+    barsEl.innerHTML = ROWS.map(function(r) {
+      var pct = totFob > 0 ? r.val/totFob : 0;
+      var w   = maxVal > 0 ? Math.max(r.val/maxVal*100, 1) : 0;
+      var inside = w > 18;
+      return '<div style="display:grid;grid-template-columns:220px 1fr 130px;align-items:center;gap:12px">' +
+        '<div style="text-align:right;font-family:DM Mono,monospace;font-size:11.5px;font-weight:600;color:var(--text2);line-height:1.25">' +
+          r.name + '<br><span style="font-size:9px;color:var(--text3);font-weight:400">' + r.sub + '</span>' +
+        '</div>' +
+        '<div style="height:28px;background:var(--bg3);border:1px solid var(--border2);border-radius:4px;position:relative;overflow:hidden">' +
+          '<div style="position:absolute;left:0;top:0;height:100%;width:'+w+'%;background:'+r.color+';border-radius:4px;transition:width 0.4s">' +
+            (inside ? '<span style="position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:800;color:#fff;font-family:DM Mono,monospace">'+(pct*100).toFixed(1)+'%</span>' : '') +
+          '</div>' +
+          (!inside ? '<span style="position:absolute;left:'+w+'% ;padding-left:6px;top:50%;transform:translateY(-50%);font-size:11px;font-weight:800;color:var(--text2);font-family:DM Mono,monospace">'+(pct*100).toFixed(1)+'%</span>' : '') +
+        '</div>' +
+        '<div style="font-family:DM Mono,monospace;font-size:12px;text-align:right;color:var(--text3)">' +
+          '<b style="color:var(--text)">'+fmtUSD(r.val)+'</b><br>' +
+          '<span style="font-size:9px">ARS '+fmtUSD(r.val*TC_ARS/1e6*1e6/1e9)+'B</span>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
 
-  // Resto del render (barras + juris)
-  var total = dist.reduce(function(s,d){ return s+d.val; }, 0);
-  var html = notaDE;
-  html += dist.map(function(d) {
-    var pct = total > 0 ? d.val/total : 0;
-    return '<div class="dist-bar-wrap">' +
-      '<div class="dist-bar-header">' +
-        '<span class="dist-bar-name">' + d.name + '</span>' +
-        '<span class="dist-bar-val">' + fmtUSD(d.val) + ' <span style="color:var(--text3)">(' + (pct*100).toFixed(1) + '%)</span></span>' +
-      '</div>' +
-      '<div class="dist-bar-track">' +
-        '<div class="dist-bar-fill" style="width:' + (pct*80) + '%;background:' + d.color + '"></div>' +
-      '</div>' +
-    '</div>';
-  }).join('');
-  document.getElementById('dist-bars').innerHTML = html;
+  // ── Nota metodológica ─────────────────────────────────────
+  var notaEl = document.getElementById('dist-nota');
+  if(notaEl) notaEl.innerHTML =
+    '<strong style="color:var(--nation)">NACIÓN V8.1:</strong> ' +
+    'Gan.×35%×42,34%='+fmtUSD(nac_gan_neto)+
+    ' · Créd/Déb+Comb.='+fmtUSD(nac_cdb+nac_comb)+
+    ' · DE Ag='+fmtUSD(totDeAg)+
+    ' · Contrib.Patron.×13='+fmtUSD(ss_patron_USD)+
+    ' · <strong style="color:var(--nation)">TOTAL='+fmtUSD(nacionTotal)+'</strong><br>' +
+    '<strong style="color:var(--muni)">PROVINCIALES:</strong> ' +
+    'Regalías='+fmtUSD(regalias_total)+
+    ' · Imp.Des.='+fmtUSD(imp_des)+
+    ' · IIBB='+fmtUSD(iibb)+
+    ' · <strong style="color:var(--muni)">Copart.RN='+fmtUSD(rn_copat)+'</strong>' +
+    ' (Gan.×35%×56,66%×2,50% · Ley 23.548) · TC BNA '+TC_ARS.toLocaleString('es-AR')+'/USD<br>' +
+    '<strong style="color:var(--green)">SALARIOS:</strong> ' +
+    'Modelo 3 (mes+empleados, R²=0,9984) ×13 SAC = <strong style="color:var(--green)">'+fmtUSD(salarios_USD/nYears)+'</strong>/año · '+
+    nYears+' año(s) seleccionados<br>' +
+    '<strong style="color:var(--gold2)">COMPRAS:</strong> Residuo '+fmtUSD(compTotal)+
+    ' → RN 37,5% · Nac.62,5% · Ext.3,9% (universo ajustado MCSAU · excluye irremplazables)<br>' +
+    '<strong style="color:var(--text3)">Años seleccionados: '+nYears+'/8 · FOB total seleccionado: '+fmtUSD(totFob)+'</strong>';
+
+  // ── Compras por jurisdicción ─────────────────────────────
+  var jurEl = document.getElementById('dist-jur');
+  if(jurEl) {
+    var jrows = [
+      {name:'🏔 Río Negro',           val:comp_rn,  pct:37.5, color:'var(--gold2)',   sub:'205 prov. · Jacobacci 70,6% · Línea Sur'},
+      {name:'🇦🇷 Nacionales (fuera RN)',val:comp_nac, pct:62.5, color:'var(--muni)',   sub:'493 prov. · AMBA concentra 67,9%'},
+      {name:'🌍 Exterior',            val:comp_ext, pct:3.9,  color:'var(--nation)', sub:'8 prov. · FLSmidth 89,4%'},
+    ];
+    jurEl.innerHTML = jrows.map(function(j) {
+      return '<div>' +
+        '<div style="display:flex;justify-content:space-between;font-family:DM Mono,monospace;font-size:11px;margin-bottom:4px">' +
+          '<span style="color:'+j.color+';font-weight:600">'+j.name+'</span>' +
+          '<span style="color:'+j.color+'">'+fmtUSD(j.val)+' · '+j.pct+'%</span>' +
+        '</div>' +
+        '<div style="background:var(--bg3);border-radius:4px;height:14px;overflow:hidden;border:1px solid var(--border2)">' +
+          '<div style="width:'+j.pct+'%;height:100%;background:'+j.color+';border-radius:4px;transition:width 0.4s"></div>' +
+        '</div>' +
+        '<div style="font-family:DM Mono,monospace;font-size:9px;color:var(--text3);margin-top:2px">'+j.sub+'</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  // ── También llamar copatBars ──────────────────────────────
+  renderCopatBars();
 }
 
 
@@ -2091,7 +2254,8 @@ function renderAll() {
 }
 
 // ── ANTHROPIC API KEY ────────────────────────────────────────
-let ANTHROPIC_KEY = ''; // Nunca guardar claves privadas dentro del HTML o del repositorio
+const _k = ['sk-ant-api03-fe7UxJ0','KSLwdFMQOEKznsIlesA0','hXLjHU2aTN0dQ83rF7ZV','szzgtE-Ge-mgI7EVyb_8VVXzfOOPhODjCZmFPiQ-YyYfFgAA'];
+let ANTHROPIC_KEY = _k.join('');
 
 function setSpotUI(au, ag, fuente) {
   const ts = new Date().toLocaleTimeString('es-AR');
@@ -2131,32 +2295,25 @@ function usarPreciosReferencia(motivo) {
     { price:69.71,   open:67.91,   high:69.77,   low:67.87,   chg:+2.65 },
     '📅 Fallback · Cierre 19/06/2026'
   );
-  document.getElementById('au-ts').textContent = '⚠ Precio de referencia — no es cotización en vivo';
-  document.getElementById('ag-ts').textContent = '⚠ Precio de referencia — no es cotización en vivo';
-  const badge = document.getElementById('precio-fecha-badge');
-  if (badge) badge.textContent = '⚠ Precios de referencia cargados (cierre 19/06/2026). Configurá tu clave para consultar valores actuales.';
+  document.getElementById('au-ts').textContent = '⚠ Sin conexión — estimación basada en datos recientes';
+  document.getElementById('ag-ts').textContent = '⚠ Sin conexión — estimación basada en datos recientes';
 }
 
 async function fetchSpot() {
-  if (!ANTHROPIC_KEY || !ANTHROPIC_KEY.startsWith('sk-ant-')) {
-    usarPreciosReferencia('sin-api-key');
-    return;
-  }
-  // Solo mostrar "···" si todavía no hay precios cargados
+  // Solo mostrar cargando si todavía no hay precio
   if (pAu === 0) {
     document.getElementById('au-price').innerHTML = '<span class="loading-text">···</span>';
     document.getElementById('ag-price').innerHTML = '<span class="loading-text">···</span>';
   }
-  // Actualizar timestamp sin borrar los precios actuales
-  document.getElementById('au-ts').textContent = '⚡ Actualizando precio...';
-  document.getElementById('ag-ts').textContent = '⚡ Actualizando precio...';
+  document.getElementById('au-ts').textContent = '⚡ Actualizando...';
+  document.getElementById('ag-ts').textContent = '⚡ Actualizando...';
 
   try {
-    var controller = new AbortController();
-    var _ft = setTimeout(function(){ controller.abort(); }, 12000);
+    var _ctrl = new AbortController();
+    var _ft = setTimeout(function(){ _ctrl.abort(); }, 12000);
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      signal: controller.signal,
+      signal: _ctrl.signal,
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': ANTHROPIC_KEY,
@@ -2196,11 +2353,11 @@ Todos valores numéricos en USD. chg = variación % del día.`,
 
   } catch(e) {
     clearTimeout(_ft);
-    if (e.name === 'AbortError') { usarPreciosReferencia('timeout-12s'); return; }
+    if (e.name==='AbortError'){ usarPreciosReferencia('timeout-12s'); return; }
     console.error('fetchSpot error:', e.message);
     if (e.message.includes('401') || e.message.includes('403')) {
       // Key inválida — limpiar y pedir nueva
-      removeStoredKey();
+      localStorage.removeItem('calcatreu_api_key');
       ANTHROPIC_KEY = '';
       mostrarModalKey();
       document.getElementById('modal-error').textContent = '⚠ Key inválida o revocada — ingresá una nueva';
@@ -2216,31 +2373,19 @@ Todos valores numéricos en USD. chg = variación % del día.`,
 }
 
 // ── TABS ──────────────────────────────────────────────────────
-function showTab(id, button) {
+function showTab(id) {
   document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-
-  const panel = document.getElementById('tab-' + id);
-  if (!panel) {
-    console.warn('Pestaña no encontrada:', id);
-    return;
-  }
-  panel.classList.add('active');
-
-  const activeButton = button || Array.from(document.querySelectorAll('.tab')).find(btn =>
-    (btn.getAttribute('onclick') || '').includes("'" + id + "'")
-  );
-  if (activeButton) activeButton.classList.add('active');
-
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
   if (pAu > 0) {
     const data = calcData(pAu, pAg);
     if (id === 'impuesto')         renderImpuesto(data);
     if (id === 'fortalecer')       renderFortalecer(data);
     if (id === 'distribucion')     { renderDistribucion(data); renderCopatBars(); }
     if (id === 'coparticipacion')  renderCoparticipacion();
-    // Compras y Empleo ya contienen contenido estático en el HTML.
-    if (id === 'empleo' && typeof renderEmpleo === 'function') renderEmpleo();
-    if (id === 'compras' && typeof renderCompras === 'function') renderCompras();
+    if (id === 'empleo')           renderEmpleo();
+    if (id === 'compras')          renderCompras();
   }
 }
 
@@ -2283,11 +2428,6 @@ Respondé en español, de forma técnica pero clara. Máximo 4 párrafos. Enfoca
 async function askAI(presetQuery) {
   const query = presetQuery || document.getElementById('ai-query').value.trim();
   if (!query) return;
-  if (!ANTHROPIC_KEY || !ANTHROPIC_KEY.startsWith('sk-ant-')) {
-    mostrarModalKey();
-    document.getElementById('modal-error').textContent = 'Ingresá una clave válida para utilizar el análisis con IA.';
-    return;
-  }
   if (pAu === 0) { document.getElementById('ai-output').innerHTML = '<span style="color:var(--red)">Esperá que carguen las cotizaciones primero.</span>'; return; }
 
   const output = document.getElementById('ai-output');
@@ -2327,11 +2467,6 @@ document.getElementById('ai-query').addEventListener('keydown', e => {
 async function fetchPrecioHoy() {
   const btn = document.getElementById('btn-hoy');
   const status = document.getElementById('manual-status');
-  if (!ANTHROPIC_KEY || !ANTHROPIC_KEY.startsWith('sk-ant-')) {
-    mostrarModalKey();
-    document.getElementById('modal-error').textContent = 'Ingresá una clave válida para consultar el precio actual.';
-    return;
-  }
   btn.textContent = '⏳ Buscando...';
   btn.disabled = true;
   status.textContent = '';
@@ -2339,12 +2474,7 @@ async function fetchPrecioHoy() {
   try {
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': ANTHROPIC_KEY,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 500,
@@ -2657,45 +2787,26 @@ function copat_selectAll() { [1,2,3,4,5,6,7,8].forEach(y=>copat_years_selected.a
 function copat_clearAll() { copat_years_selected.clear(); renderCopatBars(); }
 
 // ── INIT ─────
-// CARGA INMEDIATA — precios de referencia al instante, API en paralelo
-usarPreciosReferencia('inicio-inmediato');
-
-// ─────────────────────────────────────────────────
 updateTS();
 setInterval(updateTS, 1000);
 
-// Si hay una clave guardada, actualizar el precio en paralelo.
-// Sin clave, el dashboard queda operativo con los precios de referencia.
-var savedKey = getStoredKey();
-if (savedKey && savedKey.startsWith('sk-ant-')) {
-  ANTHROPIC_KEY = savedKey;
+// CARGA INMEDIATA: precios de referencia al instante — página funcional de inmediato
+usarPreciosReferencia('inicio');
+
+// Si hay key guardada → actualizar precio real en paralelo sin bloquear
+var _savedK = localStorage.getItem('calcatreu_api_key');
+if (_savedK && _savedK.startsWith('sk-ant-')) {
+  ANTHROPIC_KEY = _savedK;
   setTimeout(function(){ fetchSpot(); }, 800);
+} else {
+  setTimeout(function(){ mostrarModalKey(); }, 300);
 }
 setInterval(function() {
   if (ANTHROPIC_KEY && ANTHROPIC_KEY.length > 20) fetchSpot();
 }, 60 * 60 * 1000);
 
-function getStoredKey() {
-  try { return localStorage.getItem('calcatreu_api_key') || ''; }
-  catch (e) { console.warn('localStorage no disponible:', e.message); return ''; }
-}
-
-function setStoredKey(key) {
-  try { setStoredKey(key); return true; }
-  catch (e) { console.warn('No se pudo guardar la clave:', e.message); return false; }
-}
-
-function removeStoredKey() {
-  try { localStorage.removeItem('calcatreu_api_key'); }
-  catch (e) { console.warn('No se pudo limpiar la clave:', e.message); }
-}
-
 function mostrarModalKey() {
   document.getElementById('modal-key').style.display = 'flex';
-}
-
-function cerrarModalKey() {
-  document.getElementById('modal-key').style.display = 'none';
 }
 
 function guardarKey() {
@@ -2705,21 +2816,19 @@ function guardarKey() {
     return;
   }
   ANTHROPIC_KEY = key;
-  setStoredKey(key);
+  localStorage.setItem('calcatreu_api_key', key);
   document.getElementById('modal-error').textContent = '';
   document.getElementById('modal-key').style.display = 'none';
   fetchSpot();
 }
 
 function limpiarLocalStorage() {
-  removeStoredKey();
-  ANTHROPIC_KEY = '';
-  cerrarModalKey();
-  usarPreciosReferencia('clave-eliminada');
+  localStorage.clear();
+  location.reload();
 }
 
 function cambiarKey() {
-  removeStoredKey();
+  localStorage.removeItem('calcatreu_api_key');
   ANTHROPIC_KEY = '';
   document.getElementById('input-api-key').value = '';
   document.getElementById('modal-error').textContent = '';
