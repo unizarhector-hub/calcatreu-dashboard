@@ -2174,8 +2174,13 @@ async function fetchSpot() {
   document.getElementById('ag-ts').textContent  = '⚡ Buscando precio en tiempo real...';
 
   try {
+    // AbortController: si tarda más de 12 segundos, cancela la llamada
+    const controller = new AbortController();
+    const fetchTimeout = setTimeout(() => controller.abort(), 12000);
+
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
+      signal: controller.signal,
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': ANTHROPIC_KEY,
@@ -2210,9 +2215,16 @@ Todos valores numéricos en USD. chg = variación % del día.`,
     if (!prices.au?.price || prices.au.price < 100) throw new Error('Precio oro inválido');
     if (!prices.ag?.price || prices.ag.price < 1)   throw new Error('Precio plata inválido');
 
+    clearTimeout(fetchTimeout);
     setSpotUI(prices.au, prices.ag, '⚡ Claude · Tiempo real');
 
   } catch(e) {
+    clearTimeout(fetchTimeout);
+    if (e.name === 'AbortError') {
+      console.warn('fetchSpot: timeout 12s — usando precios de referencia');
+      usarPreciosReferencia('timeout-12s');
+      return;
+    }
     console.error('fetchSpot error:', e.message);
     if (e.message.includes('401') || e.message.includes('403')) {
       // Key inválida — limpiar y pedir nueva
@@ -2646,24 +2658,27 @@ function copat_selectAll() { [1,2,3,4,5,6,7,8].forEach(y=>copat_years_selected.a
 function copat_clearAll() { copat_years_selected.clear(); renderCopatBars(); }
 
 // ── INIT ─────
-// Localhost CORS fix: si no hay precios en 4 segundos, usar referencia
-setTimeout(() => {
-  if (pAu === 0) {
-    console.warn('Timeout: usando precios de referencia (posible CORS en localhost)');
-    usarPreciosReferencia('timeout-cors');
-  }
-}, 4000);
-
-─────────────────────────────────────────────────
 updateTS();
 setInterval(updateTS, 1000);
 
-// Mostrar modal si no hay key, sino intentar fetch
-// Siempre mostrar modal para ingresar/confirmar key
-mostrarModalKey();
+// PASO 1: Cargar precios de referencia INMEDIATAMENTE — la página funciona al instante
+usarPreciosReferencia('inicio');
+
+// PASO 2: Si hay key guardada, actualizar con precio real en paralelo (sin bloquear)
+const _savedKey = localStorage.getItem('calcatreu_api_key');
+if (_savedKey && _savedKey.startsWith('sk-ant-')) {
+  ANTHROPIC_KEY = _savedKey;
+  // Intentar actualizar precio real después de que la página cargue
+  setTimeout(() => { fetchSpot(); }, 500);
+} else {
+  // Sin key — mostrar modal (no bloqueante, la página ya está cargada)
+  mostrarModalKey();
+}
+
+// Actualizar precio cada 60 minutos si hay key
 setInterval(() => {
   if (ANTHROPIC_KEY && ANTHROPIC_KEY.length > 20) fetchSpot();
-}, 60 * 60 * 1000); // cada 60 min
+}, 60 * 60 * 1000);
 
 function mostrarModalKey() {
   document.getElementById('modal-key').style.display = 'flex';
