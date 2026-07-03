@@ -1702,7 +1702,16 @@ let ANTHROPIC_KEY = _k.join('');
 
 function setSpotUI(au, ag, fuente) {
   const ts = new Date().toLocaleTimeString('es-AR');
-  // ORO
+  const normalizar = (m) => ({
+    price: Number(m?.price) || 0,
+    open: Number(m?.open) || Number(m?.price) || 0,
+    high: Number(m?.high) || Number(m?.price) || 0,
+    low: Number(m?.low) || Number(m?.price) || 0,
+    chg: Number(m?.chg) || 0
+  });
+  au = normalizar(au);
+  ag = normalizar(ag);
+
   pAu = au.price;
   document.getElementById('au-price').textContent = '$' + pAu.toFixed(2);
   const auChg = document.getElementById('au-chg');
@@ -1710,14 +1719,7 @@ function setSpotUI(au, ag, fuente) {
   auChg.className = 'spot-chg ' + (au.chg >= 0 ? 'pos' : 'neg');
   document.getElementById('au-range').textContent = `Apertura $${au.open.toFixed(2)} · Máx $${au.high.toFixed(2)} · Mín $${au.low.toFixed(2)}`;
   document.getElementById('au-ts').textContent = fuente + ' · ' + ts;
-  // Actualizar badge de fecha
-  const fechaBadge = document.getElementById('precio-fecha-badge');
-  if (fechaBadge) {
-    const ayer = new Date(); ayer.setDate(ayer.getDate() - 1);
-    const fechaStr = ayer.toLocaleDateString('es-AR', {day:'2-digit',month:'2-digit',year:'numeric'});
-    fechaBadge.textContent = '⚡ Cotizaciones en tiempo real vía Claude IA · Fuentes: Kitco · Investing.com · Reuters · Actualización automática cada 60 min';
-  }
-  // PLATA
+
   pAg = ag.price;
   document.getElementById('ag-price').textContent = '$' + pAg.toFixed(2);
   const agChg = document.getElementById('ag-chg');
@@ -1725,25 +1727,63 @@ function setSpotUI(au, ag, fuente) {
   agChg.className = 'spot-chg ' + (ag.chg >= 0 ? 'pos' : 'neg');
   document.getElementById('ag-range').textContent = `Apertura $${ag.open.toFixed(2)} · Máx $${ag.high.toFixed(2)} · Mín $${ag.low.toFixed(2)}`;
   document.getElementById('ag-ts').textContent = fuente + ' · ' + ts;
-  // Mostrar precio D-1 en la barra
+
+  const fechaBadge = document.getElementById('precio-fecha-badge');
+  if (fechaBadge) {
+    if (fuente.includes('Fallback')) {
+      fechaBadge.textContent = '⚠ Dato de respaldo fijo del 19/06/2026 · La actualización en línea no respondió';
+      fechaBadge.style.color = 'rgba(240,185,80,0.95)';
+    } else if (fuente.includes('Último dato válido')) {
+      fechaBadge.textContent = '⚠ Se muestra el último dato válido guardado · Intentando actualizar vía Claude IA';
+      fechaBadge.style.color = 'rgba(240,185,80,0.95)';
+    } else {
+      fechaBadge.textContent = '⚡ Cotización obtenida vía Claude IA · Actualización automática cada 60 min';
+      fechaBadge.style.color = 'var(--green)';
+    }
+  }
+
   document.getElementById('d1-au') && (document.getElementById('d1-au').textContent = 'Au: $' + au.price.toFixed(2));
   document.getElementById('d1-ag') && (document.getElementById('d1-ag').textContent = 'Ag: $' + ag.price.toFixed(2));
   renderAll();
+}
+
+function guardarUltimaCotizacion(au, ag) {
+  try {
+    localStorage.setItem('calcatreu_last_spot', JSON.stringify({ au, ag, savedAt: new Date().toISOString() }));
+  } catch (_) {}
+}
+
+function cargarUltimaCotizacion() {
+  try {
+    const raw = localStorage.getItem('calcatreu_last_spot');
+    if (!raw) return false;
+    const saved = JSON.parse(raw);
+    if (!saved?.au?.price || !saved?.ag?.price) return false;
+    const fecha = saved.savedAt ? new Date(saved.savedAt).toLocaleString('es-AR') : 'fecha no disponible';
+    setSpotUI(saved.au, saved.ag, '🗃 Último dato válido · ' + fecha);
+    return true;
+  } catch (_) {
+    return false;
+  }
 }
 
 function usarPreciosReferencia(motivo) {
   console.warn('Fallback precios referencia:', motivo);
   setSpotUI(
     { price:4160.26, open:4210.05, high:4213.66, low:4120.89, chg:-1.18 },
-    { price:69.71,   open:67.91,   high:69.77,   low:67.87,   chg:+2.65 },
+    { price:69.71, open:67.91, high:69.77, low:67.87, chg:+2.65 },
     '📅 Fallback · Cierre 19/06/2026'
   );
-  document.getElementById('au-ts').textContent = '⚠ Sin conexión — estimación basada en datos recientes';
-  document.getElementById('ag-ts').textContent = '⚠ Sin conexión — estimación basada en datos recientes';
 }
 
 async function fetchSpot() {
-  // Solo mostrar cargando si todavía no hay precio
+  if (!ANTHROPIC_KEY || !ANTHROPIC_KEY.startsWith('sk-ant-')) {
+    if (!cargarUltimaCotizacion()) usarPreciosReferencia('sin-clave-api');
+    document.getElementById('au-ts').textContent = '⚠ Falta configurar la clave de Anthropic';
+    document.getElementById('ag-ts').textContent = '⚠ Falta configurar la clave de Anthropic';
+    return null;
+  }
+
   if (pAu === 0) {
     document.getElementById('au-price').innerHTML = '<span class="loading-text">···</span>';
     document.getElementById('ag-price').innerHTML = '<span class="loading-text">···</span>';
@@ -1751,12 +1791,13 @@ async function fetchSpot() {
   document.getElementById('au-ts').textContent = '⚡ Actualizando...';
   document.getElementById('ag-ts').textContent = '⚡ Actualizando...';
 
+  let timer;
   try {
-    var _ctrl = new AbortController();
-    var _ft = setTimeout(function(){ _ctrl.abort(); }, 12000);
+    const ctrl = new AbortController();
+    timer = setTimeout(function(){ ctrl.abort(); }, 35000);
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      signal: _ctrl.signal,
+      signal: ctrl.signal,
       headers: {
         'Content-Type': 'application/json',
         'x-api-key': ANTHROPIC_KEY,
@@ -1765,53 +1806,54 @@ async function fetchSpot() {
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
-        max_tokens: 500,
+        max_tokens: 700,
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
         system: `Buscá el precio spot actual del oro XAU/USD y la plata XAG/USD en USD por onza troy.
 Respondé ÚNICAMENTE con este JSON exacto, sin texto adicional:
 {"au":{"price":0,"open":0,"high":0,"low":0,"chg":0},"ag":{"price":0,"open":0,"high":0,"low":0,"chg":0}}
-Todos valores numéricos en USD. chg = variación % del día.`,
-        messages: [{ role: 'user', content: 'Precio spot oro XAU/USD y plata XAG/USD ahora mismo. Solo el JSON.' }]
+Todos los valores deben ser numéricos. chg es la variación porcentual del día.`,
+        messages: [{ role: 'user', content: 'Precio spot actual de oro XAU/USD y plata XAG/USD. Devolvé solamente el JSON solicitado.' }]
       })
     });
 
-    if (res.status === 401 || res.status === 403) throw new Error('401 key inválida');
-    if (res.status === 404) throw new Error('404 modelo no encontrado');
-    if (!res.ok) throw new Error('HTTP ' + res.status);
-    const data = await res.json();
+    const raw = await res.text();
+    let data;
+    try { data = JSON.parse(raw); } catch (_) { data = null; }
+    if (!res.ok) {
+      const detalle = data?.error?.message || raw.slice(0, 180) || 'sin detalle';
+      throw new Error('HTTP ' + res.status + ' · ' + detalle);
+    }
+    if (!data) throw new Error('Respuesta no JSON de Anthropic');
 
-    const allText = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
-    console.log('Raw response:', allText.slice(0, 200));
-    // Buscar JSON más robusto
+    const allText = (data.content || []).filter(function(b){ return b.type === 'text'; }).map(function(b){ return b.text || ''; }).join('\n');
     const start = allText.indexOf('{');
     const end = allText.lastIndexOf('}');
-    if (start === -1 || end === -1) throw new Error('JSON no encontrado en: ' + allText.slice(0,100));
-    const jsonStr = allText.slice(start, end + 1);
-    const prices = JSON.parse(jsonStr);
-    if (!prices.au?.price || prices.au.price < 100) throw new Error('Precio oro inválido');
-    if (!prices.ag?.price || prices.ag.price < 1)   throw new Error('Precio plata inválido');
+    if (start === -1 || end === -1 || end <= start) throw new Error('Claude no devolvió el JSON esperado');
+    const prices = JSON.parse(allText.slice(start, end + 1));
+    if (!prices.au?.price || prices.au.price < 100) throw new Error('Precio de oro inválido');
+    if (!prices.ag?.price || prices.ag.price < 1) throw new Error('Precio de plata inválido');
 
-    clearTimeout(_ft);
-    setSpotUI(prices.au, prices.ag, '⚡ Claude · Tiempo real');
-
+    clearTimeout(timer);
+    guardarUltimaCotizacion(prices.au, prices.ag);
+    setSpotUI(prices.au, prices.ag, '⚡ Claude IA · Dato actualizado');
+    return prices;
   } catch(e) {
-    clearTimeout(_ft);
-    if (e.name==='AbortError'){ usarPreciosReferencia('timeout-12s'); return; }
-    console.error('fetchSpot error:', e.message);
-    if (e.message.includes('401') || e.message.includes('403')) {
-      // Key inválida — limpiar y pedir nueva
+    if (timer) clearTimeout(timer);
+    const detalle = e.name === 'AbortError' ? 'tiempo de espera agotado (35 s)' : e.message;
+    console.error('fetchSpot error:', detalle);
+
+    if (/HTTP (401|403)/.test(detalle)) {
       localStorage.removeItem('calcatreu_api_key');
       ANTHROPIC_KEY = '';
       mostrarModalKey();
-      document.getElementById('modal-error').textContent = '⚠ Key inválida o revocada — ingresá una nueva';
-    } else {
-      // Otro error — usar fallback
-      setSpotUI(
-        { price: 4160.26, open: 4210.05, high: 4213.66, low: 4120.89, chg: -1.18 },
-        { price: 69.71,   open: 67.91,   high: 69.77,   low: 67.87,   chg: +2.65 },
-        '📅 Fallback · Cierre 19/06/2026'
-      );
+      document.getElementById('modal-error').textContent = '⚠ Clave inválida, revocada o sin permisos';
     }
+
+    const usoCache = cargarUltimaCotizacion();
+    if (!usoCache) usarPreciosReferencia(detalle);
+    document.getElementById('au-ts').textContent = '⚠ Actualización fallida: ' + detalle;
+    document.getElementById('ag-ts').textContent = '⚠ Actualización fallida: ' + detalle;
+    return null;
   }
 }
 
@@ -1912,14 +1954,31 @@ document.getElementById('ai-query').addEventListener('keydown', e => {
 async function fetchPrecioHoy() {
   const btn = document.getElementById('btn-hoy');
   const status = document.getElementById('manual-status');
+
+  if (!ANTHROPIC_KEY || !ANTHROPIC_KEY.startsWith('sk-ant-')) {
+    status.textContent = '⚠ Configurá primero la clave de Anthropic';
+    status.style.color = 'var(--red)';
+    mostrarModalKey();
+    return;
+  }
+
   btn.textContent = '⏳ Buscando...';
   btn.disabled = true;
   status.textContent = '';
+  let timer;
 
   try {
+    const ctrl = new AbortController();
+    timer = setTimeout(function(){ ctrl.abort(); }, 35000);
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      signal: ctrl.signal,
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': ANTHROPIC_KEY,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
         max_tokens: 500,
@@ -1931,35 +1990,39 @@ Ambos en USD por onza troy. Solo números, sin símbolos.`,
       })
     });
 
-    const data = await res.json();
-    const allText = (data.content || []).filter(b => b.type === 'text').map(b => b.text).join('');
+    const raw = await res.text();
+    let data;
+    try { data = JSON.parse(raw); } catch (_) { data = null; }
+    if (!res.ok) {
+      const detalle = data?.error?.message || raw.slice(0, 180) || 'sin detalle';
+      throw new Error('HTTP ' + res.status + ' · ' + detalle);
+    }
+    if (!data) throw new Error('Respuesta no JSON de Anthropic');
+
+    const allText = (data.content || []).filter(function(b){ return b.type === 'text'; }).map(function(b){ return b.text || ''; }).join('\n');
     const match = allText.match(/\{[^}]*"au"\s*:\s*([\d.]+)[^}]*"ag"\s*:\s*([\d.]+)[^}]*\}/);
-    
-    if (!match) throw new Error('No se encontró precio');
-    
+    if (!match) throw new Error('Claude no devolvió el JSON de precios esperado');
+
     const au = parseFloat(match[1]);
     const ag = parseFloat(match[2]);
-
     if (au < 100 || au > 20000) throw new Error('Precio oro inválido: ' + au);
-    if (ag < 1   || ag > 500)   throw new Error('Precio plata inválido: ' + ag);
+    if (ag < 1 || ag > 500) throw new Error('Precio plata inválido: ' + ag);
 
-    // Aplicar precios
     document.getElementById('input-au').value = au.toFixed(2);
     document.getElementById('input-ag').value = ag.toFixed(2);
-    
-    setSpotUI(
-      { price:au, open:au, high:au, low:au, chg:0 },
-      { price:ag, open:ag, high:ag, low:ag, chg:0 },
-      '⚡ Claude IA · Precio HOY'
-    );
+    const auObj = { price:au, open:au, high:au, low:au, chg:0 };
+    const agObj = { price:ag, open:ag, high:ag, low:ag, chg:0 };
+    guardarUltimaCotizacion(auObj, agObj);
+    setSpotUI(auObj, agObj, '⚡ Claude IA · Precio de hoy');
     status.textContent = '✓ Au $' + au.toFixed(2) + ' · Ag $' + ag.toFixed(2);
     status.style.color = 'var(--green)';
-
   } catch(e) {
-    console.error('fetchPrecioHoy:', e);
-    status.textContent = '⚠ Error: ' + e.message + ' — usá el ajuste manual';
+    const detalle = e.name === 'AbortError' ? 'tiempo de espera agotado (35 s)' : e.message;
+    console.error('fetchPrecioHoy:', detalle);
+    status.textContent = '⚠ ' + detalle;
     status.style.color = 'var(--red)';
   } finally {
+    if (timer) clearTimeout(timer);
     btn.textContent = '⚡ Precio de HOY (IA)';
     btn.disabled = false;
   }
@@ -2192,8 +2255,8 @@ function copat_clearAll() { copat_years_selected.clear(); renderCopatBars(); ren
 updateTS();
 setInterval(updateTS, 1000);
 
-// CARGA INMEDIATA: precios de referencia al instante — página funcional de inmediato
-usarPreciosReferencia('inicio');
+// CARGA INMEDIATA: usar el último dato válido; si no existe, mostrar respaldo fijo
+if (!cargarUltimaCotizacion()) usarPreciosReferencia('inicio');
 
 // Si hay key guardada → actualizar precio real en paralelo sin bloquear
 var _savedK = localStorage.getItem('calcatreu_api_key');
