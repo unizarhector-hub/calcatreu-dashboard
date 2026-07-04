@@ -46,7 +46,7 @@ body::before {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: 0.14;
+  opacity: 0.07;
   pointer-events:none; z-index:0;
 }
 
@@ -575,7 +575,6 @@ header {
   <button class="tab active" onclick="showTab('produccion')">PRODUCCIÓN</button>
   <button class="tab" onclick="showTab('regalias')">REGALÍAS</button>
   <button class="tab" onclick="showTab('impuesto')">IMPUESTO DESARROLLO</button>
-  <button class="tab" onclick="showTab('fortalecer')">FORTALECER</button>
   <button class="tab" onclick="showTab('alpha')">MODELO α ENDÓGENO</button>
   <button class="tab" onclick="showTab('distribucion')">DISTRIBUCIÓN</button>
   <button class="tab" onclick="showTab('escenarios')">ESCENARIOS</button>
@@ -721,53 +720,6 @@ header {
 </div>
 
 <!-- TAB: FORTALECER -->
-<div class="tab-content" id="tab-fortalecer">
-<div id="slicer-fortalecer" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-bottom:14px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border2);border-radius:8px"><span style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3);letter-spacing:1px;white-space:nowrap">FILTRAR AÑOS →</span><div id="yr-slicer-fortalecer" style="display:flex;gap:5px;flex-wrap:wrap"></div><button onclick="yr_all('fortalecer',renderFortalecer)" style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:4px;cursor:pointer">TODOS</button><button onclick="yr_none('fortalecer',renderFortalecer)" style="font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;background:var(--bg3);color:var(--text2);border:1px solid var(--border2);border-radius:4px;cursor:pointer">NINGUNO</button></div>
-  <div class="card full-width">
-    <div class="card-title">FONDO FORTALECER · 25% Regalías + 100% Impuesto Desarrollo</div>
-    <div class="fob-grid" style="margin-bottom:20px">
-      <div class="fob-kpi"><div class="fob-kpi-label">TOTAL FONDO FORTALECER</div><div class="fob-kpi-val regalia-val" id="fort-total">···</div></div>
-      <div class="fob-kpi"><div class="fob-kpi-label">COMPONENTE REGALÍAS 25%</div><div class="fob-kpi-val gold-val" id="fort-comp-reg">···</div></div>
-      <div class="fob-kpi"><div class="fob-kpi-label">COMPONENTE IMP. DESARROLLO</div><div class="fob-kpi-val" style="color:var(--province)" id="fort-comp-imp">···</div></div>
-      <div class="fob-kpi"><div class="fob-kpi-label">PROMEDIO ANUAL</div><div class="fob-kpi-val total-val" id="fort-prom">···</div></div>
-    </div>
-    <div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table class="reg-table">
-      <thead>
-        <tr>
-          <th>AÑO</th>
-          <th>FOB TOTAL (USD)</th>
-          <th class="model-a">25% REGALÍAS (USD)</th>
-          <th class="model-b">100% IMP. DESARROLLO (USD)</th>
-          <th style="color:var(--green)">TOTAL FORTALECER (USD)</th>
-          <th>EN ARS (TC: <span id="tc-header3">—</span>)</th>
-        </tr>
-      </thead>
-      <tbody id="fort-tbody"></tbody>
-    </table></div>
-    <div style="margin-top:16px;padding:16px;background:linear-gradient(135deg,rgba(61,214,140,0.06),rgba(90,174,240,0.06));border-radius:8px;border:1px solid rgba(61,214,140,0.2)">
-      <div style="font-family:'DM Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--green);margin-bottom:12px">COMPOSICIÓN DEL FONDO</div>
-      <div style="display:flex;gap:32px;flex-wrap:wrap">
-        <div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px">FUENTE 1</div>
-          <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--gold2)">25% de Regalías (2.10%)</div>
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">= 0.525% sobre FOB</div>
-        </div>
-        <div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px">FUENTE 2</div>
-          <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--silver2)">100% Impuesto Desarrollo (3.75%)</div>
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">= 3.75% sobre FOB</div>
-        </div>
-        <div>
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--text3);margin-bottom:4px">TASA EFECTIVA TOTAL</div>
-          <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--green);font-weight:600">4.275% sobre FOB</div>
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--text3)">hacia Área de Influencia</div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- TAB: ALPHA ENDÓGENO -->
 <div class="tab-content" id="tab-alpha">
   <div class="main-grid">
     <div class="card">
