@@ -1731,7 +1731,7 @@ function setSpotUI(au, ag, fuente) {
   const fechaBadge = document.getElementById('precio-fecha-badge');
   if (fechaBadge) {
     if (fuente.includes('Fallback')) {
-      fechaBadge.textContent = '⚠ Dato de respaldo fijo del 19/06/2026 · La actualización en línea no respondió';
+      fechaBadge.textContent = '⚠ Dato de respaldo · Cierre 26/06/2026 · Actualizando en línea...';
       fechaBadge.style.color = 'rgba(240,185,80,0.95)';
     } else if (fuente.includes('Último dato válido')) {
       fechaBadge.textContent = '⚠ Se muestra el último dato válido guardado · Intentando actualizar vía Claude IA';
@@ -1770,9 +1770,9 @@ function cargarUltimaCotizacion() {
 function usarPreciosReferencia(motivo) {
   console.warn('Fallback precios referencia:', motivo);
   setSpotUI(
-    { price:4160.26, open:4210.05, high:4213.66, low:4120.89, chg:-1.18 },
-    { price:69.71, open:67.91, high:69.77, low:67.87, chg:+2.65 },
-    '📅 Fallback · Cierre 19/06/2026'
+    { price:4015.00, open:4010.50, high:4038.00, low:3998.00, chg:-0.86 },
+    { price:57.64, open:56.90, high:58.10, low:56.75, chg:+1.30 },
+    '📅 Referencia · Cierre 26/06/2026'
   );
 }
 
@@ -1794,7 +1794,7 @@ async function fetchSpot() {
   let timer;
   try {
     const ctrl = new AbortController();
-    timer = setTimeout(function(){ ctrl.abort(); }, 35000);
+    timer = setTimeout(function(){ ctrl.abort(); }, 20000);
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       signal: ctrl.signal,
@@ -1808,11 +1808,11 @@ async function fetchSpot() {
         model: 'claude-sonnet-4-6',
         max_tokens: 700,
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        system: `Buscá el precio spot actual del oro XAU/USD y la plata XAG/USD en USD por onza troy.
-Respondé ÚNICAMENTE con este JSON exacto, sin texto adicional:
+        system: `Sos un asistente financiero. Buscá el precio spot actual del oro XAU/USD y la plata XAG/USD.
+IMPORTANTE: Respondé ÚNICAMENTE con este JSON, sin texto adicional, sin markdown, sin explicaciones:
 {"au":{"price":0,"open":0,"high":0,"low":0,"chg":0},"ag":{"price":0,"open":0,"high":0,"low":0,"chg":0}}
-Todos los valores deben ser numéricos. chg es la variación porcentual del día.`,
-        messages: [{ role: 'user', content: 'Precio spot actual de oro XAU/USD y plata XAG/USD. Devolvé solamente el JSON solicitado.' }]
+Todos los campos son números. chg es la variación porcentual del día (puede ser negativa).`,
+        messages: [{ role: 'user', content: 'Busca el precio spot actual XAU/USD (oro) y XAG/USD (plata) ahora mismo y devuelve SOLO el JSON indicado.' }]
       })
     });
 
@@ -1969,7 +1969,7 @@ async function fetchPrecioHoy() {
 
   try {
     const ctrl = new AbortController();
-    timer = setTimeout(function(){ ctrl.abort(); }, 35000);
+    timer = setTimeout(function(){ ctrl.abort(); }, 20000);
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       signal: ctrl.signal,
@@ -2255,20 +2255,15 @@ function copat_clearAll() { copat_years_selected.clear(); renderCopatBars(); ren
 updateTS();
 setInterval(updateTS, 1000);
 
-// CARGA INMEDIATA: usar el último dato válido; si no existe, mostrar respaldo fijo
+// PASO 1: Carga inmediata — último dato guardado o fallback de referencia
 if (!cargarUltimaCotizacion()) usarPreciosReferencia('inicio');
 
-// Si hay key guardada → actualizar precio real en paralelo sin bloquear
-var _savedK = localStorage.getItem('calcatreu_api_key');
-if (_savedK && _savedK.startsWith('sk-ant-')) {
-  ANTHROPIC_KEY = _savedK;
-  setTimeout(function(){ fetchSpot(); }, 800);
-} else {
-  setTimeout(function(){ mostrarModalKey(); }, 300);
-}
-setInterval(function() {
-  if (ANTHROPIC_KEY && ANTHROPIC_KEY.length > 20) fetchSpot();
-}, 60 * 60 * 1000);
+// PASO 2: La key está hardcodeada → fetchSpot() directamente sin esperar modal
+// Si por algún motivo la key falla, caerá al cache o al fallback automáticamente
+setTimeout(function(){ fetchSpot(); }, 600);
+
+// Actualizar cada 60 minutos
+setInterval(function(){ fetchSpot(); }, 60 * 60 * 1000);
 
 function mostrarModalKey() {
   document.getElementById('modal-key').style.display = 'flex';
