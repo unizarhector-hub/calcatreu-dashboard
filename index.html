@@ -46,7 +46,7 @@ body::before {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: 0.22;
+  opacity: 0.14;
   pointer-events:none; z-index:0;
 }
 
@@ -1731,7 +1731,7 @@ function setSpotUI(au, ag, fuente) {
   const fechaBadge = document.getElementById('precio-fecha-badge');
   if (fechaBadge) {
     if (fuente.includes('Fallback')) {
-      fechaBadge.textContent = '⚠ Dato de respaldo · Cierre 26/06/2026 · Actualizando en línea...';
+      fechaBadge.textContent = '⚠ Referencia · Cierre 26/06/2026 · Actualizando en línea...';
       fechaBadge.style.color = 'rgba(240,185,80,0.95)';
     } else if (fuente.includes('Último dato válido')) {
       fechaBadge.textContent = '⚠ Se muestra el último dato válido guardado · Intentando actualizar vía Claude IA';
@@ -1771,8 +1771,8 @@ function usarPreciosReferencia(motivo) {
   console.warn('Fallback precios referencia:', motivo);
   setSpotUI(
     { price:4015.00, open:4010.50, high:4038.00, low:3998.00, chg:-0.86 },
-    { price:57.64, open:56.90, high:58.10, low:56.75, chg:+1.30 },
-    '📅 Referencia · Cierre 26/06/2026'
+    { price:57.64,  open:56.90,   high:58.10,   low:56.75,   chg:+1.30 },
+    '📅 Fallback · Cierre 26/06/2026'
   );
 }
 
@@ -1794,7 +1794,7 @@ async function fetchSpot() {
   let timer;
   try {
     const ctrl = new AbortController();
-    timer = setTimeout(function(){ ctrl.abort(); }, 20000);
+    timer = setTimeout(function(){ ctrl.abort(); }, 18000);
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       signal: ctrl.signal,
@@ -1808,11 +1808,11 @@ async function fetchSpot() {
         model: 'claude-sonnet-4-6',
         max_tokens: 700,
         tools: [{ type: 'web_search_20250305', name: 'web_search' }],
-        system: `Sos un asistente financiero. Buscá el precio spot actual del oro XAU/USD y la plata XAG/USD.
-IMPORTANTE: Respondé ÚNICAMENTE con este JSON, sin texto adicional, sin markdown, sin explicaciones:
+        system: `Buscá el precio spot actual del oro XAU/USD y la plata XAG/USD en USD por onza troy.
+Respondé ÚNICAMENTE con este JSON exacto, sin texto adicional:
 {"au":{"price":0,"open":0,"high":0,"low":0,"chg":0},"ag":{"price":0,"open":0,"high":0,"low":0,"chg":0}}
-Todos los campos son números. chg es la variación porcentual del día (puede ser negativa).`,
-        messages: [{ role: 'user', content: 'Busca el precio spot actual XAU/USD (oro) y XAG/USD (plata) ahora mismo y devuelve SOLO el JSON indicado.' }]
+Todos los valores deben ser numéricos. chg es la variación porcentual del día.`,
+        messages: [{ role: 'user', content: 'Precio spot actual de oro XAU/USD y plata XAG/USD. Devolvé solamente el JSON solicitado.' }]
       })
     });
 
@@ -1969,7 +1969,7 @@ async function fetchPrecioHoy() {
 
   try {
     const ctrl = new AbortController();
-    timer = setTimeout(function(){ ctrl.abort(); }, 20000);
+    timer = setTimeout(function(){ ctrl.abort(); }, 18000);
     const res = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
       signal: ctrl.signal,
@@ -2258,8 +2258,7 @@ setInterval(updateTS, 1000);
 // PASO 1: Carga inmediata — último dato guardado o fallback de referencia
 if (!cargarUltimaCotizacion()) usarPreciosReferencia('inicio');
 
-// PASO 2: La key está hardcodeada → fetchSpot() directamente sin esperar modal
-// Si por algún motivo la key falla, caerá al cache o al fallback automáticamente
+// PASO 2: Key hardcodeada → fetchSpot() directamente, sin depender de localStorage
 setTimeout(function(){ fetchSpot(); }, 600);
 
 // Actualizar cada 60 minutos
